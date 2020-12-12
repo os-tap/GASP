@@ -50,7 +50,6 @@ int main() {
     ps::Frontline front_line(params);
     ps::Screen screen(params);
 
-    ps::Segments::Segment* segment = main_swarm.GetSeg(0, 0);
 
     params.Print();
 
@@ -193,8 +192,6 @@ int main() {
             Input.set_burn = true;
             burn_x = params.screen_to_area_x(mouse_x);
             burn_y = params.screen_to_area_y(mouse_y);
-//            segment = main_swarm.GetSegment(burn_x, burn_y);
-            segment = main_swarm.SegmentByPoint(burn_x, burn_y);
         }
 
         /* --- MAIN ACTION --- */
@@ -212,18 +209,18 @@ int main() {
 
 
             if (!State.pause || Input.step ) {
-//                main_swarm.ClearParticles();
+                main_swarm.ClearParticles();
                 if (State.move) {
 
                     main_swarm.MoveParticles();
-                    main_swarm.Fill();
+                    main_swarm.FillParticles();
                 }
                 main_swarm.UpdateSegments();
             }
 
-            if (Input.set_burn) main_swarm.BurnSegment(segment);
+            if (Input.set_burn) main_swarm.BurnSegmentByPoint(burn_x, burn_y);
             if (Input.lights_out) main_swarm.LightsOut();
-            if (Input.clear) main_swarm.Clear();
+            if (Input.clear) main_swarm.EraseParticles();
 
             if (!State.pause || Input.step) {
                 main_swarm.CrossParticles();
@@ -237,11 +234,10 @@ int main() {
 
         if (State.update_line && (!State.pause || Input.step || key_pressed)) {
             front_line.Calc(main_swarm.all_will_burn);
-            front_line.Calc(main_swarm.all_will_burn);
         }
 
         if (!State.pause || Input.step) {
-            main_swarm.ClearParticles();
+            //main_swarm.ClearParticles();
         }
 
 
@@ -339,7 +335,7 @@ int main() {
         if (Input.print_step)
         {
             front_line.CalcRadius();
-            main_swarm.UpdateSegments();
+            //main_swarm.UpdateSegments();
             main_swarm.CalcFrontlineRadius(front_line.front_line_points);
 //            main_swarm.Print(print_step_counter);
             front_line.Print(print_step_counter);

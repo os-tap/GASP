@@ -68,14 +68,14 @@ namespace ps {
         for (const auto& particle : particle_list) {
             //auto particle = *particle_it;
 
-            int beg_i = (int) ceil((particle->_x() - steps_start - radius) / step_size);
-            int end_i =	(int)floor((particle->_x() - steps_start + radius) / step_size);
+            int beg_i = (int) ceil((particle->x - steps_start - radius) / step_size);
+            int end_i =	(int)floor((particle->x - steps_start + radius) / step_size);
             beg_i *= beg_i > 0;
             end_i = end_i * (end_i < steps) + (end_i > steps - 1) * (steps - 1);
             //if (end_i > steps - 1) end_i = steps - 1;
 
             for (int i = beg_i; i <= end_i; ++i) {
-                front_line_points[i].sum += particle->_z();
+                front_line_points[i].sum += particle->z;
                 front_line_points[i].count++;
             }
 
@@ -239,7 +239,7 @@ namespace ps {
             double dx = (A.x - Cntr.x);
             double dy = (A.z - Cntr.z);
 
-            front_line_points[i].r = sqrt(dx*dx + dy*dy);
+            front_line_points[i].r = 1. / sqrt(dx*dx + dy*dy);
 //            front_line_points[i].r = pow(dx*dx + dy*dy, 1./6);
         }
 

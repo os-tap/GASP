@@ -60,7 +60,9 @@ void ps::Params::Load(json j)
 
     //burn_radius_cross = burn_radius + burn_radius * (double)j["burn_fix"];
     //burn_radius_cross = burn_radius * (1 + (pow(base_particles, (double)j["burn_fix"])));
-    burn_radius_cross = burn_radius / (1 - (double)j["burn_fix_a"] / pow(base_particles, (double)j["burn_fix_b"]));
+    burn_fix_a = (double)j["burn_fix_a"];
+    burn_fix_b = (double)j["burn_fix_b"];
+    burn_radius_cross = make_radius_cross_fix(burn_radius);
     burn_radius_2_cross = burn_radius_cross * burn_radius_cross;
 
     emitter_begin = (double)j["emitter_begin"] * burn_radius;
@@ -91,7 +93,10 @@ void ps::Params::Load(json j)
     refract_coef = (double)j["refract_coef"];
     refract_offset = (double)j["refract_offset"];
 
+    frontline_cross_chunk = (bool)j["frontline_cross_chunk"];
     frontline_cross_multipler = (double)j["frontline_cross_multipler"];
+    frontline_cross_area = (double)j["frontline_cross_area"];
+    frontline_cross_radius = (stream_width * frontline_cross_area);
 
 }
 

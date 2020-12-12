@@ -45,6 +45,7 @@ public:
     double stream_beg, stream_end, stream_width, stream_radius;
     double L, scale, DSR;
 
+    double burn_fix_a, burn_fix_b;
 
     double burn_radius, burn_radius_2;
     double burn_radius_cross, burn_radius_2_cross;
@@ -69,13 +70,18 @@ public:
 
     double refract_coef, refract_offset;
 
-    double frontline_cross_multipler;
+    bool frontline_cross_chunk;
+    double frontline_cross_multipler, frontline_cross_area, frontline_cross_radius;
     int frontline_radius_h;
 
 
     //std::string swarm_params() const;
 //    std::string frontline_params() const;
 
+
+    double make_radius_cross_fix(double radius) {
+        return radius / (1 - burn_fix_a / pow(base_particles, burn_fix_b));
+    }
 
 
     double stream_function(double x) const {

@@ -38,14 +38,24 @@ namespace ps {
         return state;
     }
 
-    coord_t Particle::Distance(const Particle &p) const {
+    inline coord_t Particle::Distance(const Particle &p) const {
         return (x - p.x) * (x - p.x) + (z - p.z) * (z - p.z);
     }
     bool Particle::Cross(const Particle &p) const {
-        return Distance(p) < burn_radius_2;
+        return Distance(p) < p.burn_radius_2;
     }
     bool Particle::CrossBurn(const Particle &burn_particle) const {
-        return Distance(burn_particle) < burn_radius_2;
+        return Distance(burn_particle) < burn_particle.burn_radius_2;
+    }
+
+    inline coord_t Particle::Distance(const Particle* p) const {
+        return (x - p->x) * (x - p->x) + (z - p->z) * (z - p->z);
+    }
+    bool Particle::Cross(const Particle* p) const {
+        return Distance(p) < p->burn_radius_2;
+    }
+    bool Particle::CrossBurn(const Particle* p) const {
+        return ((x - p->x) * (x - p->x) + (z - p->z) * (z - p->z)) < p->burn_radius_2;
     }
 
 } /* namespace ps */

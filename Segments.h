@@ -4,9 +4,7 @@
 #include "Particle.h"
 #include "Frontline.h"
 
-//#include <list>
 #include <vector>
-#include <forward_list>
 
 #include <string>
 #include <iostream>
@@ -20,10 +18,6 @@
 #include <tbb/concurrent_vector.h>
 #include <pstl/execution>
 #include <pstl/algorithm>
-//#include <execution>
-//#include <algorithm>
-//#include <thread>
-//#include <mutex>
 
 typedef std::vector <ps::Particle> ParticleList;
 
@@ -38,142 +32,102 @@ namespace ps {
         Segments(const Params&);
         void Update();
 
-
         ParticleList all_list;
         std::vector <Particle*> all_will_burn;
+
+    private:
         tbb::concurrent_vector <Particle*> all_will_burn_concurrent;
+
+
+
+    public:
+
+        void FillParticles();
+        void MoveParticles();
+        void CrossParticles();
+        void StepParticles();
+        void ClearParticles();
+
+        void LightsOut();
+        void EraseParticles();
+
+        void PrintSwarm(int);
+
+
+    private:
+
+        void CreateParticle(double x_cord, double z_cord, double p_speed);
+        void MoveParticle(Particle& p);
+        void StepParticle(Particle& p);
+        void BurnParticle(Particle* p);
+        void ParticleToSegment(Particle& p);
+
+        bool ParticleInBurnSegments(Particle* particle, int seg_x, int seg_z);
+
+
+    public:
+        void Toggle_Fill();
+    private:
+        bool _fill_one = 0;
+
+        void Fill_Sampling();
+
+        void Fill_Grid();   
+        void ResetFillGrid();
+        std::vector <double> last_particles;
+        int fill_grid_count;
+
 
 
 
 
     public:
 
-        void Fill();
-        void Toggle_Fill();
+        int grid_count_x, grid_count_z, grid_count; 
+        double grid_x_size, grid_z_size;
+        double grid_min_size, grid_max_size;
+        double grid_count_x_percent, grid_count_z_percent;
 
-        void DoSegments(int beg, int end);
-        void DoSegment(int i);
-        void CrossParticles();
-        void StepParticles();
-        void MoveParticles();
-        void ClearParticles();
-        void ClearParticleList();
+        struct Segment {
+            int x, z;
+            tbb::concurrent_vector <Particle*> ok_list, burn_list;
+        };
 
-        void LightsOut();
-        void Clear();
+        std::vector<Segment> grid; 
+        tbb::concurrent_vector <Segment*> burn_segments;
 
-        void FinalLoop();
+        Segment& grids(size_t x, size_t z) {
+            return grid[z * grid_count_x + x];
+        }
+
+        int GetSegmentX(double x) const;
+        int GetSegmentZ(double z) const;
+        Segment& SegmentByPoint(double x, double z);
+        void BurnSegmentByPoint(double x, double z);
 
 
-        void Print(int);
+        void SetSegmentsGrid(double);
+        void UpdateSegments();
+        void BurnSegment(Segment&);
+        void DoSegment(Segment&); 
+        void ClearSegments();
 
 
+        bool CheckSegmentNeighborsBurn(int seg_x, int seg_z);
+
+
+
+
+        /**/
+    public:
         int Line_Count();
         void Density_Grid();
         void Density_Radius();
         void Max_Radius();
 
-        void CalcFrontlineRadius(std::vector <Frontline::front_line_point> &points);
+        void CalcFrontlineRadius(std::vector <Frontline::front_line_point>& points);
         void RefractParticles();
-
-
-
-
-
-        void Fill_Sampling();
-        void Fill_Grid();
-    private:
-
-        bool _fill_one = 0;
-        //void (Segments::* fill_func)() = 0;
-
-
-        void ResetFillGrid();
-        double* last_particles = 0;
-        int fill_grid_count;
-
-    private:
-
-
-
-        void CreateParticle(double x_cord, double z_cord, double p_speed);
-        void MoveParticle(Particle *p);
-        void StepParticle(Particle *p);
-        void BurnParticle(Particle *p);
-        void ParticleToSegment(Particle *p);
-
-
-
-
-    public:
-
-
-        /*struct segment_mutex {
-            std::mutex ok, burn;
-        };*/
-
-        struct Segment {
-            bool has_burn = 0, refract = 0;
-            int x,z;
-//            std::vector<Particle*> ok_list, burn_list, will_burn;
-            tbb::concurrent_vector <Particle*> ok_list, burn_list, will_burn;
-//            std::mutex mtx_ok, mtx_burn;
-//            segment_mutex *mtx = 0;
-        };
-
-
-        void DoSegment(Segment&);
-        void DoSegment(Segment*);
-        Segment* GetSeg(int x, int y);
-        Segment* SegmentByPoint(double x, double z);
-        Segment* GetSegment(double x, double z) const;
-        void BurnSegment(Segment*);
-        void UpdateSegments();
-
-
-        int grid_count_x, grid_count_z, grid_count;
-
-
-    private:
-
-        std::vector<Segment> grids;
-        //segment_mutex *mutex_mem = 0;
-
-
-        Segment **grid = 0, *grid_mem = 0;
-
-        double grid_count_x_percent, grid_count_z_percent;
-
-
-
-        void SetSegmentsGrid(double);
-        void ClearSegments();
-
-        int GetSegmentX(double x) const;
-        int GetSegmentZ(double z) const;
-
-        bool ParticleInBurnSegment(Particle* particle, int seg_x, int seg_z);
-        bool CheckSegmentBurn(int seg_x, int seg_z);
-
-        tbb::concurrent_vector <Segment*> burn_segments;
-
-
-
-    private:
-        int particles_count = 0;
-    public:
-        int size() const {
-            return particles_count;
-        }
-
-        ~Segments() {
-            delete[]grid;
-            delete[]grid_mem;
-            delete[]last_particles;
-        }
-
-
-
+        /**/
 
     };
 

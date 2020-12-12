@@ -41,6 +41,10 @@ namespace ps {
         bool Cross(const Particle &) const;
         bool CrossBurn(const Particle &) const;
 
+        coord_t Distance(const Particle *) const;
+        bool Cross(const Particle *) const;
+        bool CrossBurn(const Particle *) const;
+
     };
 
 } /* namespace ps */
