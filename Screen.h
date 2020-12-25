@@ -6,7 +6,6 @@
 
 #include "Params.h"
 #include "Particle.h"
-#include "Frontline.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_timer.h>
@@ -35,7 +34,7 @@ namespace ps {
         const int refract_points_count = 100;
         SDL_Point refract_points[100] = {0};
 
-        void draw_frontline(const std::vector <Frontline::front_line_point> &);
+        void draw_frontline(const std::vector <Point> &);
         //void foreach_particles(std::forward_list <Particle>& particle_list);
         bool quit_program();
 

@@ -23,33 +23,52 @@ namespace ps {
 
 
         void Calc(const std::vector <Particle*>& particle_list);
+        void WindowMiddle(const std::vector <Particle*>& particle_list);
+        void SplineSmooth(double alpha);
+        void FivePointStencil(int h_div);
         void CalcError();
-        void CalcRadius();
+        void CalcRadius(int h_div);
 
         void Calc2(const std::vector <Particle*>& particle_list);
-        void FivePointStencil();
         void Print(unsigned num);
 
-        struct flow_point {
-            double x, Vx, Vx2;
-        };
-        flow_point* points{ 0 };
 
-        struct front_line_point {
-            double x=0, z=0, div=0, sum=0, diff2=0, div2=0, cross=0, r=0;
+        std::vector<Point> spline_points;
+
+        struct window_point {
+            double x, z = 0, sum = 0;
             unsigned count = 0;
         };
+        std::vector<window_point> window_points;
 
-        Point* frontline_coords{0};
+        struct flow_point {
+            double Vx, Vx2;
+        };
+        std::vector <flow_point> flow_points;
 
-        std::vector <front_line_point> front_line_points;
+
+        struct analys_point {
+            double div=0, diff2=0, div2=0, cross=0, r=0;
+        };
+        std::vector <analys_point> analys_points;
+
+
+
+
+        double area_start, area_end, area_size;
+        int window_steps;
+        double window_size, window_radius;
+        double window_step_size, window_step_start, window_step_end;
+
+        int spline_steps;
+        double spline_step_size;
+
 
         //double *x{ 0 }, *Vx{ 0 }, * Vx2{ 0 };
 
-        int steps = 0;
+        /*int steps = 0;
         double window = 0;
         unsigned h;
-        double area_start, area_end;
         double radius;
         double steps_start;
         double steps_end;
@@ -59,12 +78,8 @@ namespace ps {
         double w_percent;
 
         double avg = 0, _avg = 0;
-        double deviation = 0, error = 0;
+        double deviation = 0, error = 0;*/
 
-    public:
-        ~Frontline() {
-            delete[]points;
-        }
     };
 
 }

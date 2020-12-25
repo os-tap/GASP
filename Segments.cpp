@@ -29,8 +29,8 @@ namespace ps {
 
     void Segments::CreateParticle(double x_cord, double z_cord, double p_speed) {
         double p_burn_radius = P->burn_radius_cross;
-        //p_burn_radius *= 1 + (fabs(x_cord) < 0.1) * pow(1 - fabs(x_cord) / 0.1, 1);
-        p_burn_radius *= 1 + (fabs(x_cord) < 0.1);
+        //p_burn_radius *= 1 + (fabs(x_cord) < 0.2) * pow(1.25 - fabs(x_cord) / 0.2 * 1.25, 3);
+        //p_burn_radius *= 1 + (fabs(x_cord) < 0.1);
         all_list.emplace_back(x_cord, z_cord, p_speed, p_burn_radius);
     }
 
@@ -77,7 +77,6 @@ namespace ps {
 
     void Segments::PrintSwarm(int num)
     {
-        //all_will_burn.clear();
 
         std::string output;
 
@@ -86,14 +85,55 @@ namespace ps {
         output += "x,z,burn";
         for (auto& particle : all_list) {
             output += fmt::format("\n{},{},{}", particle._x(), particle._z(), particle.burn_counter);
-
-            /*if (particle.burn_counter == 1 || particle.getState() == Particle::State::WARM)
-            {
-                all_will_burn.push_back(&particle);
-            }*/
         }
 
         std::ofstream csv(P->csv_folder + "gas.csv." + std::to_string(num));
+        csv << output;
+        csv.close();
+
+
+
+    }
+
+
+    void Segments::PrintCount(int num, int count)
+    {
+
+        std::string output;
+
+        //output += "#base_particles " + std::to_string(P->base_particles);
+
+        output += "x,z,burn";
+
+        int step = all_list.size() / count;
+        for (size_t i = 0; i < all_list.size(); i += step) {
+            output += fmt::format("\n{},{},{}", all_list[i].x, all_list[i].z, all_list[i].burn_counter);
+        }
+
+        std::ofstream csv(P->csv_folder + "gas.csv." + std::to_string(num));
+        csv << output;
+        csv.close();
+
+
+
+    }
+
+    void Segments::PrintSVM(int num, int count)
+    {
+        //all_will_burn.clear();
+
+        std::string output;
+
+        //output += "#base_particles " + std::to_string(P->base_particles);
+
+        //output += "x,z,burn";
+        int step = all_list.size() / count;
+        for (size_t i = 0; i < all_list.size(); i+= step)
+        {
+            output += fmt::format("{} 1:{} 2:{}\n", !all_list[i].isOk() + 1, all_list[i].x, 1 - all_list[i].z);
+        }
+
+        std::ofstream csv(P->csv_folder + "svm.csv." + std::to_string(num));
         csv << output;
         csv.close();
 
@@ -188,17 +228,21 @@ namespace ps {
     }*/
 
     void Segments::DoSegment(Segment& seg) {
-        if (!(seg.burn_list.empty()))
+        //if (!(seg.burn_list.empty()))
         {
-            for (auto& particle_i : seg.ok_list) {
+            for (auto& ok_i : seg.ok_list) {
                 for (auto& burn_i : seg.burn_list) {
-                    if (particle_i->CrossBurn(burn_i)) {
-                        BurnParticle(particle_i);
-                        all_will_burn_concurrent.push_back(particle_i);
+                    if (ok_i.Cross(burn_i)) {
+                        //seg.burn_indexes.push_back(ok_i.index);
+                        //BurnParticle(all_list[ok_i.index]);
+                        will_burn_index.push_back(ok_i.index);
                         break;
                     }
                 }
             }
+            /*for(auto &i : seg.burn_indexes)
+                will_burn_index.push_back(i);*/
+
         }
     }
 
@@ -210,16 +254,34 @@ namespace ps {
     void Segments::CrossParticles() {
 
 
-        all_will_burn_concurrent.clear();
+        //all_will_burn_concurrent.clear();
 
 
         std::for_each(std::execution::par,
-            burn_segments.begin(), burn_segments.end(), [this](Segment* seg) {
-                DoSegment(*seg);
+            grid.begin(), grid.end(), [this](Segment& seg) {
+                if (!(seg.burn_list.empty()))
+                    DoSegment(seg);
             });
 
-        all_will_burn.clear();
-        all_will_burn.insert(all_will_burn.end(), all_will_burn_concurrent.begin(), all_will_burn_concurrent.end());
+        //all_will_burn.clear();
+        //all_will_burn.reserve(will_burn_index.size());
+        all_will_burn.resize(will_burn_index.size());
+        tbb::parallel_for(size_t(0),all_will_burn.size(), [=](size_t i) {
+            BurnParticle(all_list[will_burn_index[i]]);
+            all_will_burn[i] = &all_list[will_burn_index[i]];
+        });
+
+
+        //std::for_each(std::execution::par,
+        //    will_burn_index.begin(), will_burn_index.end(), [this](size_t index) {
+        //        BurnParticle(all_list[index]);
+        //        //all_will_burn_concurrent.push_back(all_list[index]);
+        //    });
+
+        
+
+        //all_will_burn.clear();
+        //all_will_burn.insert(all_will_burn.end(), all_will_burn_concurrent.begin(), all_will_burn_concurrent.end());
 
 
 
@@ -245,25 +307,25 @@ namespace ps {
 
     }
 
-    bool Segments::ParticleInBurnSegments(Particle* particle, int seg_x, int seg_z)
-    {
-        for (int xi = seg_x ? seg_x - 1 : 0; xi < (seg_x < grid_count_x - 1 ? seg_x + 2 : grid_count_x); xi++)
-        {
-            for (int zi = seg_z ? seg_z - 1 : 0; zi < (seg_z < grid_count_z - 1 ? seg_z + 2 : grid_count_z); zi++)
-            {
-                //auto seg = grids(xi,zi);
-                //if (!seg.burn_list.empty()) 
-                for (auto& burn_i : grids(xi, zi).burn_list)
-                {
-                    if (particle->CrossBurn(*burn_i))
-                    {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
+    //bool Segments::ParticleInBurnSegments(Particle* particle, int seg_x, int seg_z)
+    //{
+    //    for (int xi = seg_x ? seg_x - 1 : 0; xi < (seg_x < grid_count_x - 1 ? seg_x + 2 : grid_count_x); xi++)
+    //    {
+    //        for (int zi = seg_z ? seg_z - 1 : 0; zi < (seg_z < grid_count_z - 1 ? seg_z + 2 : grid_count_z); zi++)
+    //        {
+    //            //auto seg = grids(xi,zi);
+    //            //if (!seg.burn_list.empty()) 
+    //            for (auto& burn_i : grids(xi, zi).burn_list)
+    //            {
+    //                if (particle.Cross(burn_i))
+    //                {
+    //                    return true;
+    //                }
+    //            }
+    //        }
+    //    }
+    //    return false;
+    //}
 
     void Segments::StepParticles()
     {
@@ -305,12 +367,14 @@ namespace ps {
 
     void Segments::ClearSegments()
     {
+        will_burn_index.clear();
         std::for_each(std::execution::par,
             grid.begin(), grid.end(), [this](Segment& seg) {
                 seg.burn_list.clear();
                 seg.ok_list.clear();
+                seg.burn_indexes.clear();
             });
-        burn_segments.clear();
+        //burn_segments.clear();
     }
 
 
@@ -320,26 +384,59 @@ namespace ps {
 
         //        auto put_particle = [](Particle &p) { ParticleToSegment(&p); };
 
-        std::for_each(std::execution::par,
+        /*std::for_each(std::execution::par,
             all_list.begin(), all_list.end(), [this](Particle& p) {
                 ParticleToSegment(p);
-            });
+            }
+        );*/
 
-        std::for_each(std::execution::par,
+        tbb::parallel_for(size_t(0),all_list.size(), [=] (size_t i) {
+                ParticleToSegment(all_list[i], i);
+            }
+        );
+
+ /*       std::for_each(std::execution::par,
             grid.begin(), grid.end(), [this](Segment& seg) {
                 if (!(seg.burn_list.empty())) burn_segments.push_back(&seg);
-            });
+            });*/
 
 
     }
 
-    void Segments::ParticleToSegment(Particle& p) {
+    //void Segments::ParticleToSegment(Particle& p) {
+    //    int seg_x = GetSegmentX(p.x);
+    //    int seg_z = GetSegmentZ(p.z);
+    //    //Segment segment = grids(seg_x,seg_z);
+
+    //    if (p.state == Particle::State::OK) {
+    //        grids(seg_x, seg_z).ok_list.push_back(&p);
+    //    }
+    //    else if (p.state == Particle::State::BURN) {
+
+    //        int grids_calc = ceil(p.burn_radius / grid_min_size);
+
+    //        int seg_x_start = (seg_x - grids_calc) * (seg_x >= grids_calc);
+    //        int seg_z_start = (seg_z - grids_calc) * (seg_z >= grids_calc);
+
+    //        int seg_x_end = seg_x + grids_calc + 1 <= grid_count_x ? seg_x + grids_calc + 1 : grid_count_x;
+    //        int seg_z_end = seg_z + grids_calc + 1 <= grid_count_z ? seg_z + grids_calc + 1 : grid_count_z;
+
+    //        for (int xi = seg_x_start; xi < seg_x_end; xi++) {
+    //            for (int zi = seg_z_start; zi < seg_z_end; zi++) {
+    //                grids(xi, zi).burn_list.push_back(&p);
+    //            }
+    //        }
+
+    //        //segment.burn_list.push_back(p);
+    //    }
+    //}
+
+    void Segments::ParticleToSegment(Particle& p, size_t index) {
         int seg_x = GetSegmentX(p.x);
         int seg_z = GetSegmentZ(p.z);
-        //Segment segment = grids(seg_x,seg_z);
 
         if (p.state == Particle::State::OK) {
-            grids(seg_x, seg_z).ok_list.push_back(&p);
+            grids(seg_x, seg_z).ok_list.emplace_back(p, index);
         }
         else if (p.state == Particle::State::BURN) {
 
@@ -353,7 +450,7 @@ namespace ps {
 
             for (int xi = seg_x_start; xi < seg_x_end; xi++) {
                 for (int zi = seg_z_start; zi < seg_z_end; zi++) {
-                    grids(xi, zi).burn_list.push_back(&p);
+                    grids(xi, zi).burn_list.emplace_back(p, index);
                 }
             }
 
@@ -377,10 +474,10 @@ namespace ps {
         UpdateSegments();
         return;
 
-        for (auto& seg : burn_segments)
+        /*for (auto& seg : burn_segments)
         {
             seg->burn_list.clear();
-        }
+        }*/
     }
     void Segments::EraseParticles() {
 
@@ -429,7 +526,7 @@ namespace ps {
                         {
                             for (auto& particle_2 : grids(i, j).ok_list)
                             {
-                                if (particle_1->Cross(*particle_2))
+                                if (particle_1.Cross(particle_2))
                                 {
                                     ++crossed;
                                 }
@@ -467,13 +564,13 @@ namespace ps {
                         {
                             for (auto& particle_2 : grids(i, j).ok_list)
                             {
-                                if (particle_1->Cross(*particle_2))
+                                if (particle_1.Cross(particle_2))
                                 {
-                                    distance = particle_1->Distance(*particle_2);
+                                    /*distance = particle_1.Distance(particle_2);
                                     if (distance < P->burn_radius_2 && distance > max)
                                     {
                                         max = distance;
-                                    }
+                                    }*/
                                 }
                             }
                         }
@@ -520,6 +617,10 @@ namespace ps {
             p.state = Particle::State::DIED;
         }
     }
+    void Segments::BurnParticle(Particle& particle) {
+        particle.setBurn();
+        //all_will_burn.push_back(particle);
+    }
     void Segments::BurnParticle(Particle* particle) {
         particle->setBurn();
         //all_will_burn.push_back(particle);
@@ -527,9 +628,16 @@ namespace ps {
 
 
     void Segments::BurnSegment(Segment& segment) {
-        for (auto& particle : segment.ok_list) {
-            BurnParticle(particle);
-        }
+        /*for (auto& particle : segment.ok_list) {
+            will_burn_index.push_back(particle.index);
+        }*/
+        
+        std::for_each(std::execution::par,
+            segment.ok_list.begin(), segment.ok_list.end(), [this](SegPoint &p) {
+                BurnParticle(all_list[p.index]);
+                //all_will_burn_concurrent.push_back(all_list[index]);
+            });
+        segment.ok_list.clear();
     }
 
 
@@ -556,18 +664,18 @@ namespace ps {
         }
     }
 
-    void Segments::CalcFrontlineRadius(std::vector <Frontline::front_line_point>& points) {
+    void Segments::CalcFrontlineRadius(std::vector <Point>& points) {
         double cross_radius = P->frontline_cross_radius;
         int grids_calc = ceil(cross_radius / grid_min_size);
         /*double cross_radius = P->burn_radius * P->frontline_cross_multipler;
         int grids_calc = ceil(P->frontline_cross_multipler);*/
         //std::cout << cross_radius;
 
-        int forntline_start = 0, frontline_end = P->front_line_steps - 1;
+        int forntline_start = 0, frontline_end = P->frontline_window_steps - 1;
 
         if (P->frontline_cross_chunk)
         {
-            while ( points[forntline_start].z < cross_radius && forntline_start < P->front_line_steps - 1 )
+            while ( points[forntline_start].z < cross_radius && forntline_start < P->frontline_window_steps - 1 )
                 ++forntline_start;
 
             while ( points[frontline_end].z < cross_radius && frontline_end > 1 )
@@ -589,13 +697,13 @@ namespace ps {
             for (const auto& p : all_list) {
                 //counter+= p.state == Particle::State::OK && particle.Cross(p);
 
-                int particle_front_seg = ceil((p.x - P->stream_beg) / P->stream_width * P->front_line_steps) - 1;
+                int particle_front_seg = ceil((p.x - P->stream_beg) / P->stream_width * P->frontline_window_steps) - 1;
                 particle_front_seg*= particle_front_seg > 0;
 
                 if (p.state == Particle::State::OK && particle.Cross(p))
                 {
                     ++counter;
-                    /*int particle_front_seg = ceil((p.x - P->stream_beg) / P->stream_width * P->front_line_steps) - 1;
+                    /*int particle_front_seg = ceil((p.x - P->stream_beg) / P->stream_width * P->frontline_window_steps) - 1;
                     particle_front_seg = particle_front_seg * (particle_front_seg > 0);
                     counter += (p.z <= points[particle_front_seg].z);*/
                 }
@@ -617,7 +725,7 @@ namespace ps {
             //            /*if (particle.Cross(ok_particle) && ok_particle->state == Particle::State::OK) {
             //                ++counter;
             //            }*/
-            //            /*int particle_front_seg = ceil((ok_particle->x - P->stream_beg) / P->stream_width * P->front_line_steps) - 1;
+            //            /*int particle_front_seg = ceil((ok_particle->x - P->stream_beg) / P->stream_width * P->frontline_window_steps) - 1;
             //            particle_front_seg = particle_front_seg * (particle_front_seg > 0);
             //            counter += particle.Cross(ok_particle) *(ok_particle->z <= points[particle_front_seg].z);*/
             //        }
@@ -625,7 +733,9 @@ namespace ps {
             //}
             //points[i].cross = counter / P->base_particles / P->frontline_cross_multipler / P->frontline_cross_multipler;
             //points[i].cross = counter / P->base_particles / cross_radius / cross_radius * P->burn_radius_2_cross;
-            points[i].cross = counter / P->base_particles / cross_radius / cross_radius * P->burn_radius_2_cross;
+
+            //points[i].cross = counter / P->base_particles / cross_radius / cross_radius * P->burn_radius_2_cross;
+
             //points[i].cross = counter;
             /*points[i].cross -= 0.5;
             points[i].cross *= 100;*/

@@ -64,15 +64,21 @@ public:
     int burn_time, sage_time, wave_time;
 
 
-    int front_line_steps, front_line_h, front_line_windows;
-    double front_line_window;
+    int frontline_window_steps;
+    double frontline_window_size;
+
+    int frontline_spline_steps;
+    double frontline_spline_alpha;
+
+    int frontline_stencil_h, frontline_radius_h;
 
 
     double refract_coef, refract_offset;
 
+    int svm_count;
+
     bool frontline_cross_chunk;
     double frontline_cross_multipler, frontline_cross_area, frontline_cross_radius;
-    int frontline_radius_h;
 
 
     //std::string swarm_params() const;

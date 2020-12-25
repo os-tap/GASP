@@ -64,7 +64,7 @@ int main() {
     Uint32 startTime = 0;
     Uint32 endTime = 0;
     Uint32 delta = 0;
-    short fps, max_fps = 30;
+    short fps, max_fps = 30, fps_sum = 0;
     short timePerFrame = 1000 / max_fps; // milliseconds
     SDL_Event e;
     //const Uint8* key_state;
@@ -170,7 +170,7 @@ int main() {
                             front_line.Init();
                             screen.calc_refract_points();
                             std::cout << main_swarm.all_list.size() << " - size\n";
-                            std::cout << front_line.error << " - error\n";
+                            //std::cout << front_line.error << " - error\n";
                             break;
                     }
                     break;
@@ -299,12 +299,12 @@ int main() {
             screen.draw_grid(main_swarm.grid_count_x, main_swarm.grid_count_z);
 
 
-            if (State.display_line) screen.draw_frontline(front_line.front_line_points);
+            if (State.display_line) screen.draw_frontline(front_line.spline_points);
 
 
             if (State.test)
             {
-                screen.draw_hline(front_line.avg);
+                //screen.draw_hline(front_line.avg);
                 //screen.draw_hline(stand_pos);
                 screen.draw_hline(stand_pos + stand_err, 255, 0, 255);
                 screen.draw_hline(stand_pos - stand_err, 255, 0, 255);
@@ -325,8 +325,8 @@ int main() {
 
 
         if (Input.print_denisty) {
-            main_swarm.Density_Grid();
-            main_swarm.Density_Radius();
+            /*main_swarm.Density_Grid();
+            main_swarm.Density_Radius();*/
             //main_swarm.Max_Radius();
 //			std::cout << "\nprint - denisty";
         }
@@ -334,10 +334,11 @@ int main() {
 
         if (Input.print_step)
         {
-            front_line.CalcRadius();
+            //front_line.CalcRadius();
             //main_swarm.UpdateSegments();
-            main_swarm.CalcFrontlineRadius(front_line.front_line_points);
+            //main_swarm.CalcFrontlineRadius(front_line.front_line_points);
 //            main_swarm.Print(print_step_counter);
+            main_swarm.PrintCount(print_step_counter, params.svm_count);
             front_line.Print(print_step_counter);
             std::cout << "\nprint - " << print_step_counter;
             ++print_step_counter;
@@ -356,11 +357,14 @@ int main() {
         }
         else fps = 1000 / delta;
 
+        fps_sum += fps;
+
 
         if (ii % 10 == 0)
         {
-            sprintf_s(buffer, "FPS: %d", fps);
+            sprintf_s(buffer, "FPS: %d", short(fps_sum / 10.));
             screen.SetTitle(buffer);
+            fps_sum = 0;
         }
 
 

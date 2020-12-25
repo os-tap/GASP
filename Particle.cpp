@@ -14,6 +14,9 @@ namespace ps {
     const bool Particle::isBurn() {
         return state == State::BURN;
     }
+    const bool Particle::isOk() {
+        return state == State::OK;
+    }
 
     void Particle::setBurn() {
         state = State::WARM;

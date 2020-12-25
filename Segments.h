@@ -2,7 +2,6 @@
 #include "Params.h"
 
 #include "Particle.h"
-#include "Frontline.h"
 
 #include <vector>
 
@@ -36,7 +35,8 @@ namespace ps {
         std::vector <Particle*> all_will_burn;
 
     private:
-        tbb::concurrent_vector <Particle*> all_will_burn_concurrent;
+        tbb::concurrent_vector <size_t> will_burn_index;
+        tbb::concurrent_vector <Particle> all_will_burn_concurrent;
 
 
 
@@ -52,6 +52,8 @@ namespace ps {
         void EraseParticles();
 
         void PrintSwarm(int);
+        void PrintCount(int n, int count);
+        void PrintSVM(int n, int count);
 
 
     private:
@@ -59,8 +61,10 @@ namespace ps {
         void CreateParticle(double x_cord, double z_cord, double p_speed);
         void MoveParticle(Particle& p);
         void StepParticle(Particle& p);
+        void BurnParticle(Particle& p);
         void BurnParticle(Particle* p);
         void ParticleToSegment(Particle& p);
+        void ParticleToSegment(Particle& p, size_t i);
 
         bool ParticleInBurnSegments(Particle* particle, int seg_x, int seg_z);
 
@@ -88,13 +92,21 @@ namespace ps {
         double grid_min_size, grid_max_size;
         double grid_count_x_percent, grid_count_z_percent;
 
+        struct SegPoint {
+            SegPoint(Particle &p, size_t i) : x(p.x), z(p.z), r2(p.burn_radius_2), index(i) {}
+            bool Cross(SegPoint p) { return ((x - p.x) * (x - p.x) + (z - p.z) * (z - p.z)) <= p.r2; }
+            float x, z, r2;
+            size_t index;
+        };
+
         struct Segment {
             int x, z;
-            tbb::concurrent_vector <Particle*> ok_list, burn_list;
+            tbb::concurrent_vector <SegPoint> ok_list, burn_list;
+            std::vector<int> burn_indexes;
         };
 
         std::vector<Segment> grid; 
-        tbb::concurrent_vector <Segment*> burn_segments;
+        //tbb::concurrent_vector <Segment*> burn_segments;
 
         Segment& grids(size_t x, size_t z) {
             return grid[z * grid_count_x + x];
@@ -125,7 +137,7 @@ namespace ps {
         void Density_Radius();
         void Max_Radius();
 
-        void CalcFrontlineRadius(std::vector <Frontline::front_line_point>& points);
+        void CalcFrontlineRadius(std::vector <Point>& points);
         void RefractParticles();
         /**/
 

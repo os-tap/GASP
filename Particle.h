@@ -33,6 +33,7 @@ namespace ps {
         State getState()const;
 
         const bool isBurn();
+        const bool isOk();
         void setBurn();
 
 

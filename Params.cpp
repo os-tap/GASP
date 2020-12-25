@@ -84,14 +84,20 @@ void ps::Params::Load(json j)
     sage_time = (int)j["sage_time"] * iterations;
     wave_time = (int)j["wave_time"] * iterations;
 
-    front_line_steps = (int)j["front_line_steps"];
-    front_line_windows = (int)j["front_line_window"];
-    front_line_window = stream_width / front_line_steps * (double)j["front_line_window"];
-    front_line_h = (int)j["front_line_h"];
+    frontline_spline_steps = (int)j["frontline_spline_steps"];
+    frontline_spline_alpha = (double)j["frontline_spline_alpha"];
+
+
+    frontline_window_steps = (int)j["frontline_window_steps"];
+    frontline_window_size = (double)j["frontline_window_size"];
+
+    frontline_stencil_h = (int)j["frontline_stencil_h"];
     frontline_radius_h = (int)j["frontline_radius_h"];
 
     refract_coef = (double)j["refract_coef"];
     refract_offset = (double)j["refract_offset"];
+
+    svm_count = (int)j["svm_count"];
 
     frontline_cross_chunk = (bool)j["frontline_cross_chunk"];
     frontline_cross_multipler = (double)j["frontline_cross_multipler"];

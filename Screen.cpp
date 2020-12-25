@@ -256,7 +256,7 @@ namespace ps {
 
     }
 
-    void Screen::draw_frontline(const std::vector <Frontline::front_line_point> &points)
+    void Screen::draw_frontline(const std::vector <Point> &points)
     {
         //double bias = P->front_line_bias;
 
