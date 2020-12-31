@@ -29,7 +29,7 @@ namespace ps {
 
     void Segments::CreateParticle(double x_cord, double z_cord, double p_speed) {
         double p_burn_radius = P->burn_radius_cross;
-        //p_burn_radius *= 1 + (fabs(x_cord) < 0.2) * pow(1.25 - fabs(x_cord) / 0.2 * 1.25, 3);
+        //p_burn_radius *= 1 + (fabs(x_cord) < 0.25) * pow(1.2 - fabs(x_cord) / 0.25 * 1.2, 3);
         //p_burn_radius *= 1 + (fabs(x_cord) < 0.1);
         all_list.emplace_back(x_cord, z_cord, p_speed, p_burn_radius);
     }

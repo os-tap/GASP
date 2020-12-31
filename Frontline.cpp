@@ -8,9 +8,6 @@ namespace ps {
 
 
     void Frontline::Init() {
-        Init(P->frontline_window_steps, P->frontline_window_size, P->area_beg, P->area_end);
-    }
-    void Frontline::Init(int a_steps, double _window, double _area_start, double _area_end) {
 
         area_start = P->area_beg;
         area_end = P->area_end;
@@ -50,40 +47,11 @@ namespace ps {
             
             flow_points[i].Vx = P->system_speed(spline_points[i].x) * P->burn_speed;
             flow_points[i].Vx2 = flow_points[i].Vx * flow_points[i].Vx;
+
+            flow_points[i].x = spline_points[i].x;
+
+            analys_points[i] = {};
         }
-
-
-
-
-        /*_window = (area_end - area_start) / (a_steps + 1.) * _window;
-
-        radius = _window / 2;
-        steps_start = area_start + radius;
-        steps_end = area_end - radius;
-        steps_area = steps_end - steps_start;
-        step_size = steps_area / (a_steps - 1.);
-
-        w_percent = a_steps / (area_end - area_start);
-
-
-
-        if (steps != a_steps || window != _window) {
-            
-        }*/
-
-        ///////////
-
-
-        /*for (int i = 0; i < steps; ++i) {
-            flow_points[i].Vx = P->system_speed(flow_points[i].x) * P->burn_speed;
-            flow_points[i].Vx2 = flow_points[i].Vx * flow_points[i].Vx;
-        }*/
-
-        /*for (size_t i = 0; i < steps; i++)
-        {
-            Vx[i] = P->system_speed(frontline_window_points[i].x) * P->burn_speed;
-            Vx2[i] = Vx[i] * Vx[i];
-        }*/
 
 
     }
@@ -93,8 +61,9 @@ namespace ps {
 
         WindowMiddle(particle_list);
         SplineSmooth(P->frontline_spline_alpha);
-        CalcError();
+        //CalcError();
         FivePointStencil(P->frontline_stencil_h);
+        CalcNormal();
         CalcRadius(P->frontline_radius_h);
     }
 
@@ -122,7 +91,7 @@ namespace ps {
         for (int i = 0; i < window_steps; ++i) {
             if (window_points[i].count) {
                 window_points[i].z += window_points[i].sum / window_points[i].count;
-                window_points[i].z -= P->system_speed(window_points[i].x) / 2;
+                //window_points[i].z -= P->system_speed(window_points[i].x) / 2;
             }
         }
 
@@ -149,14 +118,41 @@ namespace ps {
             .alpha(P->frontline_spline_alpha)
             .build();
 
+
         SPLINTER::DenseVector xd(1);
-        for (auto& sp : spline_points) {
+        for (size_t i = 0; i < spline_steps; i++)
+        {
+            spline_points[i].x = flow_points[i].x;
+            xd(0) = spline_points[i].x;
+            spline_points[i].z = pspline.eval(xd);
+        }
+        /*for (auto& sp : spline_points) {
             xd(0) = sp.x;
             sp.z = pspline.eval(xd);
-        }
+        }*/
 
     }
 
+
+    void Frontline::CalcNormal()
+    {
+        double gap = P->burn_radius / 2;
+        for (size_t i = 0; i < spline_steps; i++)
+        {
+            if (spline_points[i].z && analys_points[i].div)
+            {
+                double d = ((int)(analys_points[i].div > 0) * 2 - 1);
+                double k = 1. / analys_points[i].div;
+                double dx = d * gap / sqrt(k * k + 1);
+                double dy = dx * k;
+                spline_points[i].x += dx;
+                spline_points[i].z -= dy;
+            }
+            else {
+                spline_points[i].z = 0;
+            }
+        }
+    }
 
     void Frontline::CalcError()
     {
@@ -209,13 +205,15 @@ namespace ps {
         std::ofstream csv(P->csv_folder + "line.csv." + std::to_string(num));
 
         //std::string output = P->frontline_params();
-        std::string output = "x,z,div,div2,Vx2,diff2,cross,r";
+        std::string output = "x,z,wx,wz,div,div2,Vx2,diff2,cross,r";
 
         for (int i = 0; i < spline_steps; ++i) {
 
-                output += fmt::format("\n{},{},{},{},{},{},{},{}",
+                output += fmt::format("\n{},{},{},{},{},{},{},{},{},{}",
                     spline_points[i].x,
                     spline_points[i].z,
+                    window_points[i].x,
+                    window_points[i].z,
                     analys_points[i].div,
                     analys_points[i].div2,
                     flow_points[i].Vx2,

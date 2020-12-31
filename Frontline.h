@@ -17,8 +17,6 @@ namespace ps {
         const Params* P;
     public:
         Frontline(const Params& P_) : P(&P_) { Init(); }
-        void Init(int steps, double window, double
-        tart, double area_end);
         void Init();
 
 
@@ -26,6 +24,7 @@ namespace ps {
         void WindowMiddle(const std::vector <Particle*>& particle_list);
         void SplineSmooth(double alpha);
         void FivePointStencil(int h_div);
+        void CalcNormal();
         void CalcError();
         void CalcRadius(int h_div);
 
@@ -42,7 +41,7 @@ namespace ps {
         std::vector<window_point> window_points;
 
         struct flow_point {
-            double Vx, Vx2;
+            double x, Vx, Vx2;
         };
         std::vector <flow_point> flow_points;
 
