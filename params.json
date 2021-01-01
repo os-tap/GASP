@@ -22,11 +22,12 @@
 
   "base_particles": 5000,
   "particles_dist": 16,
-  "const_speed": 0.5,
+  "const_speed": 0.8,
   "base_speed": 2,
   "burn_speed": 0.99,
 
 
+  "display_count": 500000,
   "svm_count": 10000,
 
   "emitter_begin": 0,

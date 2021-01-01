@@ -87,9 +87,9 @@ namespace ps {
 
         //output += "#base_particles " + std::to_string(P->base_particles);
 
-        output += "x,z,burn";
+        output += "x,y,z,burn";
         for (auto& particle : all_list) {
-            output += fmt::format("\n{},{},{}", particle._x(), particle._z(), particle.burn_counter);
+            output += fmt::format("\n{},{},{},{}", particle.x, particle.y, particle.z, particle.burn_counter);
         }
 
         std::ofstream csv(P->csv_folder + "gas.csv." + std::to_string(num));
@@ -108,11 +108,12 @@ namespace ps {
 
         //output += "#base_particles " + std::to_string(P->base_particles);
 
-        output += "x,z,burn";
+        output += "x,y,z,burn";
 
         int step = all_list.size() / count;
+        step += !step;
         for (size_t i = 0; i < all_list.size(); i += step) {
-            output += fmt::format("\n{},{},{}", all_list[i].x, all_list[i].z, all_list[i].burn_counter);
+            output += fmt::format("\n{},{},{},{}", all_list[i].x, all_list[i].y, all_list[i].z, all_list[i].burn_counter);
         }
 
         std::ofstream csv(P->csv_folder + "gas.csv." + std::to_string(num));
@@ -178,17 +179,18 @@ namespace ps {
         for (int pi = P->iterate_particles; pi; --pi)
         {
             double p_x_cord = dist(gen) * P->stream_width + P->stream_beg;
-            double p_y_cord = -1;// dist(gen)* P->stream_width + P->stream_beg;
+            double p_y_cord = dist(gen) * P->stream_width + P->stream_beg;
 
-            double dx = p_x_cord - P->stream_beg;
-            double dy = p_y_cord - P->stream_beg;
+            double dx = p_x_cord - P->area_center;
+            double dy = p_y_cord - P->area_center;
             double r = sqrt(dx * dx + dy * dy);
             if (r > P->stream_radius) continue;
 
             double p_z_cord = dist(gen) * max_z;
             double p_speed = P->particle_speed(r);
 
-            if (p_z_cord < p_speed) {
+            if (p_z_cord < p_speed) 
+            {
                 CreateParticle(p_x_cord, p_y_cord, p_z_cord, p_speed);
             }
         }

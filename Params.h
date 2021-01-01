@@ -75,7 +75,7 @@ public:
 
     double refract_coef, refract_offset;
 
-    int svm_count;
+    int svm_count, display_count;
 
     bool frontline_cross_chunk;
     double frontline_cross_multipler, frontline_cross_area, frontline_cross_radius;

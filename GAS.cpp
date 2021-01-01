@@ -337,7 +337,6 @@ int main() {
             //front_line.CalcRadius();
             //main_swarm.UpdateSegments();
             //main_swarm.CalcFrontlineRadius(front_line.front_line_points);
-//            main_swarm.Print(print_step_counter);
             main_swarm.PrintCount(print_step_counter, params.svm_count);
             front_line.Print(print_step_counter);
             std::cout << "\nprint - " << print_step_counter;
