@@ -27,35 +27,40 @@ namespace ps {
 
 
 
-    void Segments::CreateParticle(double x_cord, double z_cord, double p_speed) {
+    void Segments::CreateParticle(double x_cord, double y_cord, double z_cord, double p_speed) {
         double p_burn_radius = P->burn_radius_cross;
         //p_burn_radius *= 1 + (fabs(x_cord) < 0.25) * pow(1.2 - fabs(x_cord) / 0.25 * 1.2, 3);
         //p_burn_radius *= 1 + (fabs(x_cord) < 0.1);
-        all_list.emplace_back(x_cord, z_cord, p_speed, p_burn_radius);
+        all_list.emplace_back(x_cord, y_cord, z_cord, p_speed, p_burn_radius);
     }
 
     void Segments::SetSegmentsGrid(double seg_size)
     {
         //double seg_size = P->burn_radius_cross;
         grid_count_x = (int)floor(P->area_size / seg_size);
+        grid_count_y = (int)floor(P->area_size / seg_size);
         grid_count_z = (int)floor(P->area_height / seg_size);
-        grid_count = grid_count_x * grid_count_z;
+
+        grid_count = grid_count_x * grid_count_y * grid_count_z;
 
         grid_x_size = P->area_size / grid_count_x;
+        grid_y_size = P->area_size / grid_count_y;
         grid_z_size = P->area_height / grid_count_z;
+
         grid_min_size = grid_x_size * (grid_x_size <= grid_z_size) + grid_z_size * (grid_z_size < grid_x_size);
         grid_max_size = grid_x_size * (grid_x_size >= grid_z_size) + grid_z_size * (grid_z_size > grid_x_size);
 
         grid_count_x_percent = grid_count_x / P->area_size;
+        grid_count_y_percent = grid_count_y / P->area_size;
         grid_count_z_percent = grid_count_z / P->area_height;
 
 
         grid.resize(grid_count);
 
-        for (int i = 0; i < grid_count; ++i) {
+  /*      for (int i = 0; i < grid_count; ++i) {
             grid[i].x = i % grid_count_x;
             grid[i].z = i / grid_count_x;
-        }
+        }*/
 
 
 
@@ -145,7 +150,7 @@ namespace ps {
 
     void Segments::Fill_Grid() {
 
-        for (int i = 0; i < fill_grid_count; i++)
+        /*for (int i = 0; i < fill_grid_count; i++)
         {
             double x_cord = P->stream_beg + P->particles_dist / 2 + P->particles_dist * i;
             double p_speed = P->particle_speed(x_cord);
@@ -155,7 +160,7 @@ namespace ps {
                 last_particles[i] = z_cord;
             }
             last_particles[i] += p_speed;
-        }
+        }*/
 
 
     }
@@ -168,16 +173,23 @@ namespace ps {
         std::uniform_real_distribution<double> dist;
         //std::uniform_real_distribution<double> dist_x(P->stream_beg, P->stream_end), dist_z(0, P->particle_speed(P->area_center));
 
-        double p_x_cord, p_z_cord, p_speed, p_burn_radius, fabs_x, max_z = P->particle_speed(P->area_center);
+        double max_z = P->particle_speed(0);
 
         for (int pi = P->iterate_particles; pi; --pi)
         {
-            p_x_cord = dist(gen) * P->stream_width + P->stream_beg;
-            p_z_cord = dist(gen) * max_z;
-            p_speed = P->particle_speed(p_x_cord);
+            double p_x_cord = dist(gen) * P->stream_width + P->stream_beg;
+            double p_y_cord = -1;// dist(gen)* P->stream_width + P->stream_beg;
+
+            double dx = p_x_cord - P->stream_beg;
+            double dy = p_y_cord - P->stream_beg;
+            double r = sqrt(dx * dx + dy * dy);
+            if (r > P->stream_radius) continue;
+
+            double p_z_cord = dist(gen) * max_z;
+            double p_speed = P->particle_speed(r);
 
             if (p_z_cord < p_speed) {
-                CreateParticle(p_x_cord, p_z_cord, p_speed);
+                CreateParticle(p_x_cord, p_y_cord, p_z_cord, p_speed);
             }
         }
 
@@ -207,7 +219,7 @@ namespace ps {
         int sum = 0;
         for (int xi = 0; xi < grid_count_x; xi++)
         {
-            sum += (int)grids(xi, 0).ok_list.size();
+            sum += (int)grids(xi, 0, 0).ok_list.size();
         }
         return sum;
     }
@@ -258,7 +270,7 @@ namespace ps {
 
 
         std::for_each(std::execution::par,
-            grid.begin(), grid.end(), [this](Segment& seg) {
+            grid.begin(), grid.end(), [=](Segment& seg) {
                 if (!(seg.burn_list.empty()))
                     DoSegment(seg);
             });
@@ -290,7 +302,7 @@ namespace ps {
 
 
 
-    bool Segments::CheckSegmentNeighborsBurn(int seg_x, int seg_z)
+    /*bool Segments::CheckSegmentNeighborsBurn(int seg_x, int seg_z)
     {
 
         for (int xi = seg_x ? seg_x - 1 : 0; xi < (seg_x < grid_count_x - 1 ? seg_x + 2 : grid_count_x); xi++)
@@ -305,7 +317,7 @@ namespace ps {
         }
         return false;
 
-    }
+    }*/
 
     //bool Segments::ParticleInBurnSegments(Particle* particle, int seg_x, int seg_z)
     //{
@@ -348,20 +360,32 @@ namespace ps {
     inline int Segments::GetSegmentX(double x_cord) const
     {
         int x = ceil((x_cord - P->area_beg) * grid_count_x_percent) - 1;
+        assert(x < grid_count_x);
         return x * (x > 0);
+    }
+    inline int Segments::GetSegmentY(double y_cord) const
+    {
+        int y = ceil((y_cord - P->area_beg) * grid_count_y_percent) - 1;
+        assert(y < grid_count_y);
+        return y * (y > 0);
     }
     inline int Segments::GetSegmentZ(double z_cord) const
     {
         int z = ceil(z_cord * grid_count_z_percent) - 1;
+        assert(z < grid_count_z);
         return z * (z > 0);
     }
-    Segments::Segment& Segments::SegmentByPoint(double x, double z)
+    Segments::Segment& Segments::SegmentByPoint(double x, double y, double z)
     {
-        return grids(GetSegmentX(x), GetSegmentZ(z));
+        return grids(GetSegmentX(x), GetSegmentY(y), GetSegmentZ(z));
     }
     void Segments::BurnSegmentByPoint(double x, double z)
     {
-        BurnSegment(grids(GetSegmentX(x), GetSegmentZ(z)));
+        for (size_t i = 0; i < grid_count_y; i++)
+        {
+            BurnSegment(grids(GetSegmentX(x), i, GetSegmentZ(z)));
+        }
+        
     }
 
 
@@ -433,24 +457,29 @@ namespace ps {
 
     void Segments::ParticleToSegment(Particle& p, size_t index) {
         int seg_x = GetSegmentX(p.x);
+        int seg_y = GetSegmentX(p.y);
         int seg_z = GetSegmentZ(p.z);
 
         if (p.state == Particle::State::OK) {
-            grids(seg_x, seg_z).ok_list.emplace_back(p, index);
+            grids(seg_x, seg_y, seg_z).ok_list.emplace_back(p, index);
         }
         else if (p.state == Particle::State::BURN) {
 
             int grids_calc = ceil(p.burn_radius / grid_min_size);
 
             int seg_x_start = (seg_x - grids_calc) * (seg_x >= grids_calc);
+            int seg_y_start = (seg_y - grids_calc) * (seg_y >= grids_calc);
             int seg_z_start = (seg_z - grids_calc) * (seg_z >= grids_calc);
 
             int seg_x_end = seg_x + grids_calc + 1 <= grid_count_x ? seg_x + grids_calc + 1 : grid_count_x;
+            int seg_y_end = seg_y + grids_calc + 1 <= grid_count_y ? seg_y + grids_calc + 1 : grid_count_y;
             int seg_z_end = seg_z + grids_calc + 1 <= grid_count_z ? seg_z + grids_calc + 1 : grid_count_z;
 
             for (int xi = seg_x_start; xi < seg_x_end; xi++) {
-                for (int zi = seg_z_start; zi < seg_z_end; zi++) {
-                    grids(xi, zi).burn_list.emplace_back(p, index);
+                for (int yi = seg_y_start; yi < seg_y_end; yi++) {
+                    for (int zi = seg_z_start; zi < seg_z_end; zi++) {
+                        grids(xi, yi, zi).burn_list.emplace_back(p, index);
+                    }
                 }
             }
 
@@ -490,101 +519,101 @@ namespace ps {
     }
     void Segments::Density_Grid()
     {
-        std::string output = "count";
-        int size = 0;
-        for (int zi = 0; zi < grid_count_z; zi++)
-        {
-            for (int xi = 0; xi < grid_count_x; xi++)
-            {
-                size = (int)grids(xi, zi).ok_list.size();
-                if (size) {
-                    //					output += fmt::format("\n{}", size);
-                }
-
-            }
-        }
-
-        std::ofstream csv(P->csv_folder + "d_grid.csv");
-        csv << output;
-        csv.close();
-    }
-    void Segments::Density_Radius()
-    {
-        std::string output = "radius_count, particles_count";
-        int crossed = 0;
-        std::unordered_map <int, int> denisty_radius;
-        for (int zi = 1; zi < grid_count_z - 1; zi++)
-        {
-            for (int xi = 1; xi < grid_count_x - 1; xi++)
-            {
-                for (auto& particle_1 : grids(xi, zi).ok_list)
-                {
-                    crossed = 0;
-                    for (int i = xi - 1; i < xi + 2; i++)
-                    {
-                        for (int j = zi - 1; j < zi + 2; j++)
-                        {
-                            for (auto& particle_2 : grids(i, j).ok_list)
-                            {
-                                if (particle_1.Cross(particle_2))
-                                {
-                                    ++crossed;
-                                }
-                            }
-                        }
-                    }
-                    denisty_radius[crossed] += 1;
-                    //output += fmt::format("\n{}", crossed);
-                }
-
-            }
-        }
-        //        for (auto const& [key, val] : denisty_radius) {
-        //			output += fmt::format("\n{},{}", val, key);
+        //std::string output = "count";
+        //int size = 0;
+        //for (int zi = 0; zi < grid_count_z; zi++)
+        //{
+        //    for (int xi = 0; xi < grid_count_x; xi++)
+        //    {
+        //        size = (int)grids(xi, zi).ok_list.size();
+        //        if (size) {
+        //            //					output += fmt::format("\n{}", size);
         //        }
 
-        std::ofstream csv(P->csv_folder + "d_radius.csv");
-        csv << output;
-        csv.close();
-    }
-    void Segments::Max_Radius()
-    {
-        std::string output = "count";
-        double max = 0, distance;
-        for (int zi = 1; zi < grid_count_z - 1; zi++)
-        {
-            for (int xi = 1; xi < grid_count_x - 1; xi++)
-            {
-                for (auto& particle_1 : grids(xi, zi).ok_list)
-                {
-                    max = 0;
-                    for (int i = xi - 1; i < xi + 2; i++)
-                    {
-                        for (int j = zi - 1; j < zi + 2; j++)
-                        {
-                            for (auto& particle_2 : grids(i, j).ok_list)
-                            {
-                                if (particle_1.Cross(particle_2))
-                                {
-                                    /*distance = particle_1.Distance(particle_2);
-                                    if (distance < P->burn_radius_2 && distance > max)
-                                    {
-                                        max = distance;
-                                    }*/
-                                }
-                            }
-                        }
-                    }
-                    //					output+= fmt::format("\n{}", sqrt(max));
-                }
+        //    }
+        //}
 
-            }
-        }
-
-        std::ofstream csv(P->csv_folder + "d_distance.csv");
-        csv << output;
-        csv.close();
+        //std::ofstream csv(P->csv_folder + "d_grid.csv");
+        //csv << output;
+        //csv.close();
     }
+    //void Segments::Density_Radius()
+    //{
+    //    std::string output = "radius_count, particles_count";
+    //    int crossed = 0;
+    //    std::unordered_map <int, int> denisty_radius;
+    //    for (int zi = 1; zi < grid_count_z - 1; zi++)
+    //    {
+    //        for (int xi = 1; xi < grid_count_x - 1; xi++)
+    //        {
+    //            for (auto& particle_1 : grids(xi, zi).ok_list)
+    //            {
+    //                crossed = 0;
+    //                for (int i = xi - 1; i < xi + 2; i++)
+    //                {
+    //                    for (int j = zi - 1; j < zi + 2; j++)
+    //                    {
+    //                        for (auto& particle_2 : grids(i, j).ok_list)
+    //                        {
+    //                            if (particle_1.Cross(particle_2))
+    //                            {
+    //                                ++crossed;
+    //                            }
+    //                        }
+    //                    }
+    //                }
+    //                denisty_radius[crossed] += 1;
+    //                //output += fmt::format("\n{}", crossed);
+    //            }
+
+    //        }
+    //    }
+    //    //        for (auto const& [key, val] : denisty_radius) {
+    //    //			output += fmt::format("\n{},{}", val, key);
+    //    //        }
+
+    //    std::ofstream csv(P->csv_folder + "d_radius.csv");
+    //    csv << output;
+    //    csv.close();
+    //}
+    //void Segments::Max_Radius()
+    //{
+    //    std::string output = "count";
+    //    double max = 0, distance;
+    //    for (int zi = 1; zi < grid_count_z - 1; zi++)
+    //    {
+    //        for (int xi = 1; xi < grid_count_x - 1; xi++)
+    //        {
+    //            for (auto& particle_1 : grids(xi, zi).ok_list)
+    //            {
+    //                max = 0;
+    //                for (int i = xi - 1; i < xi + 2; i++)
+    //                {
+    //                    for (int j = zi - 1; j < zi + 2; j++)
+    //                    {
+    //                        for (auto& particle_2 : grids(i, j).ok_list)
+    //                        {
+    //                            if (particle_1.Cross(particle_2))
+    //                            {
+    //                                /*distance = particle_1.Distance(particle_2);
+    //                                if (distance < P->burn_radius_2 && distance > max)
+    //                                {
+    //                                    max = distance;
+    //                                }*/
+    //                            }
+    //                        }
+    //                    }
+    //                }
+    //                //					output+= fmt::format("\n{}", sqrt(max));
+    //            }
+
+    //        }
+    //    }
+
+    //    std::ofstream csv(P->csv_folder + "d_distance.csv");
+    //    csv << output;
+    //    csv.close();
+    //}
 
 
     void Segments::MoveParticle(Particle& p) {

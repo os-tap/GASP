@@ -233,7 +233,7 @@ int main() {
         }
 
         if (State.update_line && (!State.pause || Input.step || key_pressed)) {
-            front_line.Calc(main_swarm.all_will_burn);
+            //front_line.Calc(main_swarm.all_will_burn);
         }
 
         if (!State.pause || Input.step) {
@@ -299,7 +299,7 @@ int main() {
             screen.draw_grid(main_swarm.grid_count_x, main_swarm.grid_count_z);
 
 
-            if (State.display_line) screen.draw_frontline(front_line.spline_points);
+            //if (State.display_line) screen.draw_frontline(front_line.spline_points);
 
 
             if (State.test)

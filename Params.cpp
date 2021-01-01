@@ -44,7 +44,7 @@ void ps::Params::Load(json j)
     stream_width = stream_end - stream_beg;
     stream_radius = stream_width / 2;
 
-    area_center = stream_beg + stream_radius;
+    area_center = stream_center = stream_beg + stream_radius;
     L = stream_width;
 
     scale = j["scale"];
@@ -78,7 +78,7 @@ void ps::Params::Load(json j)
 
     iterate_speed = base_speed / iterations;
     iterate_const = const_speed / iterations;
-    iterate_particles = (int)floor(base_particles * particle_speed(area_center) / burn_radius_2_cross / M_PI * L);
+    iterate_particles = (int)floor(base_particles * particle_speed(0) / burn_radius_2_cross / M_PI * L);
 
     burn_time = (int)j["burn_time"] * iterations;
     sage_time = (int)j["sage_time"] * iterations;
@@ -110,8 +110,8 @@ void ps::Params::Load(json j)
 void ps::Params::Print()
 {
     std::cout << "\n-------------\n";
-    std::cout << stream_function(area_center) * base_speed << " - base speed\n";
-    std::cout << particle_speed(area_center) << " - max delta\n";
+    std::cout << stream_function(0) * base_speed << " - base speed\n";
+    std::cout << particle_speed(0) << " - max delta\n";
     std::cout << burn_radius << " - burn radius\n";
     std::cout << burn_radius_2 << " - burn radius 2\n";
     std::cout << burn_radius_2_cross << " - burn radius 2 fix\n";
