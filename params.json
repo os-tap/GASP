@@ -20,7 +20,7 @@
 
 
 
-  "base_particles": 1000,
+  "base_particles": 500,
   "particles_dist": 16,
   "const_speed": 1,
   "base_speed": 0,
