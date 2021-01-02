@@ -257,7 +257,7 @@ namespace ps {
         //all_will_burn_concurrent.clear();
 
 
-        std::for_each(std::execution::par,
+        std::for_each(pstl::execution::par,
             grid.begin(), grid.end(), [this](Segment& seg) {
                 if (!(seg.burn_list.empty()))
                     DoSegment(seg);
@@ -272,7 +272,7 @@ namespace ps {
         });
 
 
-        //std::for_each(std::execution::par,
+        //std::for_each(pstl::execution::par,
         //    will_burn_index.begin(), will_burn_index.end(), [this](size_t index) {
         //        BurnParticle(all_list[index]);
         //        //all_will_burn_concurrent.push_back(all_list[index]);
@@ -329,7 +329,7 @@ namespace ps {
 
     void Segments::StepParticles()
     {
-        std::for_each(std::execution::par, all_list.begin(), all_list.end(), [this](Particle& p) {
+        std::for_each(pstl::execution::par, all_list.begin(), all_list.end(), [this](Particle& p) {
             StepParticle(p);
             });
 
@@ -337,7 +337,7 @@ namespace ps {
 
     void Segments::MoveParticles()
     {
-        std::for_each(std::execution::par, all_list.begin(), all_list.end(), [this](Particle& p) {
+        std::for_each(pstl::execution::par, all_list.begin(), all_list.end(), [this](Particle& p) {
             MoveParticle(p);
             });
 
@@ -368,7 +368,7 @@ namespace ps {
     void Segments::ClearSegments()
     {
         will_burn_index.clear();
-        std::for_each(std::execution::par,
+        std::for_each(pstl::execution::par,
             grid.begin(), grid.end(), [this](Segment& seg) {
                 seg.burn_list.clear();
                 seg.ok_list.clear();
@@ -384,7 +384,7 @@ namespace ps {
 
         //        auto put_particle = [](Particle &p) { ParticleToSegment(&p); };
 
-        /*std::for_each(std::execution::par,
+        /*std::for_each(pstl::execution::par,
             all_list.begin(), all_list.end(), [this](Particle& p) {
                 ParticleToSegment(p);
             }
@@ -395,7 +395,7 @@ namespace ps {
             }
         );
 
- /*       std::for_each(std::execution::par,
+ /*       std::for_each(pstl::execution::par,
             grid.begin(), grid.end(), [this](Segment& seg) {
                 if (!(seg.burn_list.empty())) burn_segments.push_back(&seg);
             });*/
@@ -632,7 +632,7 @@ namespace ps {
             will_burn_index.push_back(particle.index);
         }*/
         
-        std::for_each(std::execution::par,
+        std::for_each(pstl::execution::par,
             segment.ok_list.begin(), segment.ok_list.end(), [this](SegPoint &p) {
                 BurnParticle(all_list[p.index]);
                 //all_will_burn_concurrent.push_back(all_list[index]);
@@ -643,7 +643,7 @@ namespace ps {
 
     void Segments::ClearParticles() {
 
-        auto erase_it = std::remove_if(std::execution::par, all_list.begin(), all_list.end(), [](Particle& p) {
+        auto erase_it = std::remove_if(pstl::execution::par, all_list.begin(), all_list.end(), [](Particle& p) {
             return p.state == Particle::State::DIED;
             });
         all_list.erase(erase_it, all_list.end());
