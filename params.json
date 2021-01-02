@@ -20,14 +20,14 @@
 
 
 
-  "base_particles": 5000,
+  "base_particles": 1000,
   "particles_dist": 16,
-  "const_speed": 0.8,
-  "base_speed": 2,
+  "const_speed": 1,
+  "base_speed": 0,
   "burn_speed": 0.99,
 
 
-  "display_count": 500000,
+  "display_count": 100000,
   "svm_count": 10000,
 
   "emitter_begin": 0,

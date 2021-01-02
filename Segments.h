@@ -4,6 +4,7 @@
 #include "Particle.h"
 
 #include <vector>
+#include <map>
 
 #include <string>
 #include <iostream>
@@ -13,6 +14,8 @@
 #include <random>
 #include <cmath>
 #include <cassert>
+
+#include <functional>
 
 #include <tbb/concurrent_vector.h>
 #include <pstl/execution>
@@ -95,7 +98,7 @@ namespace ps {
         struct SegPoint {
             float x, y, z, r2;
             SegPoint(Particle &p, size_t i) : x(p.x), y(p.y), z(p.z), r2(p.burn_radius_2), index(i) { }
-            bool Cross(SegPoint p) { 
+            bool Cross(SegPoint p) const { 
                 return ((x - p.x) * (x - p.x) + (y - p.y) * (y - p.y) + (z - p.z) * (z - p.z)) <= p.r2; 
             }
             size_t index;
@@ -114,6 +117,8 @@ namespace ps {
             assert(z * grid_count_x * grid_count_y + y * grid_count_x + x < grid_count);
             return grid[z * grid_count_x * grid_count_y + y * grid_count_x + x];
         }
+
+        void for_each_NeighborSegment(int i, std::function<void(Segment&)>);
 
         int GetSegmentX(double x) const;
         int GetSegmentY(double y) const;

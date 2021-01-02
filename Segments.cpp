@@ -357,7 +357,12 @@ namespace ps {
 
     }
 
+    
 
+    void Segments::for_each_NeighborSegment(int i, std::function<void(Segment&)> f)
+    {
+
+    }
 
     inline int Segments::GetSegmentX(double x_cord) const
     {
@@ -539,45 +544,69 @@ namespace ps {
         //csv << output;
         //csv.close();
     }
-    //void Segments::Density_Radius()
-    //{
-    //    std::string output = "radius_count, particles_count";
-    //    int crossed = 0;
-    //    std::unordered_map <int, int> denisty_radius;
-    //    for (int zi = 1; zi < grid_count_z - 1; zi++)
-    //    {
-    //        for (int xi = 1; xi < grid_count_x - 1; xi++)
-    //        {
-    //            for (auto& particle_1 : grids(xi, zi).ok_list)
-    //            {
-    //                crossed = 0;
-    //                for (int i = xi - 1; i < xi + 2; i++)
-    //                {
-    //                    for (int j = zi - 1; j < zi + 2; j++)
-    //                    {
-    //                        for (auto& particle_2 : grids(i, j).ok_list)
-    //                        {
-    //                            if (particle_1.Cross(particle_2))
-    //                            {
-    //                                ++crossed;
-    //                            }
-    //                        }
-    //                    }
-    //                }
-    //                denisty_radius[crossed] += 1;
-    //                //output += fmt::format("\n{}", crossed);
-    //            }
 
-    //        }
-    //    }
-    //    //        for (auto const& [key, val] : denisty_radius) {
-    //    //			output += fmt::format("\n{},{}", val, key);
-    //    //        }
 
-    //    std::ofstream csv(P->csv_folder + "d_radius.csv");
-    //    csv << output;
-    //    csv.close();
-    //}
+    void Segments::Density_Radius()
+
+    {
+        std::string output = "radius_count, particles_count";
+        int crossed = 0;
+        std::map <int, int> denisty_radius;
+
+        //for (size_t i = 0; i < grid.size(); i++)
+        //{
+        //    for (auto& particle_1 : grid[i].ok_list)
+        //    {
+        //        crossed = 0;
+        //        for_each_NeighborSegment(i, [particle_1, &crossed](Segment& seg)
+        //        {
+        //            for (auto& particle_2 : seg.ok_list)
+        //            {
+        //                if (particle_1.Cross(particle_2))
+        //                {
+        //                    ++crossed;
+        //                }
+        //            }
+        //        });
+        //        denisty_radius[crossed] += 1;
+        //    }
+        //}
+
+        for (int zi = 1; zi < grid_count_z - 1; zi++) {
+            for (int yi = 1; yi < grid_count_y - 1; yi++) {
+                for (int xi = 1; xi < grid_count_x - 1; xi++) {
+
+                    for (auto& particle_1 : grids(xi, yi, zi).ok_list) {
+                        crossed = 0;
+
+                        for (int i = xi - 1; i < xi + 2; i++) {
+                            for (int j = yi - 1; j < yi + 2; j++) {
+                                for (int k = zi - 1; k < zi + 2; k++) {
+
+                                    for (auto& particle_2 : grids(i, j, k).ok_list) {
+                                        if (particle_1.Cross(particle_2)) {
+                                            ++crossed;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        denisty_radius[crossed] += 1;
+                    }
+                }
+            }
+        }
+            /*for (auto const& [key, val] : denisty_radius) {
+        		output += fmt::format("\n{},{}", val, key);
+            }*/
+
+        std::ofstream csv(P->csv_folder + "d_radius.csv");
+        csv << output;
+        csv.close();
+    }
+
+
     //void Segments::Max_Radius()
     //{
     //    std::string output = "count";
