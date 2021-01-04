@@ -136,17 +136,17 @@ namespace ps {
 
     void Frontline::CalcNormal()
     {
-        double gap = P->burn_radius / 2;
+        double H = P->burn_radius / 2;
         for (size_t i = 0; i < spline_steps; i++)
         {
             if (spline_points[i].z && analys_points[i].div)
             {
-                double d = ((int)(analys_points[i].div > 0) * 2 - 1);
+                double direction = ((int)(analys_points[i].div > 0) * 2 - 1);
                 double k = 1. / analys_points[i].div;
-                double dx = d * gap / sqrt(k * k + 1);
+                double dx = H / sqrt(k * k + 1);
                 double dy = dx * k;
-                spline_points[i].x += dx;
-                spline_points[i].z -= dy;
+                spline_points[i].x += dx * direction;
+                spline_points[i].z -= dy * direction;
             }
             else {
                 spline_points[i].z = 0;
