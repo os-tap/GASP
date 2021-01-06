@@ -172,6 +172,15 @@ int main() {
                             std::cout << main_swarm.all_list.size() << " - size\n";
                             //std::cout << front_line.error << " - error\n";
                             break;
+
+                        case SDLK_UP:
+                            key_pressed = 1;
+                            params.display_y_level += params.display_y_gap*2;
+                            break;
+                        case SDLK_DOWN:
+                            key_pressed = 1;
+                            params.display_y_level -= params.display_y_gap*2;
+                            break;
                     }
                     break;
 

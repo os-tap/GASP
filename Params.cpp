@@ -101,6 +101,9 @@ void ps::Params::Load(json j)
     svm_count = (int)j["svm_count"];
     display_count = (int)j["display_count"];
 
+    display_y_level = (double)j["display_y_level"];
+    display_y_gap = (double)j["display_y_gap"];
+
     frontline_cross_chunk = (bool)j["frontline_cross_chunk"];
     frontline_cross_multipler = (double)j["frontline_cross_multipler"];
     frontline_cross_area = (double)j["frontline_cross_area"];

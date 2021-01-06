@@ -147,6 +147,10 @@ namespace ps {
         Uint32 white_color = get_uint32_color(125, 125, 125);
         Uint32 color = get_uint32_color(0, 0, 0);
 
+        double display_y_level_gap =P->display_y_gap;
+        double display_y_start = P->display_y_level - display_y_level_gap;
+        double display_y_end = P->display_y_level + display_y_level_gap;
+
 
 
         int red = 0, green = 0, blue = 0;
@@ -154,7 +158,10 @@ namespace ps {
         int step = particle_list.size() / P->display_count;
         step += !step;
         for (size_t i = 0; i < particle_list.size(); i += step) {
+
             auto& particle = particle_list[i];
+
+            if (particle.y < display_y_start || particle.y > display_y_end) continue;
 
             if (particle._x() > SCREEN_WIDTH) continue;
 

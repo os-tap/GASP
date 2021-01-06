@@ -13,21 +13,22 @@
   "wave_time": 100,
 
 
-  "burn_radius": 20,
+  "burn_radius": 25,
   "burn_fix": -1,
   "burn_fix_a": 1,
   "burn_fix_b": 0.671,
 
 
 
-  "base_particles": 500,
+  "base_particles": 1000,
   "particles_dist": 16,
   "const_speed": 0.9,
   "base_speed": 2,
   "burn_speed": 0.99,
 
-
-  "display_count": 100000,
+  "display_y_level": 0,
+  "display_y_gap": 0.01,
+  "display_count": 500000,
   "svm_count": 10000,
 
   "emitter_begin": 0,
