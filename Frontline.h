@@ -35,13 +35,13 @@ namespace ps {
         std::vector<Point> spline_points;
 
         struct window_point {
-            double x, z = 0, sum = 0;
             unsigned count = 0;
+            double x, y, r, z = 0, sum = 0;
         };
         std::vector<window_point> window_points;
 
         struct flow_point {
-            double x, Vx, Vx2;
+            double x,y, Vx, Vx2;
         };
         std::vector <flow_point> flow_points;
 
@@ -55,9 +55,10 @@ namespace ps {
 
 
         double area_start, area_end, area_size;
-        int window_steps;
+        int window_steps, window_steps_2;
         double window_size, window_radius;
         double window_step_size, window_step_start, window_step_end;
+        double window_area_radius;
 
         int spline_steps;
         double spline_step_size;

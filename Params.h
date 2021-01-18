@@ -18,7 +18,7 @@ namespace ps {
     struct Point;
 }
 struct ps::Point {
-    double x, z;
+    double x, y, z;
 };
 
 using json = nlohmann::json;
@@ -112,21 +112,21 @@ private:
     };
     stream stream_function_p = &Params::x2_stream;
 
-    double linear_stream(const double r) const {
-        return 1 - r / stream_radius;
+    double linear_stream(const double x) const {
+        return 1 - fabs(from_center(x)) / stream_radius;
     }
-    double log_stream(const double r) const {
-        return log(stream_radius + 1 - r) / log(stream_radius + 1);
+    double log_stream(const double x) const {
+        return log(stream_radius + 1 - fabs(from_center(x))) / log(stream_radius + 1);
     }
-    double x2_stream(const double r) const {
-        return 1 - r * r / stream_radius / stream_radius;
+    double x2_stream(const double x) const {
+        return 1 - from_center(x) * from_center(x) / stream_radius / stream_radius;
     }
-    double const_stream(const double r) const  {
+    double const_stream(const double x) const  {
         return .5;
     }
-    /*double rising_stream(const double x) const {
+    double rising_stream(const double x) const {
         return burn_speed * burn_radius + (x - stream_beg) / stream_width;
-    }*/
+    }
 
 
 public:
@@ -139,20 +139,20 @@ public:
     double screen_to_area_y(const int y) const {
         return area_height - y * screen_y_proportion;
     }
-    /*double center_percentage(const double x) const {
+    double center_percentage(const double x) const {
         return 1 - fabs(1 - (x - area_beg) / area_size * 2);
-    }*/
-    double system_speed(const double r) const {
-        return base_speed * stream_function(r) + const_speed;
     }
-    double burn_speed_fu(const double r) const {
-        return burn_speed * stream_function(r);
+    double system_speed(const double x) const {
+        return base_speed * stream_function(x) + const_speed;
     }
-    double profile_speed(const double r) const {
-        return iterate_speed * stream_function(r);
+    double burn_speed_fu(const double x) const {
+        return burn_speed * stream_function(x);
     }
-    double particle_speed(const double r) const {
-        return profile_speed(r) + iterate_const;
+    double profile_speed(const double x) const {
+        return iterate_speed * stream_function(x);
+    }
+    double particle_speed(const double x) const {
+        return profile_speed(x) + iterate_const;
     }
 
     double refract_func(const double x) const {
