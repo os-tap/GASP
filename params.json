@@ -13,14 +13,14 @@
   "wave_time": 100,
 
 
-  "burn_radius": 30,
+  "burn_radius": 25,
   "burn_fix": -1,
   "burn_fix_a": 1,
   "burn_fix_b": 0.671,
 
 
 
-  "base_particles": 500,
+  "base_particles": 1000,
   "particles_dist": 16,
   "const_speed": 0.9,
   "base_speed": 2,
@@ -44,7 +44,7 @@
   "frontline_spline_steps": 100,
   "frontline_spline_alpha":1,
 
-  "frontline_window_steps": 10,
+  "frontline_window_steps": 50,
   "frontline_window_size": 1,
 
   "frontline_stencil_h": 1,

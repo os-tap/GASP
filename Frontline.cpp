@@ -97,7 +97,7 @@ namespace ps {
     void Frontline::Calc(const std::vector <Particle*>& particle_list) {
 
         WindowMiddle(particle_list);
-        SplineSmooth(P->frontline_spline_alpha);
+        //SplineSmooth(P->frontline_spline_alpha);
         //CalcError();
         //FivePointStencil(P->frontline_stencil_h);
         //CalcNormal();
@@ -105,6 +105,9 @@ namespace ps {
     }
 
     void Frontline::WindowMiddle(const std::vector <Particle*>& particle_list) {
+        for (auto& sp : spline_points) {
+            sp.z = 0;
+        }
 
         for (auto& wp : window_points) {
             wp.z = wp.sum = wp.count = 0;
@@ -136,7 +139,7 @@ namespace ps {
 
         for (int i = 0; i < window_steps_2; ++i) {
             if (window_points[i].count) {
-                window_points[i].z = window_points[i].sum / window_points[i].count;
+                window_points[i].z = spline_points[i].z = window_points[i].sum / window_points[i].count;
                 //window_points[i].z -= P->system_speed(window_points[i].x) / 2;
             }
         }
