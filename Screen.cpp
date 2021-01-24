@@ -269,33 +269,31 @@ namespace ps {
 
     void Screen::draw_frontline(const std::vector <Point> &points)
     {
-        //double bias = P->front_line_bias;
+        Uint32 color = get_uint32_color(0, 2555, 0);
+        for (const auto& point : points)
+        {
+            if (point.y >= 0)
+            set_pixel_color(x_to_pixel(point.x), y_to_pixel(point.z), color);
+        }
 
-        SDL_Point* sdl_points = new SDL_Point[points.size()];
+
+        /*SDL_Point* sdl_points = new SDL_Point[points.size()];
         int sdl_points_count = 0;
 
-        for(auto& point : points)
+        for(const auto& point : points)
         {
             if (point.z > 0)
             {
                 sdl_points[sdl_points_count].x = x_to_pixel(point.x);
                 sdl_points[sdl_points_count].y = y_to_pixel(point.z);
                 sdl_points_count++;
-
             }
 
         }
 
         SDL_SetRenderDrawColor(m_renderer, 0, 255, 0, SDL_ALPHA_OPAQUE);
         SDL_RenderDrawLines(m_renderer, sdl_points, sdl_points_count);
-
-        //aacircleColor(m_renderer, 300, 400, 100, get_uint32_color(255, 255, 255));
-        //circleColor(m_renderer, 300, 550, 100, get_uint32_color(255, 255, 255));
-        /*circleRGBA(m_renderer, 300, 500, 100, 255,255,255,100);
-        circleRGBA(m_renderer, 300, 550, 100, 255,255,255,100);
-        circleRGBA(m_renderer, 300, 600, 100, 255,255,255,100);*/
-        //SDL_RenderPresent(m_renderer);
-        delete [] sdl_points;
+        delete [] sdl_points;*/
     }
 
     void Screen::draw_circles(std::vector <Particle*>& particle_list) {
@@ -432,7 +430,7 @@ namespace ps {
 
     void Screen::draw_hline(double y, int r, int g, int b)
     {
-//        hlineRGBA(m_renderer, 0, SCREEN_WIDTH, y_to_pixel(y), r, g, b, 255);
+        hlineRGBA(m_renderer, 0, SCREEN_WIDTH, y_to_pixel(y), r, g, b, 255);
     }
 
     Uint32 Screen::get_uint32_color(Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha) {

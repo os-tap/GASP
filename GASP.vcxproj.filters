@@ -55,5 +55,8 @@
     <None Include="params.json">
       <Filter>Файлы ресурсов</Filter>
     </None>
+    <None Include="speed.json">
+      <Filter>Файлы ресурсов</Filter>
+    </None>
   </ItemGroup>
 </Project>

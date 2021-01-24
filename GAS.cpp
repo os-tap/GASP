@@ -6,7 +6,6 @@
 #include "Screen.h"
 #include "Segments.h"
 #include "Frontline.h"
-#include <array>
 
 
 
@@ -90,7 +89,7 @@ int main() {
 
     double avg = 0, _avg = 0;
     double stay_counter = 0;
-    double step = 0.001;
+    double step = 0.02;
     bool increase = 0;
     double stand_pos = 0;
     double stand_err = 0;
@@ -99,16 +98,21 @@ int main() {
     json p = params.GetFromFile();
     double speed = p["const_speed"];
 
-//    json calc_speed;
-//    std::ifstream i("speed.json");
-//    i >> calc_speed;
-    ////double speed = calc_speed[fmt::format("{}",params.base_particles)];
-    //double speed = 0.995;
-    //if (calc_speed.find(fmt::format("{}", (int)params.base_particles)) != calc_speed.end()) {
-    //	speed = calc_speed[fmt::format("{}", (int)params.base_particles)];
-    //}
-//    i.close();
+    json calc_speed;
+    std::ifstream i("speed.json");
+    i >> calc_speed;
+    //double speed = calc_speed[fmt::format("{}",params.base_particles)];
+    //double speed = 1;
+    if (calc_speed.find(fmt::format("{}", (int)params.base_particles)) != calc_speed.end()) {
+    	speed = calc_speed[fmt::format("{}", (int)params.base_particles)];
+    }
 
+    i.close();
+
+
+    auto j = params.GetFromFile();
+    j["const_speed"] = speed;
+    //params.Load(j);
 
     int ii = -1;
     while (!Input.sdl_quit) {
@@ -164,7 +168,13 @@ int main() {
                             break;
                         case SDLK_u:
                             key_pressed = 1;
+
                             params.Read();
+                            /*j = params.GetFromFile();
+                            j["const_speed"] = speed;
+                            params.Load(j);
+                            step = 0.02;*/
+
                             params.Print();
                             main_swarm.Update();
                             front_line.Init();
@@ -251,13 +261,13 @@ int main() {
 
 
 
-/*        is_stand = State.test && is_stand;
-        if (State.test && ii % 10 == 0) {
+        is_stand = State.test && is_stand;
+        if (State.test && ii % 5 == 0) {
 
             if (!is_stand) {
                 stay_counter = 0;
                 stand_pos = front_line.avg;
-                stand_err = params.burn_radius/4 + front_line.deviation * 100;
+                stand_err = params.burn_radius/8 + front_line.deviation * 100;
                 is_stand = true;
             }
             else {
@@ -276,23 +286,32 @@ int main() {
                         speed += step;
                         increase = false;
                     }
-                    auto j = params.GetFromFile();
+                    j = params.GetFromFile();
                     j["const_speed"] = speed;
+                    j["base_particles"] = params.base_particles;
                     params.Load(j);
                     std::cout << speed << '\n';
                 }
                 else {
-                    if (++stay_counter == 50 && stand_pos) {
-                        *//*calc_speed[fmt::format("{}", (int)params.base_particles)] = speed;
+                    if (++stay_counter == 200 && stand_pos) {
+                        calc_speed[fmt::format("{}", (int)params.base_particles)] = speed;
                         std::ofstream o("speed.json");
                         o << calc_speed.dump(4) << std::endl;
                         o.close();
-                        std::cout << "Speed Out\n";*//*
+                        std::cout << "Speed Out\n";
+
+                        params.base_particles += 100;
+                        j = params.GetFromFile();
+                        j["const_speed"] = speed;
+                        j["base_particles"] = params.base_particles;
+                        params.Load(j);
+                        std::cout << '\n' << params.base_particles << '\n';
+                        step *= 4;
                     }
                 }
             }
 
-        }*/
+        }
 
 
 
@@ -303,17 +322,17 @@ int main() {
             screen.clear();
             if (State.display_swarm) screen.load_swarm(main_swarm.all_list, State.bold_points);
             if (State.blur) screen.box_blur();
+            if (State.display_line) screen.draw_frontline(front_line.spline_points);
             screen.UpdateTexture();
 
             screen.draw_grid(main_swarm.grid_count_x, main_swarm.grid_count_z);
 
-
-            if (State.display_line) screen.draw_frontline(front_line.spline_points);
+            //if (State.display_line) screen.draw_frontline(front_line.spline_points);
 
 
             if (State.test)
             {
-                //screen.draw_hline(front_line.avg);
+                screen.draw_hline(front_line.avg);
                 //screen.draw_hline(stand_pos);
                 screen.draw_hline(stand_pos + stand_err, 255, 0, 255);
                 screen.draw_hline(stand_pos - stand_err, 255, 0, 255);

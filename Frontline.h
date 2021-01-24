@@ -63,6 +63,8 @@ namespace ps {
         int spline_steps;
         double spline_step_size;
 
+        double avg = 0, deviation = 0, error = 0;
+
 
         //double *x{ 0 }, *Vx{ 0 }, * Vx2{ 0 };
 

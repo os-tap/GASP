@@ -136,13 +136,15 @@ namespace ps {
             }
 
         }
-
+        avg = 0;
         for (int i = 0; i < window_steps_2; ++i) {
             if (window_points[i].count) {
                 window_points[i].z = spline_points[i].z = window_points[i].sum / window_points[i].count;
                 //window_points[i].z -= P->system_speed(window_points[i].x) / 2;
+                avg += window_points[i].z;
             }
         }
+        avg /= window_steps_2;
 
 
     }
@@ -213,18 +215,18 @@ namespace ps {
 
     void Frontline::CalcError()
     {
-        /*int active_window_points = 0;
+        int active_window_points = 0;
         deviation = 0;
         double d;
-        for (int i = 0; i < steps; ++i) {
-            if (frontline_window_points[i].count) {
-                d = frontline_window_points[i].z - avg;
+        for (int i = 0; i < window_steps_2; ++i) {
+            if (window_points[i].count) {
+                d = window_points[i].z - avg;
                 deviation += d * d;
                 ++active_window_points;
             }
         }
         deviation /= (double)(active_window_points - 1);
-        error = sqrt(deviation) / P->stream_width;*/
+        error = sqrt(deviation) / P->stream_width;
     }
 
 
