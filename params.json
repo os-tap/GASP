@@ -1,5 +1,5 @@
 {
-  "csv_folder": "C:\\Users\\prive\\OneDrive\\csv\\",
+  "csv_folder": "C:\\Users\\prive\\OneDrive\\csv\\2d\\",
 
   "area_beg": -1,
   "area_end": 1,
@@ -13,14 +13,14 @@
   "wave_time": 100,
 
 
-  "burn_radius": 10,
+  "burn_radius": 5,
   "burn_fix": -1,
   "burn_fix_a": 1,
   "burn_fix_b": 0.671,
 
 
 
-  "base_particles": 1000,
+  "base_particles": 2000,
   "particles_dist": 16,
   "const_speed": 0.95,
   "base_speed": 2,
@@ -43,10 +43,10 @@
   "frontline_spline_alpha": 20,
 
   "frontline_window_steps": 301,
-  "frontline_window_size": 1,
+  "frontline_window_size": 2,
 
   "frontline_stencil_h": 1,
-  "frontline_radius_h": 5,
+  "frontline_radius_h": 10,
 
   "frontline_cross_chunk": true,
   "frontline_cross_multipler": 5,

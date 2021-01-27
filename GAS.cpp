@@ -64,7 +64,7 @@ int main() {
     Uint32 startTime = 0;
     Uint32 endTime = 0;
     Uint32 delta = 0;
-    short fps, max_fps = 30, fps_sum = 0;
+    short fps, max_fps = 60, fps_sum = 0;
     short timePerFrame = 1000 / max_fps; // milliseconds
     SDL_Event e;
     //const Uint8* key_state;
@@ -170,7 +170,7 @@ int main() {
                             front_line.Init();
                             screen.calc_refract_points();
                             std::cout << main_swarm.all_list.size() << " - size\n";
-                            //std::cout << front_line.error << " - error\n";
+                            std::cout << front_line.spline_points.size() << " - error\n";
                             break;
                     }
                     break;

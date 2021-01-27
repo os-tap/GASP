@@ -34,7 +34,7 @@ namespace ps {
 
         if (spline_steps != P->frontline_spline_steps)
         {
-            spline_steps = P->frontline_window_steps;
+            spline_steps = P->frontline_spline_steps;
             spline_points.resize(spline_steps);
             flow_points.resize(spline_steps);
             analys_points.resize(spline_steps);
@@ -43,12 +43,10 @@ namespace ps {
         spline_step_size = (area_size - window_size) / (spline_steps - 1.);
 
         for (int i = 0; i < spline_steps; ++i) {
-            spline_points[i].x = area_start + window_radius + spline_step_size * i;
+            flow_points[i].x = spline_points[i].x = area_start + window_radius + spline_step_size * i;
             
-            flow_points[i].Vx = P->system_speed(spline_points[i].x) * P->burn_speed;
+            flow_points[i].Vx = P->system_speed(flow_points[i].x) * P->burn_speed;
             flow_points[i].Vx2 = flow_points[i].Vx * flow_points[i].Vx;
-
-            flow_points[i].x = spline_points[i].x;
 
             analys_points[i] = {};
         }
@@ -263,7 +261,7 @@ namespace ps {
 
     void Frontline::CalcRadius(int h_div) {
         
-        for (int i = h_div; i < spline_steps - h_div; ++i) {
+        for (int i = h_div + P->frontline_stencil_h; i < spline_steps - h_div - P->frontline_stencil_h; ++i) {
             const auto& A = spline_points[i];
             const auto& B = spline_points[i - h_div];
             const auto& C = spline_points[i + h_div];
