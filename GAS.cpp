@@ -64,7 +64,7 @@ int main() {
     Uint32 startTime = 0;
     Uint32 endTime = 0;
     Uint32 delta = 0;
-    short fps, max_fps = 60, fps_sum = 0;
+    short fps, max_fps = 30, fps_sum = 0;
     short timePerFrame = 1000 / max_fps; // milliseconds
     SDL_Event e;
     //const Uint8* key_state;
@@ -109,7 +109,7 @@ int main() {
     //}
 //    i.close();
 
-
+    bool even = false;
     int ii = -1;
     while (!Input.sdl_quit) {
         ++ii;
@@ -162,6 +162,11 @@ int main() {
                             break;
                         case SDLK_x: Input.clear_csv = true;
                             break;
+                        case SDLK_o: params.who_cross = !params.who_cross;
+                            break;
+                        case SDLK_k: params.scale_burn = !params.scale_burn;
+                        case SDLK_i: params.frontline_kinks.clear();
+                            break;
                         case SDLK_u:
                             key_pressed = 1;
                             params.Read();
@@ -207,11 +212,12 @@ int main() {
         //for (int iterate = params.iterations; iterate; --iterate)
         {
 
+            //if (State.pause && Input.step) even = !even;
 
-            if (!State.pause || Input.step ) {
+            if (!State.pause || Input.step && !even ) {
                 main_swarm.ClearParticles();
                 if (State.move) {
-
+                    //if (State.pause) std::cout << "\nMove";
                     main_swarm.MoveParticles();
                     main_swarm.FillParticles();
                 }
@@ -222,7 +228,8 @@ int main() {
             if (Input.lights_out) main_swarm.LightsOut();
             if (Input.clear) main_swarm.EraseParticles();
 
-            if (!State.pause || Input.step) {
+            if (!State.pause || Input.step && !even) {
+                //if (State.pause) std::cout << "\nCross";
                 main_swarm.CrossParticles();
                 main_swarm.StepParticles();
                 //main_swarm.RefractParticles();
@@ -234,6 +241,7 @@ int main() {
 
         if (State.update_line && (!State.pause || Input.step || key_pressed)) {
             front_line.Calc(main_swarm.all_will_burn);
+            params.set_kinks(front_line.kinks);
         }
 
         if (!State.pause || Input.step) {
@@ -300,6 +308,7 @@ int main() {
 
 
             if (State.display_line) screen.draw_frontline(front_line.spline_points);
+            screen.draw_hlines(front_line.kinks);
 
 
             if (State.test)

@@ -28,8 +28,11 @@ namespace ps {
 
 
     void Segments::CreateParticle(double x_cord, double z_cord, double p_speed) {
+        //double p_burn_radius = P->get_burn_radius(x_cord);
         double p_burn_radius = P->burn_radius_cross;
-        //p_burn_radius *= 1 + (fabs(x_cord) < 0.25) * pow(1.2 - fabs(x_cord) / 0.25 * 1.2, 3);
+        //p_burn_radius *= 1 + (fabs(x_cord) < 0.2);
+        //p_burn_radius *= 1 + (fabs(x_cord) < 0.1) * pow(1.15 - fabs(x_cord) / 0.1 / 1.15, 4);
+        //p_burn_radius *= 1 + (fabs(x_cord) < 0.2) * pow(1 - fabs(x_cord) / 0.2 * 1, 2) * 1.8;
         //p_burn_radius *= 1 + (fabs(x_cord) < 0.1);
         all_list.emplace_back(x_cord, z_cord, p_speed, p_burn_radius);
     }
@@ -233,6 +236,7 @@ namespace ps {
             for (auto& ok_i : seg.ok_list) {
                 for (auto& burn_i : seg.burn_list) {
                     if (ok_i.Cross(burn_i)) {
+                    //if ((P->who_cross ? burn_i.Cross(ok_i) : ok_i.Cross(burn_i)) ) {
                         //seg.burn_indexes.push_back(ok_i.index);
                         //BurnParticle(all_list[ok_i.index]);
                         will_burn_index.push_back(ok_i.index);
@@ -439,14 +443,15 @@ namespace ps {
             grids(seg_x, seg_z).ok_list.emplace_back(p, index);
         }
         else if (p.state == Particle::State::BURN) {
-
             int grids_calc = ceil(p.burn_radius / grid_min_size);
 
             int seg_x_start = (seg_x - grids_calc) * (seg_x >= grids_calc);
             int seg_z_start = (seg_z - grids_calc) * (seg_z >= grids_calc);
 
-            int seg_x_end = seg_x + grids_calc + 1 <= grid_count_x ? seg_x + grids_calc + 1 : grid_count_x;
-            int seg_z_end = seg_z + grids_calc + 1 <= grid_count_z ? seg_z + grids_calc + 1 : grid_count_z;
+            int seg_x_end = seg_x + grids_calc + 1;
+            if (seg_x_end > grid_count_x) seg_x_end = grid_count_x;
+            int seg_z_end = seg_z + grids_calc + 1;
+            if (seg_z_end > grid_count_z) seg_z_end = grid_count_z;
 
             for (int xi = seg_x_start; xi < seg_x_end; xi++) {
                 for (int zi = seg_z_start; zi < seg_z_end; zi++) {
@@ -589,10 +594,11 @@ namespace ps {
 
     void Segments::MoveParticle(Particle& p) {
         p.Move();
-        if (p.z >= P->area_height) p.state = Particle::State::DIED;
+        if (p.z >= P->area_height || p.x > P->area_end) p.state = Particle::State::DIED;
     }
 
     void Segments::StepParticle(Particle& p) {
+        p.Step();
 
         /*if (p.state == Particle::State::WAVE &&
             ++p.wave_counter >= P->wave_time)
@@ -619,10 +625,12 @@ namespace ps {
     }
     void Segments::BurnParticle(Particle& particle) {
         particle.setBurn();
+        particle.SetBurnRadius(P->get_burn_radius(particle.x));
         //all_will_burn.push_back(particle);
     }
     void Segments::BurnParticle(Particle* particle) {
         particle->setBurn();
+        particle->SetBurnRadius(P->get_burn_radius(particle->x));
         //all_will_burn.push_back(particle);
     }
 

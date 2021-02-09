@@ -69,6 +69,7 @@ public:
 
     int frontline_spline_steps;
     double frontline_spline_alpha;
+    bool move_normal;
 
     int frontline_stencil_h, frontline_radius_h;
 
@@ -81,12 +82,43 @@ public:
     double frontline_cross_multipler, frontline_cross_area, frontline_cross_radius;
 
 
+    bool who_cross, scale_burn;
+    double scale_burn_multipler, scale_burn_pow, scale_burn_size, scale_burn_condition;
+
+    std::vector<double>frontline_kinks;
+
+
     //std::string swarm_params() const;
 //    std::string frontline_params() const;
 
 
-    double make_radius_cross_fix(double radius) {
+    double make_radius_cross_fix(double radius) const {
         return radius / (1 - burn_fix_a / pow(base_particles, burn_fix_b));
+    }
+    void set_kinks(std::vector<double>_kinks) {
+        //frontline_kinks = _kinks;
+        frontline_kinks.insert(frontline_kinks.end(), _kinks.begin(), _kinks.end());
+    }
+    double get_burn_radius(double x_cord) const {
+        double br = burn_radius_cross;
+        for (const auto x_kink : frontline_kinks) {
+            if (scale_burn && fabs(x_kink - x_cord) < scale_burn_size) {
+                br *= 1 + pow(1 - fabs(x_kink - x_cord) / scale_burn_size, scale_burn_pow) * particle_speed(x_cord) * particle_speed(x_cord) * scale_burn_multipler;
+                break;
+            }
+        }
+        return br;
+        /*double br = burn_radius_cross;
+        if (scale_burn && fabs(x_cord) < scale_burn_size) {
+            br *= 1 + pow(1 - fabs(x_cord) / scale_burn_size, scale_burn_pow) * scale_burn_multipler;
+        }
+        return br;*/
+        //return burn_radius_cross;
+        //double ir = 0.2;
+        //return burn_radius_cross * (1 + (fabs(x_cord) < 0.2) * pow(1 - fabs(x_cord) / 0.2 * 1, 2) * 1.5);
+        //return burn_radius_cross * scale_burn * (1 + (fabs(x_cord) < scale_burn_size) * pow(1 - fabs(x_cord) / scale_burn_size, scale_burn_pow) * scale_burn_multipler);
+        //return burn_radius_cross * scale_burn * (1 + (fabs(x_cord) < scale_burn_size) * sqrt(1 - fabs(x_cord) / scale_burn_size) * scale_burn_multipler);
+        //return scale_burn ? burn_radius_cross * (1 + (fabs(x_cord) < 0.2)) : burn_radius_cross;
     }
 
 

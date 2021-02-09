@@ -9,6 +9,7 @@ ps::Params::Params() {
 void ps::Params::Read()
 {
     Load(GetFromFile());
+    frontline_kinks.clear();
 }
 
 
@@ -86,6 +87,7 @@ void ps::Params::Load(json j)
 
     frontline_spline_steps = (int)j["frontline_spline_steps"];
     frontline_spline_alpha = (double)j["frontline_spline_alpha"];
+    move_normal = (bool)j["move_normal"];
 
 
     frontline_window_steps = (int)j["frontline_window_steps"];
@@ -103,6 +105,14 @@ void ps::Params::Load(json j)
     frontline_cross_multipler = (double)j["frontline_cross_multipler"];
     frontline_cross_area = (double)j["frontline_cross_area"];
     frontline_cross_radius = (stream_width * frontline_cross_area);
+
+    
+    who_cross = (bool)j["who_cross"];
+    scale_burn = (bool)j["scale_burn"];
+    scale_burn_multipler = (double)j["scale_burn_multipler"];
+    scale_burn_size = stream_width * (double)j["scale_burn_size"];
+    scale_burn_pow = (double)j["scale_burn_pow"];
+    scale_burn_condition = (double)j["scale_burn_condition"];
 
 }
 

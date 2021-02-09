@@ -424,6 +424,20 @@ namespace ps {
 //        hlineRGBA(m_renderer, 0, SCREEN_WIDTH, y_to_pixel(y), r, g, b, 255);
     }
 
+    void Screen::draw_hlines(std::vector<double>& v)
+    {
+        //std::cout << v.size();
+        //SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+        for (const auto& x : v) {
+            vlineRGBA(m_renderer, x_to_pixel(x), 0, SCREEN_HEIGHT, 255, 255, 255, SDL_ALPHA_OPAQUE);
+            //vlineRGBA(m_renderer, x_to_pixel(x2), 0, SCREEN_HEIGHT, 255, 255, 255, SDL_ALPHA_OPAQUE);
+            //SDL_RenderDrawLine(m_renderer, x_to_pixel(x1-0.1), 1, x_to_pixel(x2+0.1), 1);
+        }
+        //SDL_RenderPresent(m_renderer);
+
+        //SDL_RenderDrawLines(m_renderer, sdl_points, sdl_points_count);
+    }
+
     Uint32 Screen::get_uint32_color(Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha) {
 
         Uint32 color{ 0 };

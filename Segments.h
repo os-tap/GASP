@@ -1,11 +1,10 @@
 #pragma once
 #include "Params.h"
-
 #include "Particle.h"
 
 #include <vector>
-
 #include <string>
+
 #include <iostream>
 #include <fstream>
 #include <fmt/core.h>
@@ -109,6 +108,7 @@ namespace ps {
         //tbb::concurrent_vector <Segment*> burn_segments;
 
         Segment& grids(size_t x, size_t z) {
+            assert(z * grid_count_x + x < grid.size(), "segments out of range");
             return grid[z * grid_count_x + x];
         }
 

@@ -2,9 +2,10 @@
 
 #include "Params.h"
 #include "Particle.h"
-#include <list>
+//#include <list>
 #include <vector>
 #include <string>
+
 #include <fmt/core.h>
 #include <iostream>
 #include <fstream>
@@ -27,6 +28,7 @@ namespace ps {
         void CalcNormal();
         void CalcError();
         void CalcRadius(int h_div);
+        void CalcCurve();
 
         void Calc2(const std::vector <Particle*>& particle_list);
         void Print(unsigned num);
@@ -47,7 +49,7 @@ namespace ps {
 
 
         struct analys_point {
-            double div=0, diff2=0, div2=0, cross=0, r=0;
+            double div=0, diff2=0, div2=0, cross=0, r=0, c=0;
         };
         std::vector <analys_point> analys_points;
 
@@ -55,12 +57,14 @@ namespace ps {
 
 
         double area_start, area_end, area_size;
-        int window_steps;
+        int window_steps=0;
         double window_size, window_radius;
         double window_step_size, window_step_start, window_step_end;
 
-        int spline_steps;
+        int spline_steps=0;
         double spline_step_size;
+
+        std::vector<double> kinks;
 
 
         //double *x{ 0 }, *Vx{ 0 }, * Vx2{ 0 };

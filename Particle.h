@@ -11,14 +11,15 @@ namespace ps {
     public:
 
         Particle(coord_t x, coord_t z, coord_t speed, coord_t burn_radius);
+        void SetBurnRadius(coord_t burn_radius);
 
         enum class State { OK, WARM, BURN, WAVE, SAGE, DIED };
         State state = State::OK;
 
         unsigned short burn_counter = 0, warm_counter = 0, wave_counter = 0, sage_counter = 0;
 
-        coord_t x, z, speed;
-        coord_t burn_radius = 0;
+        coord_t x, z, speed, x_speed = 0;
+        coord_t burn_radius;
         coord_t burn_radius_2 = burn_radius * burn_radius;
         //unsigned seg_x, seg_z;
 
@@ -36,7 +37,7 @@ namespace ps {
         const bool isOk();
         void setBurn();
 
-
+        void Step();
         void Move();
         coord_t Distance(const Particle &) const;
         bool Cross(const Particle &) const;

@@ -19,6 +19,7 @@ namespace ps {
         {
             window_steps = P->frontline_window_steps;
             window_points.resize(window_steps);
+            flow_points.resize(window_steps);
         }
 
         window_radius = (area_size) / (window_steps + 1.) * P->frontline_window_size;
@@ -26,7 +27,10 @@ namespace ps {
 
         window_step_size = (area_size - window_size) / (window_steps - 1.);
         for (int i = 0; i < window_steps; ++i) {
-            window_points[i].x = area_start + window_radius + window_step_size * i;
+            window_points[i].x = flow_points[i].x = area_start + window_radius + window_step_size * i;
+
+            flow_points[i].Vx = P->system_speed(flow_points[i].x) * P->burn_speed;
+            flow_points[i].Vx2 = flow_points[i].Vx * flow_points[i].Vx;
         }
 
 
@@ -36,19 +40,15 @@ namespace ps {
         {
             spline_steps = P->frontline_spline_steps;
             spline_points.resize(spline_steps);
-            flow_points.resize(spline_steps);
             analys_points.resize(spline_steps);
         }
 
         spline_step_size = (area_size - window_size) / (spline_steps - 1.);
 
         for (int i = 0; i < spline_steps; ++i) {
-            flow_points[i].x = spline_points[i].x = area_start + window_radius + spline_step_size * i;
-            
-            flow_points[i].Vx = P->system_speed(flow_points[i].x) * P->burn_speed;
-            flow_points[i].Vx2 = flow_points[i].Vx * flow_points[i].Vx;
+            spline_points[i].x = area_start + window_radius + spline_step_size * i;
 
-            analys_points[i] = {};
+            //analys_points[i] = {};
         }
 
 
@@ -57,12 +57,20 @@ namespace ps {
 
     void Frontline::Calc(const std::vector <Particle*>& particle_list) {
 
+        /*for (int i = 0; i < spline_steps; ++i) {
+            analys_points[i] = {};
+        }*/
+        for (auto& ap : analys_points) ap = {};
+
         WindowMiddle(particle_list);
         SplineSmooth(P->frontline_spline_alpha);
         //CalcError();
         FivePointStencil(P->frontline_stencil_h);
-        CalcNormal();
+
+        if(P->move_normal) CalcNormal();
+
         CalcRadius(P->frontline_radius_h);
+        CalcCurve();
     }
 
     void Frontline::WindowMiddle(const std::vector <Particle*>& particle_list) {
@@ -134,11 +142,12 @@ namespace ps {
 
     void Frontline::CalcNormal()
     {
-        double gap = P->burn_radius / 2;
+        //double gap = P->burn_radius / 2;
         for (size_t i = 0; i < spline_steps; i++)
         {
             if (spline_points[i].z && analys_points[i].div)
             {
+                double gap = P->get_burn_radius(spline_points[i].x) / 2;
                 double d = ((int)(analys_points[i].div > 0) * 2 - 1);
                 double k = 1. / analys_points[i].div;
                 double dx = d * gap / sqrt(k * k + 1);
@@ -203,11 +212,14 @@ namespace ps {
         std::ofstream csv(P->csv_folder + "line.csv." + std::to_string(num));
 
         //std::string output = P->frontline_params();
-        std::string output = "x,z,wx,wz,div,div2,Vx2,diff2,cross,r";
+        std::string output = "x,z,wx,wz,div,div2,Vx2,diff2,cross,r,c";
 
         for (int i = 0; i < spline_steps; ++i) {
 
-                output += fmt::format("\n{},{},{},{},{},{},{},{},{},{}",
+            //if (spline_points[i].z)
+            {
+
+                output += fmt::format("\n{},{},{},{},{},{},{},{},{},{},{}",
                     spline_points[i].x,
                     spline_points[i].z,
                     window_points[i].x,
@@ -217,20 +229,27 @@ namespace ps {
                     flow_points[i].Vx2,
                     analys_points[i].diff2,
                     analys_points[i].cross,
-                    analys_points[i].r
+                    analys_points[i].r,
+                    analys_points[i].c
                 );
                 //output+= '\n' + std::to_string(frontline_window_points[i].x) + ',' + std::to_string(frontline_window_points[i].y) + ',' + std::to_string(frontline_window_points[i].div);
-            
+            }
         }
         csv << output;
         csv.close();
     }
-
+    
     void Frontline::FivePointStencil(int h_div) {
         assert(h_div >= 1);
 
+        int start = 0;
+        while (spline_points[start].z <= 0) ++start;
 
-        for (int i = h_div*2; i < spline_steps - h_div * 2; ++i) {
+        int end = spline_steps;
+        while (spline_points[end-1].z <= 0) --end;
+
+
+        for (int i = start + h_div*2; i < end - h_div * 2; ++i) {
 
 
             analys_points[i].div =
@@ -260,8 +279,14 @@ namespace ps {
 
 
     void Frontline::CalcRadius(int h_div) {
+
+        int start = 0;
+        while (spline_points[start].z <= 0) ++start;
+
+        int end = spline_steps;
+        while (spline_points[end - 1].z <= 0) --end;
         
-        for (int i = h_div + P->frontline_stencil_h; i < spline_steps - h_div - P->frontline_stencil_h; ++i) {
+        for (int i = start + h_div + P->frontline_stencil_h; i < end - h_div - P->frontline_stencil_h; ++i) {
             const auto& A = spline_points[i];
             const auto& B = spline_points[i - h_div];
             const auto& C = spline_points[i + h_div];
@@ -288,6 +313,41 @@ namespace ps {
             analys_points[i].r = 1. / sqrt(dx*dx + dy*dy);
         }
 
+
+    }
+    void Frontline::CalcCurve() {
+        int start = 0;
+        while (spline_points[start].z <= 0) ++start;
+        start += P->frontline_stencil_h*2;
+
+        int end = spline_steps;
+        while (spline_points[end - 1].z <= 0) --end;
+        end -= P->frontline_stencil_h*2;
+
+        for (int i = start; i < end; ++i) {
+            double ddy = (1 + analys_points[i].div * analys_points[i].div) / analys_points[i].diff2;
+            double x1 = spline_points[i].x - analys_points[i].div * ddy;
+            double z1 = spline_points[i].z + ddy;
+            analys_points[i].c = 1./ sqrt
+                ((x1 - spline_points[i].x) * (x1 - spline_points[i].x) + (z1 - spline_points[i].z) * (z1 - spline_points[i].z));
+        }
+
+        
+        bool scale_area = false;
+        double scale_start;
+        kinks.clear();
+        for (int i = 0; i < spline_points.size(); i++)
+        {
+            if (!scale_area && analys_points[i].c >= P->scale_burn_condition) {
+                scale_area = true;
+                scale_start = spline_points[i].x;
+            }
+            else if (scale_area && analys_points[i].c < P->scale_burn_condition) {
+                scale_area = false;
+                kinks.push_back(scale_start + (spline_points[i - 1].x - scale_start)/2);
+                //std::cout << "scale\n";
+            }
+        }
 
     }
 
