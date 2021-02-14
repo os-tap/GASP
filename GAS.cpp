@@ -308,7 +308,8 @@ int main() {
 
 
             if (State.display_line) screen.draw_frontline(front_line.spline_points);
-            screen.draw_hlines(front_line.kinks);
+            //if(params.scale_burn) 
+                screen.draw_hlines(front_line.kinks);
 
 
             if (State.test)
@@ -347,7 +348,8 @@ int main() {
             //main_swarm.UpdateSegments();
             //main_swarm.CalcFrontlineRadius(front_line.front_line_points);
 //            main_swarm.Print(print_step_counter);
-            main_swarm.PrintCount(print_step_counter, params.svm_count);
+            //main_swarm.PrintCount(print_step_counter, params.svm_count);
+            main_swarm.PrintSVM(print_step_counter, params.svm_count);
             front_line.Print(print_step_counter);
             std::cout << "\nprint - " << print_step_counter;
             ++print_step_counter;

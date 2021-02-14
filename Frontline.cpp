@@ -216,7 +216,7 @@ namespace ps {
 
         for (int i = 0; i < spline_steps; ++i) {
 
-            //if (spline_points[i].z)
+            if (spline_points[i].z)
             {
 
                 output += fmt::format("\n{},{},{},{},{},{},{},{},{},{},{}",
