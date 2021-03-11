@@ -41,6 +41,8 @@ namespace ps {
 
     public:
 
+        void FillSegments();
+
         void FillParticles();
         void MoveParticles();
         void CrossParticles();

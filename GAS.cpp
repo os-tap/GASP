@@ -308,7 +308,7 @@ int main() {
 
 
             if (State.display_line) screen.draw_frontline(front_line.spline_points);
-            screen.draw_hlines(front_line.kinks);
+            if (params.display_kinks) screen.draw_hlines(front_line.kinks);
 
 
             if (State.test)

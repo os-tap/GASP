@@ -82,7 +82,7 @@ public:
     double frontline_cross_multipler, frontline_cross_area, frontline_cross_radius;
 
 
-    bool who_cross, scale_burn;
+    bool who_cross, scale_burn, display_kinks;
     double scale_burn_multipler, scale_burn_pow, scale_burn_size, scale_burn_condition;
 
     std::vector<double>frontline_kinks;

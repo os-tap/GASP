@@ -25,6 +25,10 @@ namespace ps {
         _fill_one ? Fill_Grid() : Fill_Sampling();
     }
 
+    void Segments::FillSegments() {
+
+    }
+
 
 
     void Segments::CreateParticle(double x_cord, double z_cord, double p_speed) {

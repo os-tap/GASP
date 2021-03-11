@@ -109,6 +109,7 @@ void ps::Params::Load(json j)
     
     who_cross = (bool)j["who_cross"];
     scale_burn = (bool)j["scale_burn"];
+    display_kinks = (bool)j["display_kinks"];
     scale_burn_multipler = (double)j["scale_burn_multipler"];
     scale_burn_size = stream_width * (double)j["scale_burn_size"];
     scale_burn_pow = (double)j["scale_burn_pow"];

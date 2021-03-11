@@ -13,7 +13,7 @@
   "wave_time": 100,
 
 
-  "burn_radius": 10,
+  "burn_radius": 20,
   "burn_fix": -1,
   "burn_fix_a": 1,
   "burn_fix_b": 0.671,
@@ -39,11 +39,11 @@
 
 
 
-  "frontline_spline_steps": 301,
+  "frontline_spline_steps": 501,
   "frontline_spline_alpha": 200,
   "move_normal": true,
 
-  "frontline_window_steps": 301,
+  "frontline_window_steps": 501,
   "frontline_window_size": 4,
 
   "frontline_stencil_h": 2,
@@ -56,6 +56,7 @@
 
   "who_cross": false,
   "scale_burn": false,
+  "display_kinks":  false,
   "scale_burn_multipler": 140,
   "scale_burn_size": 0.1,
   "scale_burn_pow": 1,
