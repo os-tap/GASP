@@ -50,12 +50,16 @@ namespace ps {
         void draw_hline(double y, int r = 255, int g = 255, int b = 255);
         void draw_hlines(std::vector <double>&);
 
+
     private:
         void init_SDL();
         void init_window();
         void init_renderer();
         void init_texture();
         void init_buffers();
+
+        void init_pixels_coords_map();
+
         Uint32 get_uint32_color(Uint8, Uint8, Uint8, Uint8 = 255);
         int x_to_pixel(double);
         int y_to_pixel(double);
@@ -76,6 +80,10 @@ namespace ps {
         Uint32* m_main_buffer{ nullptr };
         Uint32* m_blur_buffer{ nullptr };
         SDL_Event m_event;
+
+    public:
+        double* pixel_x_coord{ nullptr };
+        double* pixel_y_coord{ nullptr };
     };
 
 } /* namespace ps */

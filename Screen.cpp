@@ -10,12 +10,15 @@ namespace ps {
         init_renderer();
         init_texture();
         init_buffers();
+        init_pixels_coords_map();
     }
 
     Screen::~Screen() {
         // Destroy all SDL related objects.
         delete[] m_main_buffer;
         delete[] m_blur_buffer;
+        delete[] pixel_x_coord;
+        delete[] pixel_y_coord;
         SDL_DestroyRenderer(m_renderer);
         SDL_DestroyTexture(m_texture);
         SDL_DestroyWindow(m_window);
@@ -100,6 +103,18 @@ namespace ps {
         m_blur_buffer = new Uint32[SCREEN_HEIGHT * SCREEN_WIDTH];
         memset(m_blur_buffer, 0, SCREEN_HEIGHT * SCREEN_WIDTH * sizeof(Uint32));
 
+    }
+
+    void Screen::init_pixels_coords_map()
+    {
+        for (int i = 0; i < SCREEN_WIDTH; i++)
+        {
+            pixel_x_coord[i] = i * P->screen_x_proportion;
+        }
+        for (int i = 0; i < SCREEN_HEIGHT; i++)
+        {
+            pixel_y_coord[i] = i * P->screen_y_proportion;
+        }
     }
 
     void Screen::UpdateTexture() {

@@ -13,7 +13,14 @@ namespace ps {
         Particle(coord_t x, coord_t z, coord_t speed, coord_t burn_radius);
         void SetBurnRadius(coord_t burn_radius);
 
-        enum class State { OK, WARM, BURN, WAVE, SAGE, DIED };
+        enum class State { 
+            OK   = 0, 
+            WARM = 1, 
+            BURN = 2, 
+            WAVE = 3, 
+            SAGE = 4, 
+            DIED = 5 
+        };
         State state = State::OK;
 
         unsigned short burn_counter = 0, warm_counter = 0, wave_counter = 0, sage_counter = 0;
