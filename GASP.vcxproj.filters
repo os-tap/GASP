@@ -21,9 +21,6 @@
     <ClCompile Include="Frontline.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="GAS.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
     <ClCompile Include="Params.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
@@ -33,7 +30,13 @@
     <ClCompile Include="Screen.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="SVMClassifier.cpp">
+    <ClCompile Include="Classifier.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="GAS.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
@@ -53,7 +56,10 @@
     <ClInclude Include="Params.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="SVMClassifier.h">
+    <ClInclude Include="GAS.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Classifier.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

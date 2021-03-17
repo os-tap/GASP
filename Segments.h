@@ -1,6 +1,7 @@
 #pragma once
 #include "Params.h"
 #include "Particle.h"
+#include "Classifier.h"
 
 #include <vector>
 #include <string>
@@ -17,6 +18,7 @@
 #include <pstl/execution>
 #include <pstl/algorithm>
 
+
 typedef std::vector <ps::Particle> ParticleList;
 
 namespace ps {
@@ -31,15 +33,17 @@ namespace ps {
         void Update();
 
         ParticleList all_list;
-        std::vector <Particle*> all_will_burn;
+        std::vector <Point> all_will_burn;
 
     private:
-        tbb::concurrent_vector <size_t> will_burn_index;
-        tbb::concurrent_vector <Particle> all_will_burn_concurrent;
+        //tbb::concurrent_vector <size_t> will_burn_index;
+        //tbb::concurrent_vector <Particle> all_will_burn_concurrent;
 
 
 
     public:
+
+        void Refill(Classifier&);
 
         void FillSegments();
 
@@ -110,7 +114,8 @@ namespace ps {
         //tbb::concurrent_vector <Segment*> burn_segments;
 
         Segment& grids(size_t x, size_t z) {
-            assert(z * grid_count_x + x < grid.size(), "segments out of range");
+            //assert(z * grid_count_x + x < grid.size(), "segments out of range");
+            if (z * grid_count_x + x >= grid.size()) throw std::out_of_range("GRID OUT OF RANGE");
             return grid[z * grid_count_x + x];
         }
 

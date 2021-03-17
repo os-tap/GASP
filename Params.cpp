@@ -80,6 +80,7 @@ void ps::Params::Load(json j)
     iterate_speed = base_speed / iterations;
     iterate_const = const_speed / iterations;
     iterate_particles = (int)floor(base_particles * particle_speed(area_center) / burn_radius_2_cross / M_PI * L);
+    full_particles_count = (int)floor(base_particles * area_height * area_size / burn_radius_2_cross / M_PI );
 
     burn_time = (int)j["burn_time"] * iterations;
     sage_time = (int)j["sage_time"] * iterations;
@@ -114,6 +115,9 @@ void ps::Params::Load(json j)
     scale_burn_size = stream_width * (double)j["scale_burn_size"];
     scale_burn_pow = (double)j["scale_burn_pow"];
     scale_burn_condition = (double)j["scale_burn_condition"];
+
+
+    svm_params = j["svm_params"];
 
 }
 

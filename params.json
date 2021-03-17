@@ -1,5 +1,5 @@
 {
-  "csv_folder": "C:\\Users\\prive\\OneDrive\\csv\\2d\\",
+  "csv_folder": "C:\\Users\\prive\\OneDrive\\csv\\svm\\",
 
   "area_beg": -1,
   "area_end": 1,
@@ -13,37 +13,39 @@
   "wave_time": 100,
 
 
-  "burn_radius": 20,
+  "burn_radius": 30,
   "burn_fix": -1,
   "burn_fix_a": 1,
   "burn_fix_b": 0.671,
 
 
 
-  "base_particles": 1000,
+  "base_particles": 500,
   "particles_dist": 16,
-  "const_speed": 0.95,
+  "const_speed": 0.8,
   "base_speed": 2,
   "burn_speed": 0.99,
 
+  "x_speed": 0.5,
 
-  "svm_count": 10000,
+
+  "svm_count": 5000,
 
   "emitter_begin": 0,
 
   "iterations": 1,
 
   "burn_time": 1,
-  "sage_time": 0,
+  "sage_time": 2,
 
 
 
 
-  "frontline_spline_steps": 501,
+  "frontline_spline_steps": 201,
   "frontline_spline_alpha": 200,
   "move_normal": true,
 
-  "frontline_window_steps": 501,
+  "frontline_window_steps": 201,
   "frontline_window_size": 4,
 
   "frontline_stencil_h": 2,
@@ -56,10 +58,13 @@
 
   "who_cross": false,
   "scale_burn": false,
-  "display_kinks":  false,
+  "display_kinks": false,
   "scale_burn_multipler": 140,
   "scale_burn_size": 0.1,
   "scale_burn_pow": 1,
-  "scale_burn_condition": 40
+  "scale_burn_condition": 40,
+
+
+  "svm_params": "-t 2 -c 10000"
 
 }

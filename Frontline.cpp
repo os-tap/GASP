@@ -55,7 +55,7 @@ namespace ps {
     }
 
 
-    void Frontline::Calc(const std::vector <Particle*>& particle_list) {
+    void Frontline::Calc(const std::vector <Point>& particle_list) {
 
         /*for (int i = 0; i < spline_steps; ++i) {
             analys_points[i] = {};
@@ -64,7 +64,9 @@ namespace ps {
 
         WindowMiddle(particle_list);
         SplineSmooth(P->frontline_spline_alpha);
+
         //CalcError();
+
         FivePointStencil(P->frontline_stencil_h);
 
         if(P->move_normal) CalcNormal();
@@ -73,7 +75,7 @@ namespace ps {
         CalcCurve();
     }
 
-    void Frontline::WindowMiddle(const std::vector <Particle*>& particle_list) {
+    void Frontline::WindowMiddle(const std::vector <Point>& particle_list) {
 
         for (auto& wp : window_points) {
             wp.z = wp.sum = wp.count = 0;
@@ -81,14 +83,14 @@ namespace ps {
 
         for (const auto& particle : particle_list) {
 
-            int beg_i = (int) ceil((particle->x - area_start - window_size ) / window_step_size);
-            int end_i =	(int)floor((particle->x - area_start) / window_step_size);
+            int beg_i = (int) ceil((particle.x - area_start - window_size ) / window_step_size);
+            int end_i =	(int)floor((particle.x - area_start) / window_step_size);
             beg_i *= beg_i > 0;
             end_i = end_i * (end_i < window_steps) + (end_i > window_steps - 1) * (window_steps - 1);
             //if (end_i > window_steps - 1) end_i = window_steps - 1;
 
             for (int i = beg_i; i <= end_i; ++i) {
-                window_points[i].sum += particle->z;
+                window_points[i].sum += particle.z;
                 window_points[i].count++;
             }
 
@@ -107,9 +109,25 @@ namespace ps {
     void Frontline::SplineSmooth(double alpha) {
         SPLINTER::DataTable samples;
 
+        double start = P->area_beg;
+        double end = P->area_end;
+        bool has_begun = false;
+        bool has_ended = false;
+
         for (const auto& wp : window_points) {
-            if (wp.z) samples.addSample(wp.x, wp.z);
+            if (wp.z) {
+                samples.addSample(wp.x, wp.z);
+                if (!has_begun) {
+                    has_begun = true;
+                    start = wp.x;
+                }
+            }
+            else if (has_begun && !has_ended) {
+                end = wp.x - window_size;
+                has_ended = true;
+            }
         }
+
         
         if (samples.cbegin() == samples.cend()) {
             for (auto& sp : spline_points) {
@@ -129,8 +147,11 @@ namespace ps {
         for (size_t i = 0; i < spline_steps; i++)
         {
             spline_points[i].x = flow_points[i].x;
-            xd(0) = spline_points[i].x;
-            spline_points[i].z = pspline.eval(xd);
+            if (spline_points[i].x >= start && spline_points[i].x <= end)
+            {
+                xd(0) = spline_points[i].x;
+                spline_points[i].z = pspline.eval(xd);
+            }
         }
         /*for (auto& sp : spline_points) {
             xd(0) = sp.x;
@@ -243,14 +264,13 @@ namespace ps {
         assert(h_div >= 1);
 
         int start = 0;
-        while (spline_points[start].z <= 0) ++start;
+        //while (spline_points[start].z <= 0) ++start;
 
         int end = spline_steps;
-        while (spline_points[end-1].z <= 0) --end;
+        //while (spline_points[end-1].z <= 0) --end;
 
 
         for (int i = start + h_div*2; i < end - h_div * 2; ++i) {
-
 
             analys_points[i].div =
                 8 * (spline_points[i + h_div].z - spline_points[i - h_div].z)
@@ -266,11 +286,10 @@ namespace ps {
                 + 16 * spline_points[i + h_div].z
                 - 30 * spline_points[i].z
                 + 16 * spline_points[i - h_div].z
-                - spline_points[i - h_div * 2].z;
+                - spline_points[i - h_div * 2].z
+                ;
 
             analys_points[i].diff2 /= 12 * h_div * h_div * spline_step_size * spline_step_size;
-
-
 
         }
 
@@ -281,17 +300,17 @@ namespace ps {
     void Frontline::CalcRadius(int h_div) {
 
         int start = 0;
-        while (spline_points[start].z <= 0) ++start;
+        //while (spline_points[start].z <= 0) ++start;
 
         int end = spline_steps;
-        while (spline_points[end - 1].z <= 0) --end;
+        //while (spline_points[end - 1].z <= 0) --end;
         
         for (int i = start + h_div + P->frontline_stencil_h; i < end - h_div - P->frontline_stencil_h; ++i) {
             const auto& A = spline_points[i];
             const auto& B = spline_points[i - h_div];
             const auto& C = spline_points[i + h_div];
 
-            Point M[2], Cntr{0}; double H1, H2, G;
+            Point M[2], Cntr{0,0}; double H1, H2, G;
 
             M[0].x = B.x - A.x;
             M[0].z = B.z - A.z;
@@ -317,11 +336,11 @@ namespace ps {
     }
     void Frontline::CalcCurve() {
         int start = 0;
-        while (spline_points[start].z <= 0) ++start;
+        //while (spline_points[start].z <= 0) ++start;
         start += P->frontline_stencil_h*2;
 
         int end = spline_steps;
-        while (spline_points[end - 1].z <= 0) --end;
+        //while (spline_points[end - 1].z <= 0) --end;
         end -= P->frontline_stencil_h*2;
 
         for (int i = start; i < end; ++i) {

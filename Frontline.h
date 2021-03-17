@@ -21,8 +21,8 @@ namespace ps {
         void Init();
 
 
-        void Calc(const std::vector <Particle*>& particle_list);
-        void WindowMiddle(const std::vector <Particle*>& particle_list);
+        void Calc(const std::vector <Point>& particle_list);
+        void WindowMiddle(const std::vector <Point>& particle_list);
         void SplineSmooth(double alpha);
         void FivePointStencil(int h_div);
         void CalcNormal();
@@ -30,7 +30,7 @@ namespace ps {
         void CalcRadius(int h_div);
         void CalcCurve();
 
-        void Calc2(const std::vector <Particle*>& particle_list);
+        //void Calc2(const std::vector <Particle*>& particle_list);
         void Print(unsigned num);
 
 

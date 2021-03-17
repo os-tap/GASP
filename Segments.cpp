@@ -167,6 +167,31 @@ namespace ps {
 
     }
 
+    void Segments::Refill(Classifier &classifier)
+    {
+        all_list.clear();
+
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_real_distribution<double> dist;
+        //std::uniform_real_distribution<double> dist_x(P->stream_beg, P->stream_end), dist_z(0, P->particle_speed(P->area_center));
+
+        double p_x_cord, p_z_cord;
+        Particle::State state;
+
+        for (int pi = P->full_particles_count; pi; --pi)
+        {
+            p_x_cord = dist(gen) * P->area_size + P->area_beg;
+            p_z_cord = dist(gen) * P->area_height;
+            state = static_cast<Particle::State>(classifier.predict(p_x_cord, p_z_cord));
+
+            if (state == Particle::State::OK || state == Particle::State::BURN) {
+                all_list.emplace_back(p_x_cord, p_z_cord, state);
+            }
+        }
+
+    }
+
 
     void Segments::Fill_Sampling() {
 
@@ -184,7 +209,8 @@ namespace ps {
             p_speed = P->particle_speed(p_x_cord);
 
             if (p_z_cord < p_speed) {
-                CreateParticle(p_x_cord, p_z_cord, p_speed);
+                //CreateParticle(p_x_cord, p_z_cord, p_speed);
+                all_list.emplace_back(p_x_cord, p_z_cord, Particle::State::OK);
             }
         }
 
@@ -241,9 +267,21 @@ namespace ps {
                 for (auto& burn_i : seg.burn_list) {
                     if (ok_i.Cross(burn_i)) {
                     //if ((P->who_cross ? burn_i.Cross(ok_i) : ok_i.Cross(burn_i)) ) {
-                        //seg.burn_indexes.push_back(ok_i.index);
+                        seg.burn_indexes.push_back(ok_i.index);
                         //BurnParticle(all_list[ok_i.index]);
-                        will_burn_index.push_back(ok_i.index);
+                        /*try
+                        {
+                            will_burn_index.push_back(ok_i.index);
+                        }
+                        catch (const std::bad_alloc&)
+                        {
+                            std::cerr << "will_burn_index bad_alloc";
+                        }
+                        catch (const std::exception&)
+                        {
+                            std::cerr << "will_burn_index exception";
+                        }*/
+                        
                         break;
                     }
                 }
@@ -273,11 +311,27 @@ namespace ps {
 
         //all_will_burn.clear();
         //all_will_burn.reserve(will_burn_index.size());
-        all_will_burn.resize(will_burn_index.size());
+
+        /*all_will_burn.resize(will_burn_index.size());
         tbb::parallel_for(size_t(0),all_will_burn.size(), [=](size_t i) {
             BurnParticle(all_list[will_burn_index[i]]);
-            all_will_burn[i] = &all_list[will_burn_index[i]];
-        });
+            all_will_burn[i].x = all_list[will_burn_index[i]].x;
+            all_will_burn[i].z = all_list[will_burn_index[i]].z;
+        });*/
+
+        all_will_burn.clear();
+        for (auto& segment : grid)
+        {
+            for (int i : segment.burn_indexes)
+            {
+                //Point p;
+
+                BurnParticle(all_list[i]);
+                all_will_burn.emplace_back(all_list[i].x, all_list[i].z);
+                //all_will_burn[i].x = all_list[will_burn_index[i]].x;
+                //all_will_burn[i].z = all_list[will_burn_index[i]].z;
+            }
+        }
 
 
         //std::for_each(pstl::execution::par,
@@ -375,7 +429,8 @@ namespace ps {
 
     void Segments::ClearSegments()
     {
-        will_burn_index.clear();
+        //will_burn_index.clear();
+        //all_will_burn_concurrent.clear();
         std::for_each(pstl::execution::par,
             grid.begin(), grid.end(), [this](Segment& seg) {
                 seg.burn_list.clear();
@@ -459,11 +514,19 @@ namespace ps {
 
             for (int xi = seg_x_start; xi < seg_x_end; xi++) {
                 for (int zi = seg_z_start; zi < seg_z_end; zi++) {
-                    grids(xi, zi).burn_list.emplace_back(p, index);
+                    try
+                    {
+                        grids(xi, zi).burn_list.emplace_back(p, index);
+                    }
+                    catch (const std::out_of_range&)
+                    {
+                        std::cerr << "GRIDS LOL";
+                    }
+                    
                 }
             }
 
-            //segment.burn_list.push_back(p);
+            //grids(seg_x, seg_z).burn_list.emplace_back(p, index);
         }
     }
 
@@ -597,7 +660,7 @@ namespace ps {
 
 
     void Segments::MoveParticle(Particle& p) {
-        p.Move();
+        p.Move(P->particle_speed(p.x), P->particle_x_speed(p.z));
         if (p.z >= P->area_height || p.x > P->area_end) p.state = Particle::State::DIED;
     }
 

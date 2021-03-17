@@ -18,6 +18,8 @@ namespace ps {
     struct Point;
 }
 struct ps::Point {
+    Point() {};
+    Point(double _x, double _z) : x(_x), z(_z) {};
     double x, z;
 };
 
@@ -54,6 +56,7 @@ public:
 
     double emitter_begin;
     double base_particles, particles_dist;
+    unsigned full_particles_count;
 
     int iterations;
     double iterate_burn_radius;
@@ -84,6 +87,8 @@ public:
 
     bool who_cross, scale_burn, display_kinks;
     double scale_burn_multipler, scale_burn_pow, scale_burn_size, scale_burn_condition;
+
+    std::string svm_params;
 
     std::vector<double>frontline_kinks;
 
@@ -184,6 +189,9 @@ public:
     }
     double particle_speed(const double x) const {
         return profile_speed(x) + iterate_const;
+    }
+    double particle_x_speed(const double z) const {
+        return z * iterate_const;
     }
 
     double refract_func(const double x) const {

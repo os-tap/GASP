@@ -10,15 +10,12 @@ namespace ps {
         init_renderer();
         init_texture();
         init_buffers();
-        init_pixels_coords_map();
     }
 
     Screen::~Screen() {
         // Destroy all SDL related objects.
         delete[] m_main_buffer;
         delete[] m_blur_buffer;
-        delete[] pixel_x_coord;
-        delete[] pixel_y_coord;
         SDL_DestroyRenderer(m_renderer);
         SDL_DestroyTexture(m_texture);
         SDL_DestroyWindow(m_window);
@@ -105,17 +102,6 @@ namespace ps {
 
     }
 
-    void Screen::init_pixels_coords_map()
-    {
-        for (int i = 0; i < SCREEN_WIDTH; i++)
-        {
-            pixel_x_coord[i] = i * P->screen_x_proportion;
-        }
-        for (int i = 0; i < SCREEN_HEIGHT; i++)
-        {
-            pixel_y_coord[i] = i * P->screen_y_proportion;
-        }
-    }
 
     void Screen::UpdateTexture() {
 //        SDL_RenderPresent(m_renderer);
@@ -156,8 +142,8 @@ namespace ps {
 
 
     void Screen::load_swarm(const std::vector <Particle>& particle_list, bool sdl_draw_plus) {
-        Uint32 red_color = get_uint32_color(125, 50, 50);
-        Uint32 sage_color = get_uint32_color(60, 60, 60);
+        Uint32 red_color = get_uint32_color(150, 50, 50);
+        Uint32 sage_color = get_uint32_color(50, 50, 0);
         Uint32 blue_color = get_uint32_color(50, 50, 125);
         Uint32 white_color = get_uint32_color(125, 125, 125);
         Uint32 color = get_uint32_color(0, 0, 0);
@@ -326,6 +312,32 @@ namespace ps {
 
 
 
+    }
+
+    void Screen::set_pixels(std::vector<int> &colors)
+    {
+        /*OK = 0,
+            WARM = 1,
+            BURN = 2,
+            WAVE = 3,
+            SAGE = 4,
+            DIED = 5*/
+        Uint32 color_map[] = {
+            get_uint32_color(0,0,50),
+            get_uint32_color(50, 50, 50),
+            get_uint32_color(50, 0, 0),
+            get_uint32_color(0, 50, 0),
+            get_uint32_color(20, 20, 20),
+            get_uint32_color(0, 0, 50)
+        };
+
+        for (int j = 0; j < SCREEN_HEIGHT; j++)
+        {
+            for (int i = 0; i < SCREEN_WIDTH; i++)
+            {
+                set_pixel_color(i, j, color_map[colors[i + j * SCREEN_WIDTH]]);
+            }
+        }
     }
 
 

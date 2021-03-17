@@ -6,8 +6,8 @@ namespace ps {
     /*Particle::Particle(coord_t _x, coord_t _z, coord_t _speed) :
         x(_x), z(_z), speed(_speed){}*/
 
-    Particle::Particle(coord_t _x, coord_t _z, coord_t _speed, coord_t _burn_radius) :
-            x(_x), z(_z), speed(_speed), burn_radius(_burn_radius){}
+    
+    
 
     void Particle::SetBurnRadius(coord_t _burn_radius) {
         burn_radius = _burn_radius;
@@ -32,6 +32,10 @@ namespace ps {
     void Particle::Move() {
         z += speed;// *(state != State::WAVE);
         x += x_speed;
+    }
+    void Particle::Move(double dz, double dx) {
+        z += dz;// *(state != State::WAVE);
+        x += dx;
     }
 
     void Particle::Step()
