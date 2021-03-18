@@ -52,6 +52,7 @@ namespace ps {
             double div=0, diff2=0, div2=0, cross=0, r=0, c=0;
         };
         std::vector <analys_point> analys_points;
+        std::vector <double> curvature{0};
 
 
 
@@ -60,6 +61,8 @@ namespace ps {
         int window_steps=0;
         double window_size, window_radius;
         double window_step_size, window_step_start, window_step_end;
+
+        double first_point, last_point;
 
         int spline_steps=0;
         double spline_step_size;

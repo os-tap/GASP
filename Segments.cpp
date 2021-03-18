@@ -133,7 +133,7 @@ namespace ps {
         int step = all_list.size() / count;
         for (size_t i = 0; i < all_list.size(); i+= step)
         {
-            output += fmt::format("{} 1:{} 2:{}\n", !all_list[i].isOk() + 1, all_list[i].x, 1 - all_list[i].z);
+            output += fmt::format("{} 1:{} 2:{}\n", 1 + 2*!all_list[i].isOk(), all_list[i].x, 1 - all_list[i].z);
         }
 
         std::ofstream csv(P->csv_folder + "svm.csv." + std::to_string(num));

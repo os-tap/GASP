@@ -86,6 +86,15 @@ public:
     double scale_burn_multipler, scale_burn_pow, scale_burn_size, scale_burn_condition;
 
     std::vector<double>frontline_kinks;
+    std::vector<double>frontline_curve;
+    double curve_start, curve_end, curve_width;
+    double curve_burn_coef;
+
+    long get_curvature(const double x) const {
+        if (x < curve_start || x > curve_end) return 0;
+        return frontline_curve[lround((x - curve_start) / curve_width * (frontline_curve.size() - 1))];
+    }
+
 
 
     //std::string swarm_params() const;
@@ -99,15 +108,28 @@ public:
         //frontline_kinks = _kinks;
         frontline_kinks.insert(frontline_kinks.end(), _kinks.begin(), _kinks.end());
     }
+    void set_curvature(std::vector<double>&_curvature, double _start, double _end) {
+        curve_start = _start;
+        curve_end = _end;
+        curve_width = _end - _start;
+        frontline_curve = _curvature;
+    }
     double get_burn_radius(double x_cord) const {
-        double br = burn_radius_cross;
+
+        //return burn_radius_cross;
+        return burn_radius_cross * (1 + get_curvature(x_cord) * curve_burn_coef * scale_burn);
+
+
+        /*double br = burn_radius_cross;
         for (const auto x_kink : frontline_kinks) {
             if (scale_burn && fabs(x_kink - x_cord) < scale_burn_size) {
                 br *= 1 + pow(1 - fabs(x_kink - x_cord) / scale_burn_size, scale_burn_pow) * particle_speed(x_cord) * particle_speed(x_cord) * scale_burn_multipler;
                 break;
             }
         }
-        return br;
+        return br;*/
+
+
         /*double br = burn_radius_cross;
         if (scale_burn && fabs(x_cord) < scale_burn_size) {
             br *= 1 + pow(1 - fabs(x_cord) / scale_burn_size, scale_burn_pow) * scale_burn_multipler;
@@ -153,7 +175,7 @@ private:
         return 1 - from_center(x) * from_center(x) / stream_radius / stream_radius;
     }
     double const_stream(const double x) const  {
-        return .5;
+        return burn_radius;
     }
     double rising_stream(const double x) const {
         return burn_speed * burn_radius + (x - stream_beg) / stream_width;
