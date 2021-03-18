@@ -1,10 +1,10 @@
 {
   "csv_folder": "C:\\Users\\prive\\OneDrive\\csv\\2d\\",
 
-  "area_beg": 0,
+  "area_beg": -1,
   "area_end": 1,
   "scale": 500,
-  "stream_beg": 0,
+  "stream_beg": -1,
   "stream_end": 1,
 
 
@@ -23,7 +23,7 @@
   "base_particles": 1000,
   "particles_dist": 16,
   "const_speed": 0.95,
-  "base_speed": 1.75,
+  "base_speed": 2,
   "burn_speed": 0.99,
 
 
@@ -40,8 +40,8 @@
 
 
   "frontline_spline_steps": 301,
-  "frontline_spline_alpha": 300,
-  "move_normal": true,
+  "frontline_spline_alpha": 100,
+  "move_normal": false,
 
   "frontline_window_steps": 301,
   "frontline_window_size": 4,
@@ -59,6 +59,8 @@
   "scale_burn_multipler": 580,
   "scale_burn_size": 0.1,
   "scale_burn_pow": 1,
-  "scale_burn_condition": 100
+  "scale_burn_condition": 100,
+
+  "curve_burn_coef": 0.0247
 
 }

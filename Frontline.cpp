@@ -25,6 +25,9 @@ namespace ps {
         window_radius = (area_size) / (window_steps + 1.) * P->frontline_window_size;
         window_size = window_radius * 2;
 
+        first_point = area_start + window_radius;
+        last_point = area_end - window_radius;
+
         window_step_size = (area_size - window_size) / (window_steps - 1.);
         for (int i = 0; i < window_steps; ++i) {
             window_points[i].x = flow_points[i].x = area_start + window_radius + window_step_size * i;
@@ -41,6 +44,7 @@ namespace ps {
             spline_steps = P->frontline_spline_steps;
             spline_points.resize(spline_steps);
             analys_points.resize(spline_steps);
+            curvature.resize(spline_steps);
         }
 
         spline_step_size = (area_size - window_size) / (spline_steps - 1.);
@@ -61,6 +65,7 @@ namespace ps {
             analys_points[i] = {};
         }*/
         for (auto& ap : analys_points) ap = {};
+        for (double& c : curvature) c = 0;
 
         WindowMiddle(particle_list);
         SplineSmooth(P->frontline_spline_alpha);
@@ -107,8 +112,24 @@ namespace ps {
     void Frontline::SplineSmooth(double alpha) {
         SPLINTER::DataTable samples;
 
+        double spline_start = area_start;
+        double spline_end = area_end;
+
         for (const auto& wp : window_points) {
             if (wp.z) samples.addSample(wp.x, wp.z);
+        }
+
+        for (size_t i = window_points.size()-2; i ; i--) {
+            if (window_points[i].z) {
+                spline_end = window_points[i].x;
+                break;
+            }
+        }
+        for (size_t i = 1; i < window_points.size(); i++) {
+            if (window_points[i].z) {
+                spline_start = window_points[i].x;
+                break;
+            }
         }
         
         if (samples.cbegin() == samples.cend()) {
@@ -129,8 +150,12 @@ namespace ps {
         for (size_t i = 0; i < spline_steps; i++)
         {
             spline_points[i].x = flow_points[i].x;
-            xd(0) = spline_points[i].x;
-            spline_points[i].z = pspline.eval(xd);
+            if (spline_points[i].x >= spline_start && spline_points[i].x <= spline_end)
+            {
+                xd(0) = spline_points[i].x;
+                spline_points[i].z = pspline.eval(xd);
+            }
+            
         }
         /*for (auto& sp : spline_points) {
             xd(0) = sp.x;
@@ -243,10 +268,9 @@ namespace ps {
         assert(h_div >= 1);
 
         int start = 0;
-        while (spline_points[start].z <= 0) ++start;
-
         int end = spline_steps;
-        while (spline_points[end-1].z <= 0) --end;
+        while (start < end && spline_points[start].z <= 0) ++start;
+        while (end > start && spline_points[end-1].z <= 0) --end;
 
 
         for (int i = start + h_div*2; i < end - h_div * 2; ++i) {
@@ -281,10 +305,9 @@ namespace ps {
     void Frontline::CalcRadius(int h_div) {
 
         int start = 0;
-        while (spline_points[start].z <= 0) ++start;
-
         int end = spline_steps;
-        while (spline_points[end - 1].z <= 0) --end;
+        while (start < end && spline_points[start].z <= 0) ++start;
+        while (end > start && spline_points[end - 1].z <= 0) --end;
         
         for (int i = start + h_div + P->frontline_stencil_h; i < end - h_div - P->frontline_stencil_h; ++i) {
             const auto& A = spline_points[i];
@@ -310,25 +333,24 @@ namespace ps {
             double dx = (A.x - Cntr.x);
             double dy = (A.z - Cntr.z);
 
-            analys_points[i].r = 1. / sqrt(dx*dx + dy*dy);
+            curvature[i] = analys_points[i].r = 1. / sqrt(dx*dx + dy*dy);
         }
 
 
     }
     void Frontline::CalcCurve() {
         int start = 0;
-        while (spline_points[start].z <= 0) ++start;
-        start += P->frontline_stencil_h*2;
-
         int end = spline_steps;
-        while (spline_points[end - 1].z <= 0) --end;
+        while (start < end && spline_points[start].z <= 0) ++start;
+        start += P->frontline_stencil_h * 2;
+        while (end > start && spline_points[end - 1].z <= 0) --end;
         end -= P->frontline_stencil_h*2;
 
         for (int i = start; i < end; ++i) {
             double ddy = (1 + analys_points[i].div * analys_points[i].div) / analys_points[i].diff2;
             double x1 = spline_points[i].x - analys_points[i].div * ddy;
             double z1 = spline_points[i].z + ddy;
-            analys_points[i].c = 1./ sqrt
+            curvature[i] = analys_points[i].c = 1./ sqrt
                 ((x1 - spline_points[i].x) * (x1 - spline_points[i].x) + (z1 - spline_points[i].z) * (z1 - spline_points[i].z));
         }
 

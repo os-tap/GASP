@@ -114,6 +114,8 @@ void ps::Params::Load(json j)
     scale_burn_pow = (double)j["scale_burn_pow"];
     scale_burn_condition = (double)j["scale_burn_condition"];
 
+    curve_burn_coef = (double)j["curve_burn_coef"];
+
 }
 
 

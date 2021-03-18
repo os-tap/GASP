@@ -17,15 +17,16 @@ void clear_csv_files(const ps::Params & P);
 
 struct input {
     bool sdl_quit = 0,
-            set_burn = 0,
-            lights_out = 0,
-            clear = 0,
-            pause = 0,
-            step = 0,
-            toggle_fill = 0,
-            print_step = 0,
-            print_denisty = 0,
-            clear_csv = 0;
+        set_burn = 0,
+        lights_out = 0,
+        clear = 0,
+        pause = 0,
+        step = 0,
+        toggle_fill = 0,
+        print_step = 0,
+        print_denisty = 0,
+        clear_csv = 0,
+        update_curve = 0;
 };
 
 struct state {
@@ -165,7 +166,7 @@ int main() {
                         case SDLK_o: params.who_cross = !params.who_cross;
                             break;
                         case SDLK_k: params.scale_burn = !params.scale_burn;
-                        case SDLK_i: params.frontline_kinks.clear();
+                        case SDLK_i: Input.update_curve = true;
                             break;
                         case SDLK_u:
                             key_pressed = 1;
@@ -241,7 +242,9 @@ int main() {
 
         if (State.update_line && (!State.pause || Input.step || key_pressed)) {
             front_line.Calc(main_swarm.all_will_burn);
-            params.set_kinks(front_line.kinks);
+            //params.set_kinks(front_line.kinks);
+            if(Input.update_curve)
+                params.set_curvature(front_line.curvature, front_line.first_point, front_line.last_point);
         }
 
         if (!State.pause || Input.step) {
@@ -309,7 +312,7 @@ int main() {
 
             if (State.display_line) screen.draw_frontline(front_line.spline_points);
             //if(params.scale_burn) 
-                screen.draw_hlines(front_line.kinks);
+                //screen.draw_hlines(front_line.kinks);
 
 
             if (State.test)
