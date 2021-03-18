@@ -118,7 +118,7 @@ public:
     double get_burn_radius(double x_cord) const {
 
         //return burn_radius_cross;
-        return burn_radius_cross * (1 + get_curvature(x_cord) * curve_burn_coef * scale_burn);
+        return burn_radius_cross * (1 + get_curvature(x_cord) * system_speed(x_cord) * curve_burn_coef * scale_burn);
 
 
         /*double br = burn_radius_cross;

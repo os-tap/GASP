@@ -350,7 +350,8 @@ namespace ps {
             double ddy = (1 + analys_points[i].div * analys_points[i].div) / analys_points[i].diff2;
             double x1 = spline_points[i].x - analys_points[i].div * ddy;
             double z1 = spline_points[i].z + ddy;
-            curvature[i] = analys_points[i].c = 1./ sqrt
+            //curvature[i] = 
+                analys_points[i].c = 1./ sqrt
                 ((x1 - spline_points[i].x) * (x1 - spline_points[i].x) + (z1 - spline_points[i].z) * (z1 - spline_points[i].z));
         }
 
