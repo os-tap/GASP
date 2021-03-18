@@ -100,6 +100,7 @@ void ps::Params::Load(json j)
     refract_offset = (double)j["refract_offset"];
 
     svm_count = (int)j["svm_count"];
+    print_count = (int)j["print_count"];
 
     frontline_cross_chunk = (bool)j["frontline_cross_chunk"];
     frontline_cross_multipler = (double)j["frontline_cross_multipler"];

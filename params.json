@@ -1,5 +1,5 @@
 {
-  "csv_folder": "C:\\Users\\prive\\OneDrive\\csv\\2d\\",
+  "csv_folder": "C:\\Users\\prive\\OneDrive\\csv\\curve\\",
 
   "area_beg": -1,
   "area_end": 1,
@@ -13,7 +13,7 @@
   "wave_time": 100,
 
 
-  "burn_radius": 10,
+  "burn_radius": 5,
   "burn_fix": -1,
   "burn_fix_a": 1,
   "burn_fix_b": 0.671,
@@ -22,12 +22,13 @@
 
   "base_particles": 1000,
   "particles_dist": 16,
-  "const_speed": 0.95,
-  "base_speed": 2,
+  "const_speed": 0.9,
+  "base_speed": 3,
   "burn_speed": 0.99,
 
 
   "svm_count": 10000,
+  "print_count": 20000,
 
   "emitter_begin": 0,
 
@@ -40,14 +41,14 @@
 
 
   "frontline_spline_steps": 301,
-  "frontline_spline_alpha": 100,
+  "frontline_spline_alpha": 300,
   "move_normal": false,
 
   "frontline_window_steps": 301,
-  "frontline_window_size": 4,
+  "frontline_window_size": 2,
 
-  "frontline_stencil_h": 1,
-  "frontline_radius_h": 3,
+  "frontline_stencil_h": 4,
+  "frontline_radius_h": 20,
 
   "frontline_cross_chunk": true,
   "frontline_cross_multipler": 5,
@@ -61,6 +62,6 @@
   "scale_burn_pow": 1,
   "scale_burn_condition": 100,
 
-  "curve_burn_coef": 0.0247
+  "curve_burn_coef": 0.1
 
 }

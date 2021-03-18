@@ -60,7 +60,8 @@ private:
             print_step = 0,
             print_denisty = 0,
             clear_csv = 0,
-            refill = 0;
+            refill = 0,
+            update_curve = 0;
     } input;
 
     struct State {

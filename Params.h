@@ -76,7 +76,7 @@ public:
 
     double refract_coef, refract_offset;
 
-    int svm_count;
+    int svm_count, print_count;
 
     bool frontline_cross_chunk;
     double frontline_cross_multipler, frontline_cross_area, frontline_cross_radius;
@@ -92,7 +92,8 @@ public:
 
     long get_curvature(const double x) const {
         if (x < curve_start || x > curve_end) return 0;
-        return frontline_curve[lround((x - curve_start) / curve_width * (frontline_curve.size() - 1))];
+        //double c = frontline_curve[lround((x - curve_start) / curve_width * (frontline_curve.size() - 1))];
+        return sqrt(frontline_curve[lround((x - curve_start) / curve_width * (frontline_curve.size() - 1))]);
     }
 
 

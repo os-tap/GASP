@@ -23,25 +23,38 @@ void GAS::Iteration()
     ReadSDLEvents();
 
     if (state.update_line && (!state.pause || input.step || key_pressed))
+    {
         BuildFrontline();
+    }
+        
 
     IterateSwarm();
 
 
     if (!state.pause || input.step || key_pressed)
+    {
         DrawScreen();
+    }
+        
 
     if (input.print_step || (state.printer && !state.pause))
+    {
         PrintFiles();
+    }
+        
 
     if (input.clear_csv)
+    {
         ClearFiles();
+    }
+        
 }
 
 void GAS::ReadSDLEvents()
 {
     SDL_Event e;
     input = {};
+    key_pressed = false;
     while (SDL_PollEvent(&e))
     {
         switch (e.type)
@@ -89,7 +102,8 @@ void GAS::ReadSDLEvents()
             case SDLK_r: input.refill = true;
                 break;
             case SDLK_k: params.scale_burn = !params.scale_burn;
-            case SDLK_i: params.frontline_kinks.clear();
+                break;
+            case SDLK_i: input.update_curve = true;
                 break;
             case SDLK_u:
                 key_pressed = 1;
@@ -152,7 +166,8 @@ void GAS::IterateSwarm()
 void GAS::BuildFrontline()
 {
     front_line.Calc(main_swarm.all_will_burn);
-    params.set_kinks(front_line.kinks);
+    if (input.update_curve)
+        params.set_curvature(front_line.curvature, front_line.first_point, front_line.last_point);
 }
 
 void GAS::DrawScreen()
@@ -177,7 +192,7 @@ void GAS::DrawScreen()
 
 void GAS::PrintFiles()
 {
-    main_swarm.PrintCount(print_step_counter, params.svm_count);
+    main_swarm.PrintCount(print_step_counter, params.print_count);
     front_line.Print(print_step_counter);
     std::cout << "\nprint - " << print_step_counter;
     ++print_step_counter;
@@ -219,7 +234,7 @@ void GAS::ClearFiles()
             line_out = 1;
         }
 
-        if (gas_out && line_out) return;
+        if (gas_out && line_out) break;
 
     }
 
