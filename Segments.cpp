@@ -218,17 +218,7 @@ namespace ps {
 
 
 
-    /*void Segments::DoSegment(Segment &seg) {
-        if (CheckSegmentBurn(seg.x, seg.z))
-            for (auto& particle_i : seg.ok_list) {
-                if (ParticleInBurnSegment(particle_i, seg.x, seg.z)) {
-                    BurnParticle(particle_i);
-//                    seg.will_burn.push_back(particle_i);
-                    all_will_burn_concurrent.push_back(particle_i);
-                }
-            }
 
-    }*/
 
     void Segments::DoSegment(Segment& seg) {
         //if (!(seg.burn_list.empty()))
@@ -377,6 +367,7 @@ namespace ps {
                 seg.burn_list.clear();
                 seg.ok_list.clear();
                 seg.burn_indexes.clear();
+                seg.front_points.clear();
             });
         //burn_segments.clear();
     }
@@ -435,6 +426,7 @@ namespace ps {
     //    }
     //}
 
+
     void Segments::ParticleToSegment(Particle& p, size_t index) {
         int seg_x = GetSegmentX(p.x);
         int seg_z = GetSegmentZ(p.z);
@@ -461,6 +453,83 @@ namespace ps {
 
             //segment.burn_list.push_back(p);
         }
+    }
+
+    void Segments::CalcFrontlineRadius(std::vector <Point>& points) {
+
+        front_crosses.resize(points.size());
+        std::fill(front_crosses.begin(), front_crosses.end(), 0);
+
+
+        double cross_radius = P->frontline_cross_radius;
+        int grids_calc = ceil(cross_radius / grid_min_size);
+
+        for (size_t i = 0; i < points.size(); i++)
+        {
+            auto& p = points[i];
+            int seg_x = GetSegmentX(p.x);
+            int seg_z = GetSegmentZ(p.z);
+
+            int seg_x_start = (seg_x - grids_calc) * (seg_x >= grids_calc);
+            int seg_z_start = (seg_z - grids_calc) * (seg_z >= grids_calc);
+
+            int seg_x_end = seg_x + grids_calc + 1;
+            if (seg_x_end > grid_count_x) seg_x_end = grid_count_x;
+            int seg_z_end = seg_z + grids_calc + 1;
+            if (seg_z_end > grid_count_z) seg_z_end = grid_count_z;
+
+            for (int xi = seg_x_start; xi < seg_x_end; xi++) {
+                for (int zi = seg_z_start; zi < seg_z_end; zi++) {
+                    grids(xi, zi).front_points.emplace_back(p, P->frontline_cross_radius_2, i);
+                }
+            }
+        }
+
+        std::for_each(pstl::execution::par, grid.begin(), grid.end(), [this](Segment& seg) {
+            for (auto& sp : seg.front_points) {
+                for (const auto& op : seg.ok_list) {
+                    if (sp.CrossOk(op)) {
+                        ++sp.count;
+                    }
+                }
+            }
+        });
+
+        for (const auto& seg : grid) {
+            for (auto& sp : seg.front_points) {
+                front_crosses[sp.index] += sp.count;
+            }
+        }
+
+        for (auto& c : front_crosses)
+        {
+            c = c / P->base_particles / P->frontline_cross_radius_2 * P->burn_radius_2;
+        }
+
+
+
+    }
+
+    void Segments::FrontPointToSegment(Point& p, size_t index) {
+        int seg_x = GetSegmentX(p.x);
+        int seg_z = GetSegmentZ(p.z);
+
+        int grids_calc = ceil(P->burn_radius_2_cross / grid_min_size);
+
+        int seg_x_start = (seg_x - grids_calc) * (seg_x >= grids_calc);
+        int seg_z_start = (seg_z - grids_calc) * (seg_z >= grids_calc);
+
+        int seg_x_end = seg_x + grids_calc + 1;
+        if (seg_x_end > grid_count_x) seg_x_end = grid_count_x;
+        int seg_z_end = seg_z + grids_calc + 1;
+        if (seg_z_end > grid_count_z) seg_z_end = grid_count_z;
+
+        for (int xi = seg_x_start; xi < seg_x_end; xi++) {
+            for (int zi = seg_z_start; zi < seg_z_end; zi++) {
+                grids(xi, zi).front_points.emplace_back(p, P->frontline_cross_radius_2, index);
+            }
+        }
+
     }
 
 
@@ -672,7 +741,7 @@ namespace ps {
         }
     }
 
-    void Segments::CalcFrontlineRadius(std::vector <Point>& points) {
+    void Segments::CalcFrontlineRadius2(std::vector <Point>& points) {
         double cross_radius = P->frontline_cross_radius;
         int grids_calc = ceil(cross_radius / grid_min_size);
         /*double cross_radius = P->burn_radius * P->frontline_cross_multipler;

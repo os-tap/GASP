@@ -79,7 +79,7 @@ void GAS::ReadSDLEvents()
             case SDLK_q: state.bold_points = !state.bold_points; key_pressed = 1; break;
             case SDLK_b: state.blur = !state.blur; key_pressed = 1; break;
             case SDLK_v: state.svm = !state.svm; key_pressed = 1; break;
-            case SDLK_y: state.printer = !state.printer; key_pressed = 1; break;
+            case SDLK_y: std::cout << (state.printer = !state.printer) ? "\nPrinter On" : "\nPrinter Off"; key_pressed = 1; break;
 
             case SDLK_t: state.test = !state.test; break;
 
@@ -152,6 +152,7 @@ void GAS::IterateSwarm()
     if (input.lights_out) main_swarm.LightsOut();
     if (input.clear) main_swarm.EraseParticles();
 
+
     if (!state.pause || input.step) {
         //if (State.pause) std::cout << "\nCross";
         main_swarm.CrossParticles();
@@ -167,6 +168,13 @@ void GAS::IterateSwarm()
 void GAS::BuildFrontline()
 {
     front_line.Calc(main_swarm.all_will_burn);
+
+    if (params.calc_cross)
+    {
+        main_swarm.CalcFrontlineRadius(front_line.spline_points);
+        front_line.SetCrosses(main_swarm.front_crosses);
+    }
+
     if (input.update_curve)
         params.set_curvature(front_line.curvature, front_line.first_point, front_line.last_point);
 }

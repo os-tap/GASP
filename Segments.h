@@ -64,6 +64,7 @@ namespace ps {
         void BurnParticle(Particle* p);
         void ParticleToSegment(Particle& p);
         void ParticleToSegment(Particle& p, size_t i);
+        void FrontPointToSegment(Point& p, size_t index);
 
         bool ParticleInBurnSegments(Particle* particle, int seg_x, int seg_z);
 
@@ -92,16 +93,25 @@ namespace ps {
         double grid_count_x_percent, grid_count_z_percent;
 
         struct SegPoint {
+            SegPoint(Point &p, double _r2, size_t i) : x(p.x), z(p.z), r2(_r2), index(i) {}
             SegPoint(Particle &p, size_t i) : x(p.x), z(p.z), r2(p.burn_radius_2), index(i) {}
             bool Cross(SegPoint p) { return ((x - p.x) * (x - p.x) + (z - p.z) * (z - p.z)) <= p.r2; }
+            bool CrossOk(SegPoint p) { return ((x - p.x) * (x - p.x) + (z - p.z) * (z - p.z)) <= r2; }
             float x, z, r2;
             size_t index;
+        };
+        struct FrontSegPoint : SegPoint {
+            FrontSegPoint(Point& p, double _r2, size_t i) : SegPoint(p, _r2, i) {}
+            unsigned count = 0;
         };
 
         struct Segment {
             int x, z;
             tbb::concurrent_vector <SegPoint> ok_list, burn_list;
             std::vector<int> burn_indexes;
+
+            std::vector<FrontSegPoint> front_points;
+            //std::vector<std::pair<int, int>> front_points;
         };
 
         std::vector<Segment> grid; 
@@ -138,6 +148,8 @@ namespace ps {
         void Max_Radius();
 
         void CalcFrontlineRadius(std::vector <Point>& points);
+        std::vector<double> front_crosses;
+        void CalcFrontlineRadius2(std::vector <Point>& points);
         void RefractParticles();
         /**/
 

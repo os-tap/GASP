@@ -29,6 +29,7 @@ namespace ps {
         void CalcError();
         void CalcRadius(int h_div);
         void CalcCurve();
+        void SetCrosses(const std::vector <double>& crosses);
 
         void Calc2(const std::vector <Particle*>& particle_list);
         void Print(unsigned num);

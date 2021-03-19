@@ -151,8 +151,12 @@ namespace ps {
 
         int red = 0, green = 0, blue = 0;
 
-        for (auto& particle : particle_list) {
-            if (particle._x() > SCREEN_WIDTH) continue;
+        int step = 1;// = particle_list.size() / P->display_count;
+        for (size_t i = 0; i < particle_list.size(); i += step) {
+
+            auto &particle = particle_list[i];
+
+            //if (particle._x() > SCREEN_WIDTH) continue;
 
 
 

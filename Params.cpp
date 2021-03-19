@@ -88,6 +88,8 @@ void ps::Params::Load(json j)
     frontline_spline_steps = (int)j["frontline_spline_steps"];
     frontline_spline_alpha = (double)j["frontline_spline_alpha"];
     move_normal = (bool)j["move_normal"];
+    move_speed = (bool)j["move_speed"];
+    curve_by_radius = (bool)j["curve_by_radius"];
 
 
     frontline_window_steps = (int)j["frontline_window_steps"];
@@ -101,11 +103,14 @@ void ps::Params::Load(json j)
 
     svm_count = (int)j["svm_count"];
     print_count = (int)j["print_count"];
+    display_count = (int)j["display_count"];
 
+    calc_cross = (bool)j["calc_cross"];
     frontline_cross_chunk = (bool)j["frontline_cross_chunk"];
     frontline_cross_multipler = (double)j["frontline_cross_multipler"];
     frontline_cross_area = (double)j["frontline_cross_area"];
     frontline_cross_radius = (stream_width * frontline_cross_area);
+    frontline_cross_radius_2 = frontline_cross_radius * frontline_cross_radius;
 
     
     who_cross = (bool)j["who_cross"];

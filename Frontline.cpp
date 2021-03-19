@@ -76,6 +76,11 @@ namespace ps {
 
         CalcRadius(P->frontline_radius_h);
         CalcCurve();
+
+        for (size_t i = 0; i < spline_steps; i++)
+        {
+            curvature[i] = P->curve_by_radius ? analys_points[i].r : analys_points[i].c;
+        }
     }
 
     void Frontline::WindowMiddle(const std::vector <Particle*>& particle_list) {
@@ -102,7 +107,15 @@ namespace ps {
         for (int i = 0; i < window_steps; ++i) {
             if (window_points[i].count) {
                 window_points[i].z += window_points[i].sum / window_points[i].count;
-                //window_points[i].z -= P->system_speed(window_points[i].x) / 2;
+            }
+        }
+
+        if (P->move_speed)
+        {
+            for (int i = 0; i < window_steps; ++i) {
+                if (window_points[i].count) {
+                    window_points[i].z -= P->system_speed(window_points[i].x) / 2;
+                }
             }
         }
 
@@ -332,8 +345,8 @@ namespace ps {
 
             double dx = (A.x - Cntr.x);
             double dy = (A.z - Cntr.z);
-
-            curvature[i] = analys_points[i].r = 1. / sqrt(dx*dx + dy*dy);
+            
+            analys_points[i].r = 1. / sqrt(dx*dx + dy*dy);
         }
 
 
@@ -350,8 +363,7 @@ namespace ps {
             double ddy = (1 + analys_points[i].div * analys_points[i].div) / analys_points[i].diff2;
             double x1 = spline_points[i].x - analys_points[i].div * ddy;
             double z1 = spline_points[i].z + ddy;
-            //curvature[i] = 
-                analys_points[i].c = 1./ sqrt
+            analys_points[i].c = 1./ sqrt
                 ((x1 - spline_points[i].x) * (x1 - spline_points[i].x) + (z1 - spline_points[i].z) * (z1 - spline_points[i].z));
         }
 
@@ -372,6 +384,19 @@ namespace ps {
             }
         }
 
+    }
+
+    void Frontline::SetCrosses(const std::vector<double>& crosses)
+    {
+        if (crosses.size() != analys_points.size())
+        {
+            std::cout << "\n\ncrosses.size() != analys_points.size()";
+            exit(22);
+        }
+        for (size_t i = 0; i < spline_steps; i++)
+        {
+            analys_points[i].cross = crosses[i];
+        }
     }
 
 

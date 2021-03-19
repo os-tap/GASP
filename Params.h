@@ -69,17 +69,18 @@ public:
 
     int frontline_spline_steps;
     double frontline_spline_alpha;
-    bool move_normal;
+    bool move_normal, move_speed;
+    bool curve_by_radius;
 
     int frontline_stencil_h, frontline_radius_h;
 
 
     double refract_coef, refract_offset;
 
-    int svm_count, print_count;
+    int svm_count, print_count, display_count;
 
-    bool frontline_cross_chunk;
-    double frontline_cross_multipler, frontline_cross_area, frontline_cross_radius;
+    bool frontline_cross_chunk, calc_cross;
+    double frontline_cross_multipler, frontline_cross_area, frontline_cross_radius, frontline_cross_radius_2;
 
 
     bool who_cross, scale_burn;
