@@ -34,6 +34,8 @@ void ps::Params::Load(json j)
     area_beg = j["area_beg"];
     area_end = j["area_end"];
     area_size = area_end - area_beg;
+    area_divide_z = j["area_divide_z"];
+
     area_height = area_size / screen_width * screen_height;
 
     screen_proportion = screen_width / area_size;
@@ -74,11 +76,15 @@ void ps::Params::Load(json j)
     burn_speed = (double)j["burn_speed"] / burn_radius;
 
     const_speed = (double)j["const_speed"] * burn_radius;
+    const_speed_x = (double)j["const_speed_x"] * burn_radius;
+    const_speed_z = (double)j["const_speed_z"] * burn_radius;
 
     iterations = (int)j["iterations"];
 
     iterate_speed = base_speed / iterations;
     iterate_const = const_speed / iterations;
+    iterate_const_x = const_speed_x / iterations;
+    iterate_const_z = const_speed_z / iterations;
     iterate_particles = (int)floor(base_particles * particle_speed(area_center) / burn_radius_2_cross / M_PI * L);
 
     burn_time = (int)j["burn_time"] * iterations;

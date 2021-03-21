@@ -45,12 +45,15 @@ public:
     double stream_beg, stream_end, stream_width, stream_radius;
     double L, scale, DSR;
 
+    double area_divide_z;
+
     double burn_fix_a, burn_fix_b;
 
     double burn_radius, burn_radius_2;
     double burn_radius_cross, burn_radius_2_cross;
 
     double base_speed, burn_speed, const_speed;
+    double const_speed_x, const_speed_z;
 
     double emitter_begin;
     double base_particles, particles_dist;
@@ -59,6 +62,7 @@ public:
     double iterate_burn_radius;
     double iterate_speed;
     double iterate_const;
+    double iterate_const_x, iterate_const_z;
     int iterate_particles;
 
     int burn_time, sage_time, wave_time;
@@ -208,6 +212,13 @@ public:
     }
     double particle_speed(const double x) const {
         return profile_speed(x) + iterate_const;
+    }
+
+    double particle_speed_x(const double x, const double z) const {
+        return iterate_const_x * x;
+    }
+    double particle_speed_z(const double x, const double z) const {
+        return iterate_const_z*(area_divide_z - z);
     }
 
     double refract_func(const double x) const {

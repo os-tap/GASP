@@ -171,7 +171,7 @@ namespace ps {
         std::uniform_real_distribution<double> dist;
         //std::uniform_real_distribution<double> dist_x(P->stream_beg, P->stream_end), dist_z(0, P->particle_speed(P->area_center));
 
-        double p_x_cord, p_z_cord, p_speed, p_burn_radius, fabs_x, max_z = P->particle_speed(P->area_center);
+        double p_x_cord, p_z_cord, p_speed, p_burn_radius, fabs_x, max_z = P->particle_speed_z(P->area_center, 0);
 
         for (int pi = P->iterate_particles; pi; --pi)
         {
@@ -179,7 +179,8 @@ namespace ps {
             p_z_cord = dist(gen) * max_z;
             p_speed = P->particle_speed(p_x_cord);
 
-            if (p_z_cord < p_speed) {
+            //if (p_z_cord < p_speed) 
+            {
                 CreateParticle(p_x_cord, p_z_cord, p_speed);
             }
         }
@@ -565,16 +566,11 @@ namespace ps {
     void Segments::Density_Grid()
     {
         std::string output = "count";
-        int size = 0;
-        for (int zi = 0; zi < grid_count_z; zi++)
+        for (const auto& seg : grid)
         {
-            for (int xi = 0; xi < grid_count_x; xi++)
-            {
-                size = (int)grids(xi, zi).ok_list.size();
-                if (size) {
-                    //					output += fmt::format("\n{}", size);
-                }
-
+            int size = seg.ok_list.size();
+            if (size) {
+                output += fmt::format("\n{}", size);
             }
         }
 
@@ -584,8 +580,7 @@ namespace ps {
     }
     void Segments::Density_Radius()
     {
-        std::string output = "radius_count, particles_count";
-        int crossed = 0;
+
         std::unordered_map <int, int> denisty_radius;
         for (int zi = 1; zi < grid_count_z - 1; zi++)
         {
@@ -593,7 +588,7 @@ namespace ps {
             {
                 for (auto& particle_1 : grids(xi, zi).ok_list)
                 {
-                    crossed = 0;
+                    int crossed = 0;
                     for (int i = xi - 1; i < xi + 2; i++)
                     {
                         for (int j = zi - 1; j < zi + 2; j++)
@@ -608,14 +603,15 @@ namespace ps {
                         }
                     }
                     denisty_radius[crossed] += 1;
-                    //output += fmt::format("\n{}", crossed);
                 }
 
             }
         }
-        //        for (auto const& [key, val] : denisty_radius) {
-        //			output += fmt::format("\n{},{}", val, key);
-        //        }
+
+        std::string output = "radius_count, particles_count";
+        for (auto const& [key, val] : denisty_radius) {
+        	output += fmt::format("\n{},{}", val, key);
+        }
 
         std::ofstream csv(P->csv_folder + "d_radius.csv");
         csv << output;
@@ -662,8 +658,8 @@ namespace ps {
 
 
     void Segments::MoveParticle(Particle& p) {
-        p.Move();
-        if (p.z >= P->area_height || p.x > P->area_end) p.state = Particle::State::DIED;
+        p.Move(P->particle_speed_x(p.x,p.z), P->particle_speed_z(p.x, p.z));
+        if (p.z < 0 || p.z >= P->area_height || p.x > P->area_end || p.x < P->area_beg) p.state = Particle::State::DIED;
     }
 
     void Segments::StepParticle(Particle& p) {

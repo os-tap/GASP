@@ -3,7 +3,7 @@
 GAS::GAS()
 {
     params.set_curvature(front_line.curvature, front_line.first_point, front_line.last_point);
-    CountFiles();
+    //CountFiles();
     startTime = SDL_GetTicks();
     params.Print();
     MainLoop();
@@ -11,7 +11,7 @@ GAS::GAS()
 
 void GAS::MainLoop()
 {
-    for (; !input.sdl_quit;)
+    for (;!input.sdl_quit;)
     {
         Iteration();
         ++ii;
@@ -23,13 +23,13 @@ void GAS::Iteration()
 {
     ReadSDLEvents();
 
-    if (state.update_line && (!state.pause || input.step || key_pressed))
+    IterateSwarm();
+
+
+    if (state.display_line && state.update_line && (!state.pause || input.step || key_pressed))
     {
         BuildFrontline();
     }
-        
-
-    IterateSwarm();
 
 
     if (!state.pause || input.step || key_pressed)
@@ -41,6 +41,13 @@ void GAS::Iteration()
     if (input.print_step || (state.printer && !state.pause))
     {
         PrintFiles();
+    }
+
+    if (input.print_denisty)
+    {
+        main_swarm.Density_Grid();
+        main_swarm.Density_Radius();
+        std::cout << "\nPrint Denisty";
     }
         
 
@@ -79,12 +86,17 @@ void GAS::ReadSDLEvents()
             case SDLK_q: state.bold_points = !state.bold_points; key_pressed = 1; break;
             case SDLK_b: state.blur = !state.blur; key_pressed = 1; break;
             case SDLK_v: state.svm = !state.svm; key_pressed = 1; break;
-            case SDLK_y: std::cout << (state.printer = !state.printer) ? "\nPrinter On" : "\nPrinter Off"; key_pressed = 1; break;
+            case SDLK_y: std::cout << ((state.printer = !state.printer) ? "\nPrinter On" : "\nPrinter Off"); key_pressed = 1; break;
 
             case SDLK_t: state.test = !state.test; break;
 
-            case SDLK_m: state.move = !state.move;
-                std::cout << (state.move ? "\n- Move" : "\n- Freeze");
+            case SDLK_m:
+                std::cout << ((state.move = !state.move) ? "\n- Move" : "\n- Freeze");
+                break;
+            case SDLK_h:
+                std::cout << ((state.burn = !state.burn) ? "\n- Burn On" : "\n- Burn Off");
+                break;
+            case SDLK_g: std::cout << ((state.fill = !state.fill) ? "\n- Generate" : "\n- No generate");
                 break;
             case SDLK_w: state.display_swarm = !state.display_swarm; key_pressed = 1; break;
             case SDLK_e: state.display_line = !state.display_line; key_pressed = 1; break;
@@ -139,7 +151,7 @@ void GAS::IterateSwarm()
         if (state.move) {
             //if (State.pause) std::cout << "\nMove";
             main_swarm.MoveParticles();
-            main_swarm.FillParticles();
+            if (state.fill) main_swarm.FillParticles();
         }
     }
 
@@ -155,8 +167,11 @@ void GAS::IterateSwarm()
 
     if (!state.pause || input.step) {
         //if (State.pause) std::cout << "\nCross";
-        main_swarm.CrossParticles();
-        main_swarm.StepParticles();
+        if (state.burn)
+        {
+            main_swarm.CrossParticles();
+            main_swarm.StepParticles();
+        }
         //main_swarm.RefractParticles();
         //main_swarm.FinalLoop();
 

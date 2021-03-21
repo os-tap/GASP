@@ -38,7 +38,7 @@ namespace ps {
         void setBurn();
 
         void Step();
-        void Move();
+        void Move(const double dx, const double dz);
         coord_t Distance(const Particle &) const;
         bool Cross(const Particle &) const;
         bool CrossBurn(const Particle &) const;
