@@ -42,7 +42,14 @@ void GAS::Iteration()
     {
         PrintFiles();
     }
-        
+
+
+    if (input.print_denisty)
+    {
+        main_swarm.Density_Grid();
+        main_swarm.Density_Radius();
+        std::cout << "\nPrint Denisty";
+    }
 
     if (input.clear_csv)
     {
