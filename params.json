@@ -1,5 +1,5 @@
 {
-  "csv_folder": "C:\\Users\\prive\\OneDrive\\csv\\curve\\",
+  "csv_folder": "C:\\Users\\prive\\OneDrive\\csv\\2203\\",
 
   "area_beg": -1,
   "area_end": 1,
@@ -13,7 +13,7 @@
   "wave_time": 100,
 
 
-  "burn_radius": 5,
+  "burn_radius": 10,
   "burn_fix": -1,
   "burn_fix_a": 1,
   "burn_fix_b": 0.671,
@@ -42,16 +42,16 @@
 
 
   "frontline_spline_steps": 500,
-  "frontline_spline_alpha": 100,
+  "frontline_spline_alpha": 500,
   "move_normal": false,
   "move_speed": true,
 
   "frontline_window_steps": 500,
   "frontline_window_size": 4,
 
-  "frontline_stencil_h": 2,
+  "frontline_stencil_h": 5,
   "frontline_radius_h": 20,
-  "curve_by_radius": false,
+  "curve_by_radius": true,
 
   "calc_cross":  true,
   "frontline_cross_chunk": true,
@@ -66,6 +66,6 @@
   "scale_burn_pow": 1,
   "scale_burn_condition": 100,
 
-  "curve_burn_coef": 5.5
+  "curve_burn_coef": 2
 
 }

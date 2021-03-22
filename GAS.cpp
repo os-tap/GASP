@@ -3,7 +3,7 @@
 GAS::GAS()
 {
     params.set_curvature(front_line.curvature, front_line.first_point, front_line.last_point);
-    CountFiles();
+    //CountFiles();
     startTime = SDL_GetTicks();
     params.Print();
     MainLoop();
