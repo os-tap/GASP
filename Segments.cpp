@@ -470,13 +470,18 @@ namespace ps {
             int seg_x = GetSegmentX(p.x);
             int seg_z = GetSegmentZ(p.z);
 
-            int seg_x_start = (seg_x - grids_calc) * (seg_x >= grids_calc);
-            int seg_z_start = (seg_z - grids_calc) * (seg_z >= grids_calc);
+            //int seg_x_start = (seg_x - grids_calc) * (seg_x >= grids_calc);
+            //int seg_z_start = (seg_z - grids_calc) * (seg_z >= grids_calc);
+
+            int seg_x_start = seg_x - grids_calc;
+            if (seg_x_start < 0) continue;
+            int seg_z_start = seg_z - grids_calc;
+            if (seg_z_start < 0) continue;
 
             int seg_x_end = seg_x + grids_calc + 1;
-            if (seg_x_end > grid_count_x) seg_x_end = grid_count_x;
+            if (seg_x_end > grid_count_x) continue;// seg_x_end = grid_count_x;
             int seg_z_end = seg_z + grids_calc + 1;
-            if (seg_z_end > grid_count_z) seg_z_end = grid_count_z;
+            if (seg_z_end > grid_count_z) continue;// seg_z_end = grid_count_z;
 
             for (int xi = seg_x_start; xi < seg_x_end; xi++) {
                 for (int zi = seg_z_start; zi < seg_z_end; zi++) {
@@ -504,6 +509,9 @@ namespace ps {
         for (auto& c : front_crosses)
         {
             c = c / P->base_particles / P->frontline_cross_radius_2 * P->burn_radius_2;
+            c *= c < 0.5F;
+            if (c) c = 0.5F - c;
+
         }
 
 

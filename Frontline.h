@@ -31,6 +31,8 @@ namespace ps {
         void CalcCurve();
         void SetCrosses(const std::vector <double>& crosses);
 
+        void BuildCurvatureSpline(const std::vector <double>& crosses);
+
         void Calc2(const std::vector <Particle*>& particle_list);
         void Print(unsigned num);
 

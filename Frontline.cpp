@@ -399,6 +399,69 @@ namespace ps {
         }
     }
 
+    void Frontline::BuildCurvatureSpline(const std::vector<double>& crosses)
+    {
+        if (crosses.size() != analys_points.size())
+        {
+            std::cerr << "\n\ncrosses.size() != analys_points.size()";
+            exit(22);
+        }
+
+        SPLINTER::DataTable samples;
+
+        double spline_start = area_start;
+        double spline_end = area_end;
+
+        for(int i = 0; i < spline_steps)
+
+        for (const auto& c : crosses) {
+            if (wp.z) samples.addSample(wp.x, wp.z);
+        }
+
+        for (size_t i = window_points.size() - 2; i; i--) {
+            if (window_points[i].z) {
+                spline_end = window_points[i].x;
+                break;
+            }
+        }
+        for (size_t i = 1; i < window_points.size(); i++) {
+            if (window_points[i].z) {
+                spline_start = window_points[i].x;
+                break;
+            }
+        }
+
+        if (samples.cbegin() == samples.cend()) {
+            for (auto& sp : spline_points) {
+                sp.z = 0;
+            }
+            return;
+        };
+
+        SPLINTER::BSpline pspline = SPLINTER::BSpline::Builder(samples)
+            .degree(3)
+            .smoothing(SPLINTER::BSpline::Smoothing::PSPLINE)
+            .alpha(P->frontline_spline_alpha)
+            .build();
+
+
+        SPLINTER::DenseVector xd(1);
+        for (size_t i = 0; i < spline_steps; i++)
+        {
+            spline_points[i].x = flow_points[i].x;
+            if (spline_points[i].x >= spline_start && spline_points[i].x <= spline_end)
+            {
+                xd(0) = spline_points[i].x;
+                spline_points[i].z = pspline.eval(xd);
+            }
+
+        }
+        /*for (auto& sp : spline_points) {
+            xd(0) = sp.x;
+            sp.z = pspline.eval(xd);
+        }*/
+    }
+
 
 }
 

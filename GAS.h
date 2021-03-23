@@ -66,6 +66,7 @@ private:
 
     struct State {
         bool move = true,
+            burn = true,
             pause = false,
             display_swarm = true,
             display_line = true,

@@ -90,6 +90,7 @@ void GAS::ReadSDLEvents()
 
             case SDLK_t: state.test = !state.test; break;
 
+            case SDLK_h: std::cout << ((state.burn = !state.burn) ? "\n- Burn On" : "\n- Burn Off"); break;
             case SDLK_m: state.move = !state.move;
                 std::cout << (state.move ? "\n- Move" : "\n- Freeze");
                 break;
@@ -162,9 +163,11 @@ void GAS::IterateSwarm()
 
     if (!state.pause || input.step) {
         //if (State.pause) std::cout << "\nCross";
-        main_swarm.CrossParticles();
-        main_swarm.StepParticles();
-        //main_swarm.RefractParticles();
+        if (state.burn)
+        {
+            main_swarm.CrossParticles();
+            main_swarm.StepParticles();
+        }        //main_swarm.RefractParticles();
         //main_swarm.FinalLoop();
 
     }
