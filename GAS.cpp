@@ -205,6 +205,7 @@ void GAS::DrawScreen()
     screen.UpdateTexture();
 
     screen.draw_grid(main_swarm.grid_count_x, main_swarm.grid_count_z);
+    screen.draw_hline(2.0, 255, 0, 255);
 
 
     if (state.display_line) screen.draw_frontline(front_line.spline_points);

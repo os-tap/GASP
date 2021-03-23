@@ -37,7 +37,7 @@
 
   "emitter_begin": 0,
 
-  "iterations": 10,
+  "iterations": 1,
 
   "burn_time": 3,
   "sage_time": 50,

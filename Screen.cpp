@@ -425,7 +425,7 @@ namespace ps {
 
     void Screen::draw_hline(double y, int r, int g, int b)
     {
-//        hlineRGBA(m_renderer, 0, SCREEN_WIDTH, y_to_pixel(y), r, g, b, 255);
+        hlineRGBA(m_renderer, 0, SCREEN_WIDTH, y_to_pixel(y), r, g, b, 255);
     }
 
     void Screen::draw_hlines(std::vector<double>& v)
