@@ -171,17 +171,21 @@ namespace ps {
         std::uniform_real_distribution<double> dist;
         //std::uniform_real_distribution<double> dist_x(P->stream_beg, P->stream_end), dist_z(0, P->particle_speed(P->area_center));
 
-        double p_x_cord, p_z_cord, p_speed, p_burn_radius, fabs_x, max_z = P->particle_speed_z(P->area_center, 0);
+        double p_x_cord, p_z_cord, p_speed, p_burn_radius, fabs_x, max_z = 3;// P->particle_speed_z(P->area_center, 0);
+        double r = P->iterate_const_x * 4;
+        //std::cout << r;
+        double r2 = r * r;
 
         for (int pi = P->iterate_particles; pi; --pi)
         {
-            p_x_cord = dist(gen) * P->stream_width + P->stream_beg;
-            p_z_cord = dist(gen) * max_z;
-            p_speed = P->particle_speed(p_x_cord);
+            p_x_cord = r * (dist(gen) * 2 - 1);
+            p_z_cord = r * (dist(gen) * 2 - 1);
+            p_speed = 0;
+            double pr2 = p_x_cord * p_x_cord + p_z_cord * p_z_cord;
 
-            //if (p_z_cord < p_speed) 
+            if (pr2>0 && pr2 <= r2)
             {
-                CreateParticle(p_x_cord, p_z_cord, p_speed);
+                CreateParticle(p_x_cord, p_z_cord + 1.5, p_speed);
             }
         }
 

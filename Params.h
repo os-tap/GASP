@@ -214,11 +214,13 @@ public:
         return profile_speed(x) + iterate_const;
     }
 
-    double particle_speed_x(const double x, const double z) const {
-        return iterate_const_x * x;
+    double particle_speed_x(const double x, double z) const {
+        z -= 1.5;
+        return iterate_const_x * x / (x*x+z*z);
     }
-    double particle_speed_z(const double x, const double z) const {
-        return iterate_const_z*(area_divide_z - z);
+    double particle_speed_z(const double x, double z) const {
+        z -= 1.5;
+        return iterate_const_z * (z) / (x * x + z * z);
     }
 
     double refract_func(const double x) const {
