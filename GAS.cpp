@@ -21,11 +21,14 @@ void GAS::MainLoop()
 void GAS::Iteration()
 {
     ReadSDLEvents();
-
-    if (state.update_line && (!state.pause || input.step || key_pressed))
-        BuildFrontline();
+        
 
     IterateSwarm();
+
+    if (state.update_line && (!state.pause || input.step || key_pressed))
+    {
+        BuildFrontline();
+    }
 
 
     if (!state.pause || input.step || key_pressed)
@@ -121,6 +124,25 @@ void GAS::ReadSDLEvents()
 
 void GAS::IterateSwarm()
 {
+
+    if (!state.pause || input.step) {
+        if (state.move) {
+            //if (State.pause) std::cout << "\nMove";
+            main_swarm.MoveParticles();
+            main_swarm.FillParticles();
+
+
+            //REGROUP
+
+            if (state.svm)
+            {
+                classifier.Train(main_swarm.all_list);
+                classifier.FreeModel();
+            }
+
+        }
+    }
+
     if (!state.pause || input.step) {
 
         main_swarm.ClearParticles();
@@ -139,26 +161,6 @@ void GAS::IterateSwarm()
         //main_swarm.RefractParticles();
         //main_swarm.FinalLoop();
 
-    }
-    if (!state.pause || input.step) {
-        if (state.move) {
-            //if (State.pause) std::cout << "\nMove";
-            main_swarm.MoveParticles();
-            main_swarm.FillParticles();
-
-
-
-            //REGROUP
-
-            if (state.svm)
-            {
-                classifier.Train(main_swarm.all_list);
-                classifier.FreeModel();
-            }
-
-
-
-        }
     }
 
 }
