@@ -400,7 +400,7 @@ namespace ps {
     }
 
     void Frontline::BuildCurvatureSpline(const std::vector<double>& crosses)
-    {
+    {/*
         if (crosses.size() != analys_points.size())
         {
             std::cerr << "\n\ncrosses.size() != analys_points.size()";
@@ -455,7 +455,7 @@ namespace ps {
                 spline_points[i].z = pspline.eval(xd);
             }
 
-        }
+        }*/
         /*for (auto& sp : spline_points) {
             xd(0) = sp.x;
             sp.z = pspline.eval(xd);
