@@ -22,7 +22,7 @@
 
   "base_particles": 1000,
   "particles_dist": 16,
-  "const_speed": 0.95,
+  "const_speed": 1,
   "base_speed": 2,
   "burn_speed": 0.99,
 

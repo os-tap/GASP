@@ -509,8 +509,8 @@ namespace ps {
         for (auto& c : front_crosses)
         {
             c = c / P->base_particles / P->frontline_cross_radius_2 * P->burn_radius_2;
-            c *= c < 0.5F;
-            if (c) c = 0.5F - c;
+            //c *= c < 0.5F;
+            //if (c) c = 0.5F - c;
 
         }
 

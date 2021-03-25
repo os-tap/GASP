@@ -3,7 +3,7 @@
 GAS::GAS()
 {
     params.set_curvature(front_line.curvature, front_line.first_point, front_line.last_point);
-    //CountFiles();
+    CountFiles();
     startTime = SDL_GetTicks();
     params.Print();
     MainLoop();
@@ -23,13 +23,14 @@ void GAS::Iteration()
 {
     ReadSDLEvents();
 
+        
+    IterateSwarm();
+
+
     if (state.update_line && (!state.pause || input.step || key_pressed))
     {
         BuildFrontline();
     }
-        
-
-    IterateSwarm();
 
 
     if (!state.pause || input.step || key_pressed)
@@ -182,7 +183,8 @@ void GAS::BuildFrontline()
     if (params.calc_cross)
     {
         main_swarm.CalcFrontlineRadius(front_line.spline_points);
-        front_line.SetCrosses(main_swarm.front_crosses);
+        //front_line.SetCrosses(main_swarm.front_crosses);
+        front_line.BuildCurvatureSpline(main_swarm.front_crosses);
     }
 
     if (input.update_curve)

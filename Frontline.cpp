@@ -412,31 +412,26 @@ namespace ps {
         double spline_start = area_start;
         double spline_end = area_end;
 
-        for(int i = 0; i < spline_steps)
-
-        for (const auto& c : crosses) {
-            if (wp.z) samples.addSample(wp.x, wp.z);
+        for (int i = 0; i < spline_steps; ++i) {
+            if (crosses[i]) samples.addSample(spline_points[i].x, crosses[i]);
         }
 
-        for (size_t i = window_points.size() - 2; i; i--) {
-            if (window_points[i].z) {
-                spline_end = window_points[i].x;
-                break;
-            }
-        }
-        for (size_t i = 1; i < window_points.size(); i++) {
-            if (window_points[i].z) {
-                spline_start = window_points[i].x;
+        if (samples.cbegin() == samples.cend()) return;
+
+        for (size_t i = spline_steps - 1; i; i--) {
+            if (crosses[i]) {
+                spline_end = spline_points[i].x;
                 break;
             }
         }
 
-        if (samples.cbegin() == samples.cend()) {
-            for (auto& sp : spline_points) {
-                sp.z = 0;
+        for (size_t i = 0; i < spline_steps; i++) {
+            if (crosses[i]) {
+                spline_start = spline_points[i].x;
+                break;
             }
-            return;
-        };
+        }
+
 
         SPLINTER::BSpline pspline = SPLINTER::BSpline::Builder(samples)
             .degree(3)
@@ -448,18 +443,14 @@ namespace ps {
         SPLINTER::DenseVector xd(1);
         for (size_t i = 0; i < spline_steps; i++)
         {
-            spline_points[i].x = flow_points[i].x;
+
             if (spline_points[i].x >= spline_start && spline_points[i].x <= spline_end)
             {
                 xd(0) = spline_points[i].x;
-                spline_points[i].z = pspline.eval(xd);
+                analys_points[i].cross = pspline.eval(xd);
             }
 
         }
-        /*for (auto& sp : spline_points) {
-            xd(0) = sp.x;
-            sp.z = pspline.eval(xd);
-        }*/
     }
 
 

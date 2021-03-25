@@ -75,7 +75,8 @@ namespace ps {
 
         //double *x{ 0 }, *Vx{ 0 }, * Vx2{ 0 };
 
-        /*int steps = 0;
+        /*
+        int steps = 0;
         double window = 0;
         unsigned h;
         double radius;
@@ -87,7 +88,8 @@ namespace ps {
         double w_percent;
 
         double avg = 0, _avg = 0;
-        double deviation = 0, error = 0;*/
+        double deviation = 0, error = 0;
+        */
 
     };
 
