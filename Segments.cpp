@@ -462,6 +462,9 @@ namespace ps {
 
 
         double cross_radius = P->frontline_cross_radius;
+        double cross_radius_2 = P->frontline_cross_radius_2;
+        //double cross_radius = P->burn_radius_cross;
+        //double cross_radius_2 = P->burn_radius_2_cross;
         int grids_calc = ceil(cross_radius / grid_min_size);
 
         for (size_t i = 0; i < points.size(); i++)
@@ -485,7 +488,7 @@ namespace ps {
 
             for (int xi = seg_x_start; xi < seg_x_end; xi++) {
                 for (int zi = seg_z_start; zi < seg_z_end; zi++) {
-                    grids(xi, zi).front_points.emplace_back(p, P->frontline_cross_radius_2, i);
+                    grids(xi, zi).front_points.emplace_back(p, cross_radius_2, i);
                 }
             }
         }
@@ -508,7 +511,7 @@ namespace ps {
 
         for (auto& c : front_crosses)
         {
-            c = c / P->base_particles / P->frontline_cross_radius_2 * P->burn_radius_2;
+            c = c / P->base_particles / P->frontline_cross_radius_2 * P->burn_radius_2_cross;
             //c *= c < 0.5F;
             //if (c) c = 0.5F - c;
 

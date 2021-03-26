@@ -27,7 +27,7 @@ void GAS::Iteration()
     IterateSwarm();
 
 
-    if (state.update_line && (!state.pause || input.step || key_pressed))
+    if (state.display_line && state.update_line && (!state.pause || input.step || key_pressed))
     {
         BuildFrontline();
     }
@@ -87,7 +87,7 @@ void GAS::ReadSDLEvents()
             case SDLK_q: state.bold_points = !state.bold_points; key_pressed = 1; break;
             case SDLK_b: state.blur = !state.blur; key_pressed = 1; break;
             case SDLK_v: state.svm = !state.svm; key_pressed = 1; break;
-            case SDLK_y: std::cout << (state.printer = !state.printer) ? "\nPrinter On" : "\nPrinter Off"; key_pressed = 1; break;
+            case SDLK_y: std::cout << ((state.printer = !state.printer) ? "\nPrinter On" : "\nPrinter Off"); key_pressed = 1; break;
 
             case SDLK_t: state.test = !state.test; break;
 
@@ -157,6 +157,8 @@ void GAS::IterateSwarm()
         main_swarm.UpdateSegments();
     }
 
+
+
     if (input.set_burn) main_swarm.BurnSegmentByPoint(burn_x, burn_y);
     if (input.lights_out) main_swarm.LightsOut();
     if (input.clear) main_swarm.EraseParticles();
@@ -168,6 +170,8 @@ void GAS::IterateSwarm()
         {
             main_swarm.CrossParticles();
             main_swarm.StepParticles();
+
+            main_swarm.UpdateSegments();
         }        //main_swarm.RefractParticles();
         //main_swarm.FinalLoop();
 

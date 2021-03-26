@@ -412,11 +412,6 @@ namespace ps {
         double spline_start = area_start;
         double spline_end = area_end;
 
-        for (int i = 0; i < spline_steps; ++i) {
-            if (crosses[i]) samples.addSample(spline_points[i].x, crosses[i]);
-        }
-
-        if (samples.cbegin() == samples.cend()) return;
 
         for (size_t i = spline_steps - 1; i; i--) {
             if (crosses[i]) {
@@ -431,6 +426,13 @@ namespace ps {
                 break;
             }
         }
+
+
+        for (int i = 0; i < spline_steps; ++i) {
+            if (crosses[i]) samples.addSample(spline_points[i].x, crosses[i]);
+        }
+
+        if (samples.cbegin() == samples.cend()) return;
 
 
         SPLINTER::BSpline pspline = SPLINTER::BSpline::Builder(samples)
@@ -448,6 +450,7 @@ namespace ps {
             {
                 xd(0) = spline_points[i].x;
                 analys_points[i].cross = pspline.eval(xd);
+                //analys_points[i].cross *= analys_points[i].cross > 0;
             }
 
         }

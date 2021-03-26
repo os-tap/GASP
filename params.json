@@ -20,9 +20,9 @@
 
 
 
-  "base_particles": 1000,
+  "base_particles": 500,
   "particles_dist": 16,
-  "const_speed": 1,
+  "const_speed": 0.95,
   "base_speed": 2,
   "burn_speed": 0.99,
 
@@ -56,7 +56,7 @@
   "calc_cross":  true,
   "frontline_cross_chunk": true,
   "frontline_cross_multipler": 5,
-  "frontline_cross_area": 0.1,
+  "frontline_cross_area": 0.05,
 
 
   "who_cross": false,
