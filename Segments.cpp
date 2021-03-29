@@ -456,9 +456,7 @@ namespace ps {
     }
 
     void Segments::CalcFrontlineRadius(std::vector <Point>& points) {
-
-        front_crosses.resize(points.size());
-        std::fill(front_crosses.begin(), front_crosses.end(), 0);
+        frontline_points = points;
 
 
         double cross_radius = P->frontline_cross_radius;
@@ -467,33 +465,19 @@ namespace ps {
         //double cross_radius_2 = P->burn_radius_2_cross;
         int grids_calc = ceil(cross_radius / grid_min_size);
 
+        //tbb::parallel_for(size_t(0), frontline_points.size(), [=](size_t i)
         for (size_t i = 0; i < points.size(); i++)
         {
-            auto& p = points[i];
-            int seg_x = GetSegmentX(p.x);
-            int seg_z = GetSegmentZ(p.z);
-
-            //int seg_x_start = (seg_x - grids_calc) * (seg_x >= grids_calc);
-            //int seg_z_start = (seg_z - grids_calc) * (seg_z >= grids_calc);
-
-            int seg_x_start = seg_x - grids_calc;
-            if (seg_x_start < 0) continue;
-            int seg_z_start = seg_z - grids_calc;
-            if (seg_z_start < 0) continue;
-
-            int seg_x_end = seg_x + grids_calc + 1;
-            if (seg_x_end > grid_count_x) continue;// seg_x_end = grid_count_x;
-            int seg_z_end = seg_z + grids_calc + 1;
-            if (seg_z_end > grid_count_z) continue;// seg_z_end = grid_count_z;
-
-            for (int xi = seg_x_start; xi < seg_x_end; xi++) {
-                for (int zi = seg_z_start; zi < seg_z_end; zi++) {
-                    grids(xi, zi).front_points.emplace_back(p, cross_radius_2, i);
-                }
-            }
+                //ParticleToSegment(all_list[i], i);
+                //auto p = frontline_points[i];
+                FrontPointToSegment(frontline_points[i], i, grids_calc, cross_radius_2);
         }
+        //);
 
-        std::for_each(pstl::execution::par, grid.begin(), grid.end(), [this](Segment& seg) {
+
+
+        std::for_each(pstl::execution::par_unseq, grid.begin(), grid.end(), [this](Segment& seg) {
+        //for(auto& seg : grid)
             for (auto& sp : seg.front_points) {
                 for (const auto& op : seg.ok_list) {
                     if (sp.CrossOk(op)) {
@@ -502,6 +486,10 @@ namespace ps {
                 }
             }
         });
+
+
+        front_crosses.resize(frontline_points.size());
+        std::fill(front_crosses.begin(), front_crosses.end(), 0);
 
         for (const auto& seg : grid) {
             for (auto& sp : seg.front_points) {
@@ -521,23 +509,26 @@ namespace ps {
 
     }
 
-    void Segments::FrontPointToSegment(Point& p, size_t index) {
+    void Segments::FrontPointToSegment(Point& p, size_t index, int grids_calc, double cross_radius_2) {
         int seg_x = GetSegmentX(p.x);
         int seg_z = GetSegmentZ(p.z);
 
-        int grids_calc = ceil(P->burn_radius_2_cross / grid_min_size);
+        //int seg_x_start = (seg_x - grids_calc) * (seg_x >= grids_calc);
+        //int seg_z_start = (seg_z - grids_calc) * (seg_z >= grids_calc);
 
-        int seg_x_start = (seg_x - grids_calc) * (seg_x >= grids_calc);
-        int seg_z_start = (seg_z - grids_calc) * (seg_z >= grids_calc);
+        int seg_x_start = seg_x - grids_calc;
+        if (seg_x_start < 0) return;
+        int seg_z_start = seg_z - grids_calc;
+        if (seg_z_start < 0) return;
 
         int seg_x_end = seg_x + grids_calc + 1;
-        if (seg_x_end > grid_count_x) seg_x_end = grid_count_x;
+        if (seg_x_end > grid_count_x) return;// seg_x_end = grid_count_x;
         int seg_z_end = seg_z + grids_calc + 1;
-        if (seg_z_end > grid_count_z) seg_z_end = grid_count_z;
+        if (seg_z_end > grid_count_z) return;// seg_z_end = grid_count_z;
 
         for (int xi = seg_x_start; xi < seg_x_end; xi++) {
             for (int zi = seg_z_start; zi < seg_z_end; zi++) {
-                grids(xi, zi).front_points.emplace_back(p, P->frontline_cross_radius_2, index);
+                grids(xi, zi).front_points.emplace_back(p, cross_radius_2, index);
             }
         }
 

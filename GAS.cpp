@@ -3,6 +3,7 @@
 GAS::GAS()
 {
     params.set_curvature(front_line.curvature, front_line.first_point, front_line.last_point);
+    params.set_curve_spline(front_line.curve_spline, front_line.curve_start, front_line.curve_end);
     //CountFiles();
     startTime = SDL_GetTicks();
     std::cout << params.burn_radius / params.burn_radius_cross;

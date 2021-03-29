@@ -64,7 +64,7 @@ namespace ps {
         void BurnParticle(Particle* p);
         void ParticleToSegment(Particle& p);
         void ParticleToSegment(Particle& p, size_t i);
-        void FrontPointToSegment(Point& p, size_t index);
+        void FrontPointToSegment(Point& p, size_t index, int grids_calc, double cross_radius_2);
 
         bool ParticleInBurnSegments(Particle* particle, int seg_x, int seg_z);
 
@@ -149,6 +149,7 @@ namespace ps {
 
         void CalcFrontlineRadius(std::vector <Point>& points);
         std::vector<double> front_crosses;
+        std::vector<Point> frontline_points;
         void CalcFrontlineRadius2(std::vector <Point>& points);
         void RefractParticles();
         /**/

@@ -13,14 +13,14 @@
   "wave_time": 100,
 
 
-  "burn_radius": 10,
+  "burn_radius": 2,
   "burn_fix": -1,
   "burn_fix_a": 1,
   "burn_fix_b": 0.671,
 
 
 
-  "base_particles": 500,
+  "base_particles": 50,
   "particles_dist": 16,
   "const_speed": 0,
   "base_speed": 3,
@@ -68,6 +68,6 @@
   "scale_burn_pow": 1,
   "scale_burn_condition": 100,
 
-  "curve_burn_coef": 7
+  "curve_burn_coef": 6
 
 }
