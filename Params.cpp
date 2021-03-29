@@ -68,7 +68,7 @@ void ps::Params::Load(json j)
     burn_radius_cross = make_radius_cross_fix(burn_radius);
     burn_radius_2_cross = burn_radius_cross * burn_radius_cross;
 
-    emitter_begin = (double)j["emitter_begin"] * burn_radius;
+    emitter_begin = (double)j["emitter_begin"] * burn_radius_2 / burn_radius_cross;
 
 
     base_speed = (double)j["base_speed"] * burn_radius;
