@@ -1,8 +1,5 @@
 #include "Frontline.h"
 
-#include <SPLINTER/datatable.h>
-#include <SPLINTER/bspline.h>
-#include <SPLINTER/bsplinebuilder.h>
 
 namespace ps {
 
@@ -250,14 +247,14 @@ namespace ps {
         std::ofstream csv(P->csv_folder + "line.csv." + std::to_string(num));
 
         //std::string output = P->frontline_params();
-        std::string output = "x,z,wx,wz,div,div2,Vx2,diff2,cross,r,c";
+        std::string output = "x,z,wx,wz,div,div2,Vx2,diff2,cross,raw_cross,r,c";
 
         for (int i = 0; i < spline_steps; ++i) {
 
             if (spline_points[i].z)
             {
 
-                output += fmt::format("\n{},{},{},{},{},{},{},{},{},{},{}",
+                output += fmt::format("\n{},{},{},{},{},{},{},{},{},{},{},{}",
                     spline_points[i].x,
                     spline_points[i].z,
                     window_points[i].x,
@@ -267,6 +264,7 @@ namespace ps {
                     flow_points[i].Vx2,
                     analys_points[i].diff2,
                     analys_points[i].cross,
+                    analys_points[i].raw_cross,
                     analys_points[i].r,
                     analys_points[i].c
                 );
@@ -407,53 +405,58 @@ namespace ps {
             exit(22);
         }
 
+        for (size_t i = 0; i < spline_steps; i++)
+        {
+            analys_points[i].raw_cross = crosses[i];
+        }
+
         SPLINTER::DataTable samples;
 
-        double spline_start = area_start;
-        double spline_end = area_end;
-
-
-        for (size_t i = spline_steps - 1; i; i--) {
-            if (crosses[i]) {
-                spline_end = spline_points[i].x;
-                break;
-            }
-        }
-
         for (size_t i = 0; i < spline_steps; i++) {
-            if (crosses[i]) {
-                spline_start = spline_points[i].x;
-                break;
-            }
+            curve_start = spline_points[i].x;
+            if (crosses[i]) break;
         }
+
+        for (size_t i = spline_steps - 1; i>=0; i--) {
+            curve_end = spline_points[i].x;
+            if (crosses[i]) break;
+        }
+
+        //std::cout << '\n' << curve_start;
+
 
 
         for (int i = 0; i < spline_steps; ++i) {
-            if (crosses[i]) samples.addSample(spline_points[i].x, crosses[i]);
+            if (crosses[i]) samples.addSample(spline_points[i].x, P->frontline_cross_border - crosses[i]);
         }
 
         if (samples.cbegin() == samples.cend()) return;
 
-
-        SPLINTER::BSpline pspline = SPLINTER::BSpline::Builder(samples)
+    
+        curve_spline = SPLINTER::BSpline::Builder(samples)
             .degree(3)
             .smoothing(SPLINTER::BSpline::Smoothing::PSPLINE)
-            .alpha(P->frontline_spline_alpha)
+            .alpha(P->frontline_cross_spline_alpha)
             .build();
 
 
-        SPLINTER::DenseVector xd(1);
+
         for (size_t i = 0; i < spline_steps; i++)
         {
-
-            if (spline_points[i].x >= spline_start && spline_points[i].x <= spline_end)
-            {
-                xd(0) = spline_points[i].x;
-                analys_points[i].cross = pspline.eval(xd);
-                //analys_points[i].cross *= analys_points[i].cross > 0;
-            }
-
+            analys_points[i].cross = get_curvature(spline_points[i].x);
         }
+    }
+
+    double Frontline::get_curvature(const double x) const
+    {
+        if (x < curve_start || x > curve_end) return 0;
+
+        SPLINTER::DenseVector xd(1);
+        xd(0) = x;
+        double c = curve_spline.eval(xd);
+
+        return c * (c > 0);
+
     }
 
 

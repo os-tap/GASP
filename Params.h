@@ -12,6 +12,10 @@
 #include <fmt/core.h>
 #include <nlohmann/json.hpp>
 
+#include <SPLINTER/datatable.h>
+#include <SPLINTER/bspline.h>
+#include <SPLINTER/bsplinebuilder.h>
+
 
 namespace ps {
     class Params;
@@ -81,6 +85,8 @@ public:
 
     bool frontline_cross_chunk, calc_cross;
     double frontline_cross_multipler, frontline_cross_area, frontline_cross_radius, frontline_cross_radius_2;
+    double frontline_cross_border;
+    double frontline_cross_spline_alpha;
 
 
     bool who_cross, scale_burn;
@@ -91,11 +97,35 @@ public:
     double curve_start, curve_end, curve_width;
     double curve_burn_coef;
 
-    long get_curvature(const double x) const {
+    SPLINTER::BSpline curve_spline{ 1 };
+
+    void set_curve_spline(SPLINTER::BSpline spline, double _start, double _end) {
+        curve_spline = spline;
+        curve_start = _start;
+        curve_end = _end;
+    }
+
+    double get_curvature(const double x) const
+    {
+        if (x < curve_start || x > curve_end) return 0;
+
+        //std::cout << curve_start;
+
+        SPLINTER::DenseVector xd(1);
+        xd(0) = x;
+        double c = curve_spline.eval(xd);
+
+        return c * (c > 0);
+
+    }
+
+
+
+    /*double get_curvature(const double x) const {
         if (x < curve_start || x > curve_end) return 0;
         //double c = frontline_curve[lround((x - curve_start) / curve_width * (frontline_curve.size() - 1))];
         return sqrt(frontline_curve[lround((x - curve_start) / curve_width * (frontline_curve.size() - 1))]);
-    }
+    }*/
 
 
 
@@ -119,7 +149,7 @@ public:
     double get_burn_radius(double x_cord) const {
 
         //return burn_radius_cross;
-        return burn_radius_cross * (1 + get_curvature(x_cord) * system_speed(x_cord) * curve_burn_coef * scale_burn);
+        return burn_radius_cross * (1 + get_curvature(x_cord) * /*system_speed(x_cord)*/  curve_burn_coef * scale_burn);
 
 
         /*double br = burn_radius_cross;
@@ -177,7 +207,7 @@ private:
         return 1 - from_center(x) * from_center(x) / stream_radius / stream_radius;
     }
     double const_stream(const double x) const  {
-        return burn_radius;
+        return 0.5;
     }
     double rising_stream(const double x) const {
         return burn_speed * burn_radius + (x - stream_beg) / stream_width;

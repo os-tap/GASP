@@ -141,9 +141,9 @@ namespace ps {
 
 
     void Screen::load_swarm(const std::vector <Particle>& particle_list, bool sdl_draw_plus) {
-        Uint32 red_color = get_uint32_color(125, 50, 50);
+        Uint32 red_color = get_uint32_color(255, 150, 100);
         Uint32 sage_color = get_uint32_color(60, 60, 60);
-        Uint32 blue_color = get_uint32_color(50, 50, 125);
+        Uint32 blue_color = get_uint32_color(50, 50, 150);
         Uint32 white_color = get_uint32_color(125, 125, 125);
         Uint32 color = get_uint32_color(0, 0, 0);
 
@@ -186,7 +186,12 @@ namespace ps {
                     break;
 
                case Particle::State::SAGE:
-                    color = sage_color;
+                    //color = sage_color;
+                    red = 255 - (int)(particle.sage_counter * 6.4F);
+                    green = 120 - (int)(particle.sage_counter * 3.0F);
+                    blue = 100 - (int)(particle.sage_counter * 2.5F);
+
+                    color = get_uint32_color(red, green, blue);
                     break;
 
                case Particle::State::DIED:

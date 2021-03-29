@@ -171,7 +171,6 @@ void GAS::IterateSwarm()
             main_swarm.CrossParticles();
             main_swarm.StepParticles();
 
-            main_swarm.UpdateSegments();
         }        //main_swarm.RefractParticles();
         //main_swarm.FinalLoop();
 
@@ -186,13 +185,17 @@ void GAS::BuildFrontline()
 
     if (params.calc_cross)
     {
+
+        main_swarm.UpdateSegments();
         main_swarm.CalcFrontlineRadius(front_line.spline_points);
         //front_line.SetCrosses(main_swarm.front_crosses);
         front_line.BuildCurvatureSpline(main_swarm.front_crosses);
     }
 
-    if (input.update_curve)
-        params.set_curvature(front_line.curvature, front_line.first_point, front_line.last_point);
+    if (params.scale_burn)
+    //if (input.update_curve)
+        params.set_curve_spline(front_line.curve_spline, front_line.curve_start, front_line.curve_end);
+        //params.set_curvature(front_line.curvature, front_line.first_point, front_line.last_point);
 }
 
 void GAS::DrawScreen()

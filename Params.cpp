@@ -36,6 +36,8 @@ void ps::Params::Load(json j)
     area_size = area_end - area_beg;
     area_height = area_size / screen_width * screen_height;
 
+    curve_start = area_end; curve_end = area_beg;
+
     screen_proportion = screen_width / area_size;
     screen_x_proportion = area_size / screen_width;
     screen_y_proportion = area_height / screen_height;
@@ -111,6 +113,9 @@ void ps::Params::Load(json j)
     frontline_cross_area = (double)j["frontline_cross_area"];
     frontline_cross_radius = (stream_width * frontline_cross_area);
     frontline_cross_radius_2 = frontline_cross_radius * frontline_cross_radius;
+
+    frontline_cross_border = (double)j["frontline_cross_border"];
+    frontline_cross_spline_alpha = (double)j["frontline_cross_spline_alpha"];
 
     
     who_cross = (bool)j["who_cross"];

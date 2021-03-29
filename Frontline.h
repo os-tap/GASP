@@ -1,14 +1,20 @@
 #pragma once
 
-#include "Params.h"
-#include "Particle.h"
-//#include <list>
 #include <vector>
 #include <string>
 
 #include <fmt/core.h>
 #include <iostream>
 #include <fstream>
+
+
+#include <SPLINTER/datatable.h>
+#include <SPLINTER/bspline.h>
+#include <SPLINTER/bsplinebuilder.h>
+
+
+#include "Params.h"
+#include "Particle.h"
 
 
 namespace ps {
@@ -32,6 +38,10 @@ namespace ps {
         void SetCrosses(const std::vector <double>& crosses);
 
         void BuildCurvatureSpline(const std::vector <double>& crosses);
+        double get_curvature(const double x) const;
+
+        SPLINTER::BSpline curve_spline{1};
+        double curve_start, curve_end;
 
         void Calc2(const std::vector <Particle*>& particle_list);
         void Print(unsigned num);
@@ -52,7 +62,7 @@ namespace ps {
 
 
         struct analys_point {
-            double div=0, diff2=0, div2=0, cross=0, r=0, c=0;
+            double div=0, diff2=0, div2=0, cross=0, raw_cross, r=0, c=0;
         };
         std::vector <analys_point> analys_points;
         std::vector <double> curvature{0};
