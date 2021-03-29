@@ -147,6 +147,10 @@ namespace ps {
         Uint32 white_color = get_uint32_color(125, 125, 125);
         Uint32 color = get_uint32_color(0, 0, 0);
 
+        double rm = 255. / P->sage_time / P->iterations;
+        double gm = 120. / P->sage_time / P->iterations;
+        double bm = 100. / P->sage_time / P->iterations;
+
 
 
         int red = 0, green = 0, blue = 0;
@@ -187,9 +191,9 @@ namespace ps {
 
                case Particle::State::SAGE:
                     //color = sage_color;
-                    red = 255 - (int)(particle.sage_counter * 6.4F);
-                    green = 120 - (int)(particle.sage_counter * 3.0F);
-                    blue = 100 - (int)(particle.sage_counter * 2.5F);
+                    red = 255 - (int)(particle.sage_counter * rm);
+                    green = 120 - (int)(particle.sage_counter * gm);
+                    blue = 100 - (int)(particle.sage_counter * bm);
 
                     color = get_uint32_color(red, green, blue);
                     break;

@@ -62,7 +62,7 @@ namespace ps {
 
 
         struct analys_point {
-            double div=0, diff2=0, div2=0, cross=0, raw_cross, r=0, c=0;
+            double div=0, diff2=0, div2=0, cross=0, raw_cross, r=0, c=0, k=0;
         };
         std::vector <analys_point> analys_points;
         std::vector <double> curvature{0};

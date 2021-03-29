@@ -185,6 +185,7 @@ namespace ps {
                 double gap = P->get_burn_radius(spline_points[i].x) / 2;
                 double d = ((int)(analys_points[i].div > 0) * 2 - 1);
                 double k = 1. / analys_points[i].div;
+                analys_points[i].k = k;
                 double dx = d * gap / sqrt(k * k + 1);
                 double dy = dx * k;
                 spline_points[i].x += dx;
@@ -247,14 +248,14 @@ namespace ps {
         std::ofstream csv(P->csv_folder + "line.csv." + std::to_string(num));
 
         //std::string output = P->frontline_params();
-        std::string output = "x,z,wx,wz,div,div2,Vx2,diff2,cross,raw_cross,r,c";
+        std::string output = "x,z,wx,wz,div,div2,Vx2,diff2,cross,raw_cross,r,c,k";
 
         for (int i = 0; i < spline_steps; ++i) {
 
             if (spline_points[i].z)
             {
 
-                output += fmt::format("\n{},{},{},{},{},{},{},{},{},{},{},{}",
+                output += fmt::format("\n{},{},{},{},{},{},{},{},{},{},{},{},{}",
                     spline_points[i].x,
                     spline_points[i].z,
                     window_points[i].x,
@@ -266,7 +267,8 @@ namespace ps {
                     analys_points[i].cross,
                     analys_points[i].raw_cross,
                     analys_points[i].r,
-                    analys_points[i].c
+                    analys_points[i].c,
+                    analys_points[i].k
                 );
                 //output+= '\n' + std::to_string(frontline_window_points[i].x) + ',' + std::to_string(frontline_window_points[i].y) + ',' + std::to_string(frontline_window_points[i].div);
             }
