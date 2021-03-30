@@ -39,8 +39,13 @@ namespace ps {
 
         void BuildCurvatureSpline(const std::vector <double>& crosses);
         double get_curvature(const double x) const;
+        double getZ(const double x) const;
 
         SPLINTER::BSpline curve_spline{1};
+        SPLINTER::BSpline front_spline{1};
+        SPLINTER::DataTable spline_samples;
+
+        double spline_start, spline_end;
         double curve_start, curve_end;
 
         void Calc2(const std::vector <Particle*>& particle_list);

@@ -185,7 +185,7 @@ void GAS::BuildFrontline()
 {
     front_line.Calc(main_swarm.all_will_burn);
 
-    if (params.calc_cross)
+    if (0 && params.calc_cross)
     {
 
         main_swarm.UpdateSegments();
@@ -194,7 +194,7 @@ void GAS::BuildFrontline()
         front_line.BuildCurvatureSpline(main_swarm.front_crosses);
     }
 
-    if (params.scale_burn)
+    if (0 && params.scale_burn)
     //if (input.update_curve)
         params.set_curve_spline(front_line.curve_spline, front_line.curve_start, front_line.curve_end);
         //params.set_curvature(front_line.curvature, front_line.first_point, front_line.last_point);

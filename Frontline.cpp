@@ -67,16 +67,16 @@ namespace ps {
         WindowMiddle(particle_list);
         SplineSmooth(P->frontline_spline_alpha);
         //CalcError();
-        FivePointStencil(P->frontline_stencil_h);
+        //FivePointStencil(P->frontline_stencil_h);
 
-        if(P->move_normal) CalcNormal();
+        //if(P->move_normal) CalcNormal();
 
-        CalcRadius(P->frontline_radius_h);
-        CalcCurve();
+        //CalcRadius(P->frontline_radius_h);
+        //CalcCurve();
 
         for (size_t i = 0; i < spline_steps; i++)
         {
-            curvature[i] = P->curve_by_radius ? analys_points[i].r : analys_points[i].c;
+            //curvature[i] = P->curve_by_radius ? analys_points[i].r : analys_points[i].c;
         }
     }
 
@@ -120,51 +120,59 @@ namespace ps {
     }
 
     void Frontline::SplineSmooth(double alpha) {
-        SPLINTER::DataTable samples;
+        spline_samples = SPLINTER::DataTable{};
 
-        double spline_start = area_start;
-        double spline_end = area_end;
+        spline_start = area_end;
+        spline_end = area_start;
 
         for (const auto& wp : window_points) {
-            if (wp.z) samples.addSample(wp.x, wp.z);
+            if (wp.z) spline_samples.addSample(wp.x, wp.z);
         }
 
-        for (size_t i = window_points.size()-2; i ; i--) {
-            if (window_points[i].z) {
-                spline_end = window_points[i].x;
-                break;
-            }
-        }
-        for (size_t i = 1; i < window_points.size(); i++) {
-            if (window_points[i].z) {
-                spline_start = window_points[i].x;
-                break;
-            }
-        }
-        
-        if (samples.cbegin() == samples.cend()) {
+        if (spline_samples.cbegin() == spline_samples.cend()) {
             for (auto& sp : spline_points) {
                 sp.z = 0;
             }
             return;
         };
 
-        SPLINTER::BSpline pspline = SPLINTER::BSpline::Builder(samples)
+        for (size_t i = 0; i < window_points.size(); i++) {
+            spline_start = window_points[i].x;
+            if (window_points[i].z) {
+                break;
+            }
+        }
+        for (size_t i = window_points.size()-1; i>0 ; i--) {
+            spline_end = window_points[i].x;
+            if (window_points[i].z) {
+                break;
+            }
+        }
+        
+
+        SPLINTER::BSpline front_spline = SPLINTER::BSpline::Builder(spline_samples)
             .degree(3)
             .smoothing(SPLINTER::BSpline::Smoothing::PSPLINE)
             .alpha(P->frontline_spline_alpha)
             .build();
 
 
-        SPLINTER::DenseVector xd(1);
+        //SPLINTER::DenseVector xd(1);
         for (size_t i = 0; i < spline_steps; i++)
         {
             spline_points[i].x = flow_points[i].x;
-            if (spline_points[i].x >= spline_start && spline_points[i].x <= spline_end)
+            //spline_points[i].z = getZ(spline_points[i].x);
+            if (spline_points[i].x < spline_start || spline_points[i].x > spline_end) continue;
+            SPLINTER::DenseVector xd(1);
+            xd(0) = spline_points[i].x;
+            spline_points[i].z = front_spline.eval(xd);
+            spline_points[i].z = getZ(spline_points[i].x);
+
+            /*if (spline_points[i].x >= spline_start && spline_points[i].x <= spline_end)
             {
                 xd(0) = spline_points[i].x;
-                spline_points[i].z = pspline.eval(xd);
-            }
+                spline_points[i].z = front_spline.eval(xd);
+            }*/
             
         }
         /*for (auto& sp : spline_points) {
@@ -173,6 +181,39 @@ namespace ps {
         }*/
 
     }
+    double Frontline::getZ(const double x) const
+    {
+        if (x < spline_start+0.1 || x > spline_end-0.1) return 0;
+
+        SPLINTER::DenseVector xd(1);
+        xd(0) = x;
+        std::cout << "\nspline_start:" << spline_start;
+        std::cout << "\nspline_end:" << spline_end;
+        std::cout << "\nx:" << x;
+        double c = front_spline.eval(xd);
+
+        return c;
+
+    }
+    //double Frontline::getZ(const double x) const {
+    //    //if (x < spline_start+0.1 || x > spline_end-0.1) return 0;
+
+    //    //SPLINTER::DenseVector xd(1);
+    //    //xd(0) = x;
+    //    
+
+    //    if (x > spline_start && x < spline_end)
+    //    {
+    //        SPLINTER::DenseVector xd(1);
+    //        xd(0) = x;
+    //        std::cout << "\nspline_start:" << spline_start;
+    //        std::cout << "\nspline_end:" << spline_end;
+    //        std::cout << "\nx:" << x;
+    //        double z = front_spline.eval(xd);
+    //        return z;
+    //    }
+    //    else return 0;
+    //}
 
 
     void Frontline::CalcNormal()
