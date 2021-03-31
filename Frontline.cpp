@@ -63,7 +63,9 @@ namespace ps {
 
         WindowMiddle(particle_list);
         SplineSmooth(P->frontline_spline_alpha);
+
         //CalcError();
+
         FivePointStencil(P->frontline_stencil_h);
 
         if(P->move_normal) CalcNormal();
@@ -479,7 +481,7 @@ namespace ps {
             if (crosses[i]) break;
         }
 
-        for (size_t i = spline_steps - 1; i>=0; i--) {
+        for (size_t i = spline_steps - 1; i>0; i--) {
             curve_end = spline_points[i].x;
             if (crosses[i]) break;
         }
