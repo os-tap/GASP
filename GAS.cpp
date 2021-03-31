@@ -2,9 +2,8 @@
 
 GAS::GAS()
 {
-    //params.set_curvature(front_line.curvature, front_line.first_point, front_line.last_point);
     params.set_curve_spline(front_line.curve_spline, front_line.curve_start, front_line.curve_end);
-    //CountFiles();
+    CountFiles();
     startTime = SDL_GetTicks();
     std::cout << params.burn_radius / params.burn_radius_cross;
     params.Print();
@@ -109,8 +108,6 @@ void GAS::ReadSDLEvents()
                 break;
             case SDLK_x: input.clear_csv = true;
                 break;
-            case SDLK_o: params.who_cross = !params.who_cross;
-                break;
             case SDLK_r: input.refill = true;
                 break;
             case SDLK_k: params.scale_burn = !params.scale_burn;
@@ -184,20 +181,21 @@ void GAS::IterateSwarm()
 void GAS::BuildFrontline()
 {
     front_line.Calc(main_swarm.all_will_burn);
+    //front_line.BuildCurvatureSpline();
 
-    if (0 && params.calc_cross)
+    if (params.calc_cross)
     {
 
         main_swarm.UpdateSegments();
         main_swarm.CalcFrontlineRadius(front_line.spline_points);
+
         //front_line.SetCrosses(main_swarm.front_crosses);
-        front_line.BuildCurvatureSpline(main_swarm.front_crosses);
+        front_line.BuildCrossesSpline(main_swarm.front_crosses);
     }
 
-    if (0 && params.scale_burn)
+    if (params.scale_burn)
     //if (input.update_curve)
         params.set_curve_spline(front_line.curve_spline, front_line.curve_start, front_line.curve_end);
-        //params.set_curvature(front_line.curvature, front_line.first_point, front_line.last_point);
 }
 
 void GAS::DrawScreen()

@@ -13,17 +13,17 @@
   "wave_time": 100,
 
 
-  "burn_radius": 3,
+  "burn_radius": 5,
   "burn_fix": -1,
   "burn_fix_a": 1,
   "burn_fix_b": 0.671,
 
 
 
-  "base_particles": 100,
+  "base_particles": 300,
   "particles_dist": 16,
-  "const_speed": 0,
-  "base_speed": 2.8,
+  "const_speed": 0.95,
+  "base_speed": 2,
   "burn_speed": 0.99,
 
 
@@ -36,20 +36,20 @@
   "iterations": 1,
 
   "burn_time": 1,
-  "sage_time": 60,
+  "sage_time": 20,
 
 
 
 
   "frontline_spline_steps": 500,
-  "frontline_spline_alpha": 100,
+  "frontline_spline_alpha": 500,
   "move_normal": false,
   "move_speed": true,
 
   "frontline_window_steps": 500,
   "frontline_window_size": 2,
 
-  "frontline_stencil_h": 1,
+  "frontline_stencil_h": 4,
   "frontline_radius_h": 10,
   "curve_by_radius": true,
 
@@ -62,11 +62,7 @@
 
   "calc_cross": true,
   "scale_burn": true,
-  "who_cross": false,
-  "scale_burn_multipler": 580,
-  "scale_burn_size": 0.1,
-  "scale_burn_pow": 1,
-  "scale_burn_condition": 100,
+
 
   "curve_burn_coef": 7
 

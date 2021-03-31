@@ -89,12 +89,10 @@ public:
     double frontline_cross_spline_alpha;
 
 
-    bool who_cross, scale_burn;
-    double scale_burn_multipler, scale_burn_pow, scale_burn_size, scale_burn_condition;
+    bool scale_burn;
 
-    std::vector<double>frontline_kinks;
-    std::vector<double>frontline_curve;
-    double curve_start, curve_end, curve_width;
+
+    double curve_start, curve_end;
     double curve_burn_coef;
 
     SPLINTER::BSpline curve_spline{ 1 };
@@ -135,16 +133,6 @@ public:
 
     double make_radius_cross_fix(double radius) const {
         return radius / (1 - burn_fix_a / pow(base_particles, burn_fix_b));
-    }
-    void set_kinks(std::vector<double>_kinks) {
-        //frontline_kinks = _kinks;
-        frontline_kinks.insert(frontline_kinks.end(), _kinks.begin(), _kinks.end());
-    }
-    void set_curvature(std::vector<double>&_curvature, double _start, double _end) {
-        curve_start = _start;
-        curve_end = _end;
-        curve_width = _end - _start;
-        frontline_curve = _curvature;
     }
     double get_burn_radius(double x_cord) const {
 

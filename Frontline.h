@@ -37,7 +37,8 @@ namespace ps {
         void CalcCurve();
         void SetCrosses(const std::vector <double>& crosses);
 
-        void BuildCurvatureSpline(const std::vector <double>& crosses);
+        void BuildCurvatureSpline();
+        void BuildCrossesSpline(const std::vector <double>& crosses);
         double get_curvature(const double x) const;
         double getZ(const double x) const;
 
@@ -67,7 +68,7 @@ namespace ps {
 
 
         struct analys_point {
-            double div=0, diff2=0, div2=0, cross=0, raw_cross, r=0, c=0, k=0;
+            double div=0, diff2=0, div2=0, cross=0, raw_cross, r=0, c=0, k=0, cx=0, cz=0;
         };
         std::vector <analys_point> analys_points;
         std::vector <double> curvature{0};
@@ -80,12 +81,10 @@ namespace ps {
         double window_size, window_radius;
         double window_step_size, window_step_start, window_step_end;
 
-        double first_point, last_point;
 
         int spline_steps=0;
         double spline_step_size;
 
-        std::vector<double> kinks;
 
 
         //double *x{ 0 }, *Vx{ 0 }, * Vx2{ 0 };
