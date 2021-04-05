@@ -2,7 +2,6 @@
 
 GAS::GAS()
 {
-    params.set_curve_spline(front_line.curve_spline, front_line.curve_start, front_line.curve_end);
     CountFiles();
     startTime = SDL_GetTicks();
     std::cout << params.burn_radius / params.burn_radius_cross;
@@ -97,7 +96,7 @@ void GAS::ReadSDLEvents()
                 std::cout << (state.move ? "\n- Move" : "\n- Freeze");
                 break;
             case SDLK_w: state.display_swarm = !state.display_swarm; key_pressed = 1; break;
-            case SDLK_e: state.display_line = !state.display_line; key_pressed = 1; break;
+            case SDLK_e: state.display_line = !state.display_line; key_pressed = 1; params.clear_curve_spline();  break;
             case SDLK_l: state.update_line = !state.update_line; key_pressed = 1; break;
             case SDLK_f: main_swarm.Toggle_Fill();
                 std::cout << "\n- Toggle Fill";

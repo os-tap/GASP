@@ -288,7 +288,7 @@ namespace ps {
 
         }
 
-        SDL_SetRenderDrawColor(m_renderer, 0, 255, 0, SDL_ALPHA_OPAQUE);
+        SDL_SetRenderDrawColor(m_renderer, 255, 255, 100, SDL_ALPHA_OPAQUE);
         SDL_RenderDrawLines(m_renderer, sdl_points, sdl_points_count);
 
         //aacircleColor(m_renderer, 300, 400, 100, get_uint32_color(255, 255, 255));

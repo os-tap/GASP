@@ -1,5 +1,5 @@
 {
-  "csv_folder": "C:\\Users\\prive\\OneDrive\\csv\\2203\\",
+  "csv_folder": "C:\\Users\\prive\\OneDrive\\csv\\3103\\",
 
   "area_beg": -1,
   "area_end": 1,
@@ -20,10 +20,10 @@
 
 
 
-  "base_particles": 2000,
+  "base_particles": 100,
   "particles_dist": 16,
-  "const_speed": 0.98,
-  "base_speed": 2,
+  "const_speed": 1,
+  "base_speed": 0,
   "burn_speed": 0.99,
 
 
@@ -36,15 +36,15 @@
   "iterations": 1,
 
   "burn_time": 1,
-  "sage_time": 0,
+  "sage_time": 20,
 
 
 
 
   "frontline_spline_steps": 500,
   "frontline_spline_alpha": 300,
-  "move_normal": false,
-  "move_speed": true,
+  "move_normal": true,
+  "move_speed": false,
 
   "frontline_window_steps": 500,
   "frontline_window_size": 1,
@@ -60,8 +60,8 @@
   "frontline_cross_spline_alpha": 100,
 
 
-  "calc_cross": false,
-  "scale_burn": false,
+  "calc_cross": true,
+  "scale_burn": true,
 
 
   "curve_burn_coef": 8

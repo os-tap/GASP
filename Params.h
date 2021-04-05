@@ -102,6 +102,12 @@ public:
         curve_start = _start;
         curve_end = _end;
     }
+    void clear_curve_spline() {
+        set_curve_spline(SPLINTER::BSpline{ 1 }, area_end, area_beg);
+        /*curve_spline = SPLINTER::BSpline {1};
+        curve_start = area_end;
+        curve_end = area_beg;*/
+    }
 
     double get_curvature(const double x) const
     {

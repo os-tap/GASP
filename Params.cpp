@@ -4,6 +4,7 @@
 
 ps::Params::Params() {
     Read();
+    clear_curve_spline();
 }
 
 void ps::Params::Read()
