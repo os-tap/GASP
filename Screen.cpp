@@ -140,6 +140,109 @@ namespace ps {
 
 
 
+    void Screen::load_swarm_bunzen(const std::vector <Particle>& particle_list, bool sdl_draw_plus) {
+        Uint32 red_color = get_uint32_color(255, 255, 255);
+        Uint32 sage_color = get_uint32_color(60, 60, 60);
+        Uint32 blue_color = get_uint32_color(100, 100, 250);
+        Uint32 white_color = get_uint32_color(125, 125, 125);
+        Uint32 color = get_uint32_color(0, 0, 0);
+
+        double rm = 255. / P->sage_time / P->iterations;
+        double gm = 120. / P->sage_time / P->iterations;
+        double bm = 100. / P->sage_time / P->iterations;
+
+
+
+        int red = 0, green = 0, blue = 0;
+
+        int step = 1;// = particle_list.size() / P->display_count;
+        for (size_t i = 0; i < particle_list.size(); i += step) {
+
+            auto &particle = particle_list[i];
+
+            //if (particle._x() > SCREEN_WIDTH) continue;
+
+
+
+            switch (particle.getState())
+            {
+
+                case Particle::State::OK:
+                    color = blue_color;
+                    break;
+
+//                case Particle::State::WAVE:
+//
+////                filledCircleRGBA(m_renderer, x, y, 7, 255, 255, 0, 100);
+//                    draw_circle(particle.x, particle.z, P->burn_radius * particle.wave_counter / P->iterations / 5, get_uint32_color(200, 200, 200));
+//                    /*aacircleRGBA(m_renderer, x, y,
+//                        P->screen_proportion * P->burn_radius * particle.wave_counter / P->iterations / 5,
+//                        255, 255, 255, 255);*/
+//                    //continue;
+//                    break;
+
+                case Particle::State::WARM:
+                    color = white_color;
+                    break;
+
+                case Particle::State::BURN:
+                    color = red_color;
+                    break;
+
+               case Particle::State::SAGE:
+                    //color = sage_color;
+                    red = 255 - (int)(particle.sage_counter * rm);
+                    green = 120 - (int)(particle.sage_counter * gm);
+                    blue = 100 - (int)(particle.sage_counter * bm);
+
+                    color = get_uint32_color(red, green, blue);
+                    break;
+
+               case Particle::State::DIED:
+                    color = get_uint32_color(0, 0, 0);
+                    continue;
+                    break;
+
+                    //if (P->sage_time == 0) continue;
+                    //red = 200 - particle.sage_counter * 20;
+                    //green = 100 - particle.sage_counter * 10;
+                    //blue = 100 - particle.sage_counter * 10;
+
+                    //int lim = 40;
+
+                    //red = red < lim ? lim : red;
+                    //green = green < lim ? lim : green,
+                    //        blue = blue < lim ? lim : blue;
+                    //break;
+            }
+
+
+            /*if (particle.burn_counter == 1) {
+                red = 255; green = 255, blue = 255;
+                color = white_color;
+            }*/
+
+            /*if (particle.burn_counter > 1) {
+                continue;
+            }*/
+
+            //SDL_SetRenderDrawColor(m_renderer, red, green, blue, SDL_ALPHA_OPAQUE);
+            //SDL_RenderDrawPoint(m_renderer, x, y);
+
+            //color = get_uint32_color(red, green, blue);
+
+            int x = x_to_pixel(particle.x);
+            int y = y_to_pixel(particle.z);
+            set_pixel_color(x, y, color);
+            if(sdl_draw_plus) draw_plus(x, y, color);
+
+        }
+        //SDL_RenderPresent(m_renderer);
+    }
+
+
+
+
     void Screen::load_swarm(const std::vector <Particle>& particle_list, bool sdl_draw_plus) {
         Uint32 red_color = get_uint32_color(255, 150, 100);
         Uint32 sage_color = get_uint32_color(60, 60, 60);
@@ -274,6 +377,8 @@ namespace ps {
         //double bias = P->front_line_bias;
 
         SDL_Point* sdl_points = new SDL_Point[points.size()];
+        SDL_Point* sdl_points1 = new SDL_Point[points.size()];
+        SDL_Point* sdl_points2 = new SDL_Point[points.size()];
         int sdl_points_count = 0;
 
         for(auto& point : points)
@@ -282,14 +387,24 @@ namespace ps {
             {
                 sdl_points[sdl_points_count].x = x_to_pixel(point.x);
                 sdl_points[sdl_points_count].y = y_to_pixel(point.z);
+                
+                sdl_points1[sdl_points_count].x = x_to_pixel(point.x);
+                sdl_points1[sdl_points_count].y = y_to_pixel(point.z)+1;
+                
+                sdl_points2[sdl_points_count].x = x_to_pixel(point.x);
+                sdl_points2[sdl_points_count].y = y_to_pixel(point.z)-1;
+
+
                 sdl_points_count++;
 
             }
 
         }
 
-        SDL_SetRenderDrawColor(m_renderer, 255, 255, 100, SDL_ALPHA_OPAQUE);
+        SDL_SetRenderDrawColor(m_renderer, 100, 255, 100, SDL_ALPHA_OPAQUE);
         SDL_RenderDrawLines(m_renderer, sdl_points, sdl_points_count);
+        SDL_RenderDrawLines(m_renderer, sdl_points1, sdl_points_count);
+        SDL_RenderDrawLines(m_renderer, sdl_points2, sdl_points_count);
 
         //aacircleColor(m_renderer, 300, 400, 100, get_uint32_color(255, 255, 255));
         //circleColor(m_renderer, 300, 550, 100, get_uint32_color(255, 255, 255));
