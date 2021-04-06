@@ -205,7 +205,7 @@ void GAS::DrawScreen()
     screen.clear();
 
 
-    if (state.display_swarm) screen.load_swarm(main_swarm.all_list, state.bold_points);
+    if (state.display_swarm) screen.load_swarm_bunzen(main_swarm.all_list, state.bold_points);
     if (state.blur) screen.box_blur();
     screen.UpdateTexture();
 
