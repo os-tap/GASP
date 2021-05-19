@@ -110,7 +110,7 @@ namespace ps {
         {
             for (int i = 0; i < window_steps; ++i) {
                 if (window_points[i].count) {
-                    window_points[i].z -= P->system_speed(window_points[i].x) / 2;
+                    window_points[i].z += P->system_speed(window_points[i].x) / 2;
                 }
             }
         }

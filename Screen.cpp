@@ -289,7 +289,7 @@ namespace ps {
                     break;
 
                 case Particle::State::BURN:
-                    color = red_color;
+                    color = particle.burn_counter == 0 ? white_color : red_color;
                     break;
 
                case Particle::State::SAGE:
@@ -401,7 +401,8 @@ namespace ps {
 
         }
 
-        SDL_SetRenderDrawColor(m_renderer, 100, 255, 100, SDL_ALPHA_OPAQUE);
+        //SDL_SetRenderDrawColor(m_renderer, 100, 255, 100, SDL_ALPHA_OPAQUE);
+        SDL_SetRenderDrawColor(m_renderer, 255, 200, 100, SDL_ALPHA_OPAQUE);
         SDL_RenderDrawLines(m_renderer, sdl_points, sdl_points_count);
         //SDL_RenderDrawLines(m_renderer, sdl_points1, sdl_points_count);
         //SDL_RenderDrawLines(m_renderer, sdl_points2, sdl_points_count);

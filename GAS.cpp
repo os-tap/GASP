@@ -180,7 +180,7 @@ void GAS::IterateSwarm()
 void GAS::BuildFrontline()
 {
     front_line.Calc(main_swarm.all_will_burn);
-    //front_line.BuildCurvatureSpline();
+    
 
     if (params.calc_cross)
     {
@@ -190,6 +190,9 @@ void GAS::BuildFrontline()
 
         //front_line.SetCrosses(main_swarm.front_crosses);
         front_line.BuildCrossesSpline(main_swarm.front_crosses);
+    }
+    else {
+        front_line.BuildCurvatureSpline();
     }
 
     if (params.scale_burn)
@@ -244,7 +247,7 @@ void GAS::CalcFPS()
 
     if (ii % 10 == 0)
     {
-        sprintf_s(buffer, "FPS: %d", short(fps_sum / 10.));
+        sprintf_s(buffer, "FPS: %d", fps);
         screen.SetTitle(buffer);
         fps_sum = 0;
     }
