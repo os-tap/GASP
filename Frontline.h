@@ -8,9 +8,11 @@
 #include <fstream>
 
 
-#include <SPLINTER/datatable.h>
-#include <SPLINTER/bspline.h>
-#include <SPLINTER/bsplinebuilder.h>
+//#include <SPLINTER/datatable.h>
+//#include <SPLINTER/bspline.h>
+//#include <SPLINTER/bsplinebuilder.h>
+
+#include "Spline.h"
 
 
 #include "Params.h"
@@ -30,6 +32,7 @@ namespace ps {
         void Calc(const std::vector <Particle*>& particle_list);
         void WindowMiddle(const std::vector <Particle*>& particle_list);
         void SplineSmooth(double alpha);
+        void SplineSmooth2(double alpha);
         void FivePointStencil(int h_div);
         void CalcNormal();
         void CalcError();
@@ -40,11 +43,15 @@ namespace ps {
         void BuildCurvatureSpline();
         void BuildCrossesSpline(const std::vector <double>& crosses);
         double get_curvature(const double x) const;
-        double getZ(const double x) const;
+        double getZ(const double x);
+        double getZ2(const double x);
 
-        SPLINTER::BSpline curve_spline{1};
-        SPLINTER::BSpline front_spline{1};
-        SPLINTER::DataTable spline_samples;
+
+        Spline spl;
+
+        //SPLINTER::BSpline curve_spline{1};
+        //SPLINTER::BSpline front_spline{1};
+        //SPLINTER::DataTable spline_samples;
 
         double spline_start, spline_end;
         double curve_start, curve_end;
@@ -55,11 +62,12 @@ namespace ps {
 
         std::vector<Point> spline_points;
 
-        struct window_point {
-            double x, z = 0, sum = 0;
+        struct window_info {
+            double sum = 0;
             unsigned count = 0;
         };
-        std::vector<window_point> window_points;
+        std::vector<Point> window_points;
+        std::vector<window_info> window_infos;
 
         struct flow_point {
             double x, Vx, Vx2;

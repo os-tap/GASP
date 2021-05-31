@@ -4,7 +4,7 @@
 
 ps::Params::Params() {
     Read();
-    clear_curve_spline();
+    //clear_curve_spline();
 }
 
 void ps::Params::Read()
@@ -92,6 +92,10 @@ void ps::Params::Load(json j)
     move_normal = (bool)j["move_normal"];
     move_speed = (bool)j["move_speed"];
     curve_by_radius = (bool)j["curve_by_radius"];
+
+    spline_smooth = (bool)j["spline_smooth"];
+    spl_coef = (int)j["spl_coef"];
+    spl_k = (int)j["spl_k"];
 
 
     frontline_window_steps = (int)j["frontline_window_steps"];

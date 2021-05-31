@@ -20,10 +20,10 @@
 
 
 
-  "base_particles": 500,
+  "base_particles": 200,
   "particles_dist": 16,
 
-  "const_speed": 0.97,
+  "const_speed": 0.95,
   "base_speed": 2,
 
   "burn_speed": 0.99,
@@ -38,34 +38,38 @@
   "iterations": 1,
 
   "burn_time": 1,
-  "sage_time": 30,
+  "sage_time": 60,
 
 
 
 
-  "frontline_spline_steps": 500,
-  "frontline_spline_alpha": 100,
+  "frontline_spline_steps": 250,
+  "frontline_spline_alpha": 10,
   "move_normal": false,
   "move_speed": false,
 
-  "frontline_window_steps": 500,
-  "frontline_window_size": 2,
+  "frontline_window_steps": 250,
+  "frontline_window_size": 1,
+  "spline_smooth": true,
 
-  "frontline_stencil_h": 2,
-  "frontline_radius_h": 5,
-  "curve_by_radius": false,
+  "frontline_stencil_h": 1,
+  "frontline_radius_h": 8,
+  "curve_by_radius": true,
 
   "frontline_cross_chunk": true,
   "frontline_cross_multipler": 5,
-  "frontline_cross_area": 0.1,
+  "frontline_cross_area": 0.05,
   "frontline_cross_border": 0.5,
   "frontline_cross_spline_alpha": 100,
 
+  "spl_k":  4,
+  "spl_coef":  50,
+
 
   "calc_cross": false,
-  "scale_burn": false,
+  "scale_burn": true,
 
 
-  "curve_burn_coef": 5
+  "curve_burn_coef": 0.15
 
 }

@@ -12,9 +12,9 @@
 #include <fmt/core.h>
 #include <nlohmann/json.hpp>
 
-#include <SPLINTER/datatable.h>
-#include <SPLINTER/bspline.h>
-#include <SPLINTER/bsplinebuilder.h>
+//#include <SPLINTER/datatable.h>
+//#include <SPLINTER/bspline.h>
+//#include <SPLINTER/bsplinebuilder.h>
 
 
 namespace ps {
@@ -75,6 +75,9 @@ public:
     double frontline_spline_alpha;
     bool move_normal, move_speed;
     bool curve_by_radius;
+    bool spline_smooth;
+
+    int spl_coef, spl_k;
 
     int frontline_stencil_h, frontline_radius_h;
 
@@ -95,31 +98,32 @@ public:
     double curve_start, curve_end;
     double curve_burn_coef;
 
-    SPLINTER::BSpline curve_spline{ 1 };
+    //SPLINTER::BSpline curve_spline{ 1 };
 
-    void set_curve_spline(SPLINTER::BSpline spline, double _start, double _end) {
-        curve_spline = spline;
-        curve_start = _start;
-        curve_end = _end;
-    }
-    void clear_curve_spline() {
-        set_curve_spline(SPLINTER::BSpline{ 1 }, area_end, area_beg);
-        /*curve_spline = SPLINTER::BSpline {1};
-        curve_start = area_end;
-        curve_end = area_beg;*/
-    }
+    //void set_curve_spline(SPLINTER::BSpline spline, double _start, double _end) {
+    //    curve_spline = spline;
+    //    curve_start = _start;
+    //    curve_end = _end;
+    //}
+    //void clear_curve_spline() {
+    //    set_curve_spline(SPLINTER::BSpline{ 1 }, area_end, area_beg);
+    //    /*curve_spline = SPLINTER::BSpline {1};
+    //    curve_start = area_end;
+    //    curve_end = area_beg;*/
+    //}
 
     double get_curvature(const double x) const
     {
-        if (x < curve_start || x > curve_end) return 0;
+        return 0;
+        //if (x < curve_start || x > curve_end) return 0;
 
-        //std::cout << curve_start;
+        ////std::cout << curve_start;
 
-        SPLINTER::DenseVector xd(1);
-        xd(0) = x;
-        double c = curve_spline.eval(xd);
+        //SPLINTER::DenseVector xd(1);
+        //xd(0) = x;
+        //double c = curve_spline.eval(xd);
 
-        return c * (c > 0);
+        //return c * (c > 0);
 
     }
 
