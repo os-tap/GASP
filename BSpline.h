@@ -7,12 +7,12 @@
 #include <gsl/gsl_bspline.h>
 #include <gsl/gsl_multifit.h>
 
-#include "Params.h"
+#include "Point.h"
 
 namespace ps {
-    class Spline;
+    class BSpline;
 }
-class ps::Spline
+class ps::BSpline
 {
 
     size_t n = 0;
@@ -34,7 +34,7 @@ class ps::Spline
     std::unordered_map<double, double> cache;
 
 public:
-    Spline() {
+    BSpline() {
         Init(4,12);
     }
 
@@ -108,7 +108,7 @@ public:
         return yi;
     }
 
-    ~Spline() {
+    ~BSpline() {
         gsl_bspline_free(bw);
         gsl_vector_free(B);
         gsl_vector_free(y);

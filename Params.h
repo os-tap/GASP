@@ -12,18 +12,12 @@
 #include <fmt/core.h>
 #include <nlohmann/json.hpp>
 
-//#include <SPLINTER/datatable.h>
-//#include <SPLINTER/bspline.h>
-//#include <SPLINTER/bsplinebuilder.h>
+#include "Point.h"
 
 
 namespace ps {
     class Params;
-    struct Point;
 }
-struct ps::Point {
-    double x, z;
-};
 
 using json = nlohmann::json;
 

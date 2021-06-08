@@ -26,16 +26,17 @@
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="Screen.cpp" />
     <ClCompile Include="Segments.cpp" />
-    <ClCompile Include="Spline.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Frontline.h" />
     <ClInclude Include="GAS.h" />
     <ClInclude Include="Params.h" />
     <ClInclude Include="Particle.h" />
+    <ClInclude Include="Point.h" />
+    <ClInclude Include="PSpline.h" />
     <ClInclude Include="Screen.h" />
     <ClInclude Include="Segments.h" />
-    <ClInclude Include="Spline.h" />
+    <ClInclude Include="BSpline.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="params.json" />

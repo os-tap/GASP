@@ -8,11 +8,8 @@
 #include <fstream>
 
 
-//#include <SPLINTER/datatable.h>
-//#include <SPLINTER/bspline.h>
-//#include <SPLINTER/bsplinebuilder.h>
 
-#include "Spline.h"
+#include "BSpline.h"
 
 
 #include "Params.h"
@@ -47,7 +44,7 @@ namespace ps {
         double getZ2(const double x);
 
 
-        Spline spl;
+        BSpline spl;
 
         //SPLINTER::BSpline curve_spline{1};
         //SPLINTER::BSpline front_spline{1};
