@@ -36,7 +36,7 @@ private:
     Uint32 startTime = 0;
     Uint32 endTime = 0;
     Uint32 delta = 0;
-    short fps, max_fps = 30, fps_sum = 0;
+    short fps, max_fps = 60, fps_sum = 0;
     short timePerFrame = 1000 / max_fps; // milliseconds
     char buffer[8] = "FPS: 00";
 
@@ -69,7 +69,7 @@ private:
             burn = true,
             pause = false,
             display_swarm = true,
-            display_line = true,
+            display_line = false,
             bold_points = false,
             blur = false,
             update_line = true,

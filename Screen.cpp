@@ -141,15 +141,15 @@ namespace ps {
 
 
     void Screen::load_swarm_bunzen(const std::vector <Particle>& particle_list, bool sdl_draw_plus) {
-        Uint32 red_color = get_uint32_color(255, 255, 255);
+        Uint32 red_color = get_uint32_color(255, 150, 100);
         Uint32 sage_color = get_uint32_color(60, 60, 60);
         Uint32 blue_color = get_uint32_color(100, 100, 250);
         Uint32 white_color = get_uint32_color(125, 125, 125);
         Uint32 color = get_uint32_color(0, 0, 0);
 
-        double rm = 255. / P->sage_time / P->iterations;
-        double gm = 120. / P->sage_time / P->iterations;
-        double bm = 100. / P->sage_time / P->iterations;
+        double rm = 255. / P->sage_time;// P->iterations;
+        double gm = 120. / P->sage_time;// P->iterations;
+        double bm = 100. / P->sage_time;// P->iterations;
 
 
 
@@ -388,11 +388,11 @@ namespace ps {
                 sdl_points[sdl_points_count].x = x_to_pixel(point.x);
                 sdl_points[sdl_points_count].y = y_to_pixel(point.z);
                 
-                sdl_points1[sdl_points_count].x = x_to_pixel(point.x);
+                /*sdl_points1[sdl_points_count].x = x_to_pixel(point.x);
                 sdl_points1[sdl_points_count].y = y_to_pixel(point.z)+1;
                 
                 sdl_points2[sdl_points_count].x = x_to_pixel(point.x);
-                sdl_points2[sdl_points_count].y = y_to_pixel(point.z)-1;
+                sdl_points2[sdl_points_count].y = y_to_pixel(point.z)-1;*/
 
 
                 sdl_points_count++;
@@ -401,10 +401,11 @@ namespace ps {
 
         }
 
-        SDL_SetRenderDrawColor(m_renderer, 100, 255, 100, SDL_ALPHA_OPAQUE);
+        //SDL_SetRenderDrawColor(m_renderer, 100, 255, 100, SDL_ALPHA_OPAQUE);
+        SDL_SetRenderDrawColor(m_renderer, 200, 200, 100, SDL_ALPHA_OPAQUE);
         SDL_RenderDrawLines(m_renderer, sdl_points, sdl_points_count);
-        SDL_RenderDrawLines(m_renderer, sdl_points1, sdl_points_count);
-        SDL_RenderDrawLines(m_renderer, sdl_points2, sdl_points_count);
+        //SDL_RenderDrawLines(m_renderer, sdl_points1, sdl_points_count);
+        //SDL_RenderDrawLines(m_renderer, sdl_points2, sdl_points_count);
 
         //aacircleColor(m_renderer, 300, 400, 100, get_uint32_color(255, 255, 255));
         //circleColor(m_renderer, 300, 550, 100, get_uint32_color(255, 255, 255));
