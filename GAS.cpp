@@ -222,10 +222,22 @@ void GAS::DrawScreen()
     screen.Render();
 }
 
+void GAS::PrintBurnRadius() {
+
+    burn_radius_str += fmt::format("\n{},{}", print_step_counter, params.get_burn_radius(0));
+
+    std::ofstream csv(params.csv_folder + "burn_radius.csv." + std::to_string(print_step_counter));
+    csv << burn_radius_str;
+    csv.close();
+}
+
+
 void GAS::PrintFiles()
 {
+
     main_swarm.PrintCount(print_step_counter, params.print_count);
     front_line.Print(print_step_counter);
+    PrintBurnRadius();
     std::cout << "\nprint - " << print_step_counter;
     ++print_step_counter;
 }
@@ -271,6 +283,8 @@ void GAS::ClearFiles()
     }
 
     print_step_counter = 0;
+    burn_radius_str = "t, burn_radius";
+    burn_radius_str += fmt::format("\n{},{}", -1, params.get_burn_radius(0));
     std::cout << "\nclear files";
 }
 

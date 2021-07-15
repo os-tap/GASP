@@ -1,5 +1,5 @@
 {
-  "csv_folder": "C:\\Users\\prive\\OneDrive\\csv\\3103\\",
+  "csv_folder": "C:\\Users\\prive\\OneDrive\\csv\\0707\\",
 
   "area_beg": -1,
   "area_end": 1,
@@ -13,24 +13,24 @@
   "wave_time": 100,
 
 
-  "burn_radius": 5,
+  "burn_radius": 0.75,
   "burn_fix": -1,
   "burn_fix_a": 1,
-  "burn_fix_b": 0.671,
+  "burn_fix_b": 1,
 
 
 
-  "base_particles": 500,
+  "base_particles": 300,
   "particles_dist": 16,
 
-  "const_speed": 0.97,
-  "base_speed": 2,
+  "const_speed": 0,
+  "base_speed": 3,
 
   "burn_speed": 0.99,
 
 
   "svm_count": 10000,
-  "print_count": 20000,
+  "print_count": 40000,
   "display_count": 500000,
 
   "emitter_begin": 0,
@@ -38,7 +38,7 @@
   "iterations": 1,
 
   "burn_time": 1,
-  "sage_time": 30,
+  "sage_time": 100,
 
 
 
@@ -49,10 +49,10 @@
   "move_speed": false,
 
   "frontline_window_steps": 500,
-  "frontline_window_size": 2,
+  "frontline_window_size": 3,
 
   "frontline_stencil_h": 2,
-  "frontline_radius_h": 5,
+  "frontline_radius_h": 7,
   "curve_by_radius": false,
 
   "frontline_cross_chunk": true,
@@ -66,6 +66,6 @@
   "scale_burn": false,
 
 
-  "curve_burn_coef": 5
+  "curve_burn_coef": 0.1
 
 }

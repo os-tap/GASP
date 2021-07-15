@@ -126,6 +126,7 @@ namespace ps {
     }
 
     void Screen::clear() {
+        //auto background = get_uint32_color(255, 255, 255);
         auto background = get_uint32_color(0, 0, 0);
         //auto background = get_uint32_color(0, 0, 0, 100);
         //auto background = SDL_Color{0,0,0,0};
@@ -191,9 +192,9 @@ namespace ps {
 
                case Particle::State::SAGE:
                     //color = sage_color;
-                    red = 255 - (int)(particle.sage_counter * rm);
-                    green = 120 - (int)(particle.sage_counter * gm);
-                    blue = 100 - (int)(particle.sage_counter * bm);
+                    red = 255 - (int)(particle.burn_counter * rm);
+                    green = 120 - (int)(particle.burn_counter * gm);
+                    blue = 100 - (int)(particle.burn_counter * bm);
 
                     color = get_uint32_color(red, green, blue);
                     break;

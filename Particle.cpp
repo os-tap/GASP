@@ -16,10 +16,10 @@ namespace ps {
 
 
 
-    const bool Particle::isBurn() {
+    bool Particle::isBurn() const {
         return state == State::BURN;
     }
-    const bool Particle::isOk() {
+    bool Particle::isOk() const {
         return state == State::OK;
     }
 
