@@ -126,6 +126,7 @@ namespace ps {
     }
 
     void Screen::clear() {
+        //auto background = get_uint32_color(255, 255, 255);
         auto background = get_uint32_color(0, 0, 0);
         //auto background = get_uint32_color(0, 0, 0, 100);
         //auto background = SDL_Color{0,0,0,0};
@@ -147,13 +148,9 @@ namespace ps {
         Uint32 white_color = get_uint32_color(125, 125, 125);
         Uint32 color = get_uint32_color(0, 0, 0);
 
-        double rm = 255. / P->sage_time;// P->iterations;
-        double gm = 120. / P->sage_time;// P->iterations;
-        double bm = 100. / P->sage_time;// P->iterations;
-
-        double rw = 155. / P->iterations;
-        double gw = 155. / P->iterations;
-        //double bw = 155. / P->iterations;
+        double rm = 255. / P->sage_time / P->iterations;
+        double gm = 120. / P->sage_time / P->iterations;
+        double bm = 100. / P->sage_time / P->iterations;
 
 
 
@@ -186,13 +183,7 @@ namespace ps {
 //                    break;
 
                 case Particle::State::WARM:
-                    //color = sage_color;
-                    red = 100 + (int)(particle.warm_counter * rw);
-                    green = 100 + (int)(particle.warm_counter * gw);
-                    blue = 255;
-
-                    color = get_uint32_color(red, green, blue);
-                    break;
+                    color = white_color;
                     break;
 
                 case Particle::State::BURN:
@@ -201,9 +192,9 @@ namespace ps {
 
                case Particle::State::SAGE:
                     //color = sage_color;
-                    red = 255 - (int)(particle.sage_counter * rm);
-                    green = 120 - (int)(particle.sage_counter * gm);
-                    blue = 100 - (int)(particle.sage_counter * bm);
+                    red = 255 - (int)(particle.burn_counter * rm);
+                    green = 120 - (int)(particle.burn_counter * gm);
+                    blue = 100 - (int)(particle.burn_counter * bm);
 
                     color = get_uint32_color(red, green, blue);
                     break;
@@ -299,7 +290,7 @@ namespace ps {
                     break;
 
                 case Particle::State::BURN:
-                    color = red_color;
+                    color = particle.burn_counter == 0 ? white_color : red_color;
                     break;
 
                case Particle::State::SAGE:
@@ -389,7 +380,7 @@ namespace ps {
         SDL_Point* sdl_points = new SDL_Point[points.size()];
         SDL_Point* sdl_points1 = new SDL_Point[points.size()];
         SDL_Point* sdl_points2 = new SDL_Point[points.size()];
-        int sdl_points_count = 0;
+        size_t sdl_points_count = 0;
 
         for(auto& point : points)
         {
@@ -398,11 +389,11 @@ namespace ps {
                 sdl_points[sdl_points_count].x = x_to_pixel(point.x);
                 sdl_points[sdl_points_count].y = y_to_pixel(point.z);
                 
-                /*sdl_points1[sdl_points_count].x = x_to_pixel(point.x);
+                sdl_points1[sdl_points_count].x = x_to_pixel(point.x);
                 sdl_points1[sdl_points_count].y = y_to_pixel(point.z)+1;
                 
                 sdl_points2[sdl_points_count].x = x_to_pixel(point.x);
-                sdl_points2[sdl_points_count].y = y_to_pixel(point.z)-1;*/
+                sdl_points2[sdl_points_count].y = y_to_pixel(point.z)-1;
 
 
                 sdl_points_count++;
@@ -412,7 +403,7 @@ namespace ps {
         }
 
         //SDL_SetRenderDrawColor(m_renderer, 100, 255, 100, SDL_ALPHA_OPAQUE);
-        SDL_SetRenderDrawColor(m_renderer, 200, 200, 100, SDL_ALPHA_OPAQUE);
+        SDL_SetRenderDrawColor(m_renderer, 255, 200, 100, SDL_ALPHA_OPAQUE);
         SDL_RenderDrawLines(m_renderer, sdl_points, sdl_points_count);
         //SDL_RenderDrawLines(m_renderer, sdl_points1, sdl_points_count);
         //SDL_RenderDrawLines(m_renderer, sdl_points2, sdl_points_count);

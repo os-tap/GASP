@@ -44,7 +44,8 @@ private:
     int mouse_x, mouse_y;
     double burn_x, burn_y;
 
-
+    std::string burn_radius_str{ "t, burn_radius" };
+    void PrintBurnRadius();
 
 
     bool key_pressed = false;

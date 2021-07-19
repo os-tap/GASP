@@ -684,7 +684,7 @@ namespace ps {
         }
 
         else if (p.state == Particle::State::SAGE &&
-            ++p.sage_counter >= P->sage_time)
+            ++p.burn_counter >= P->sage_time)
         {
             p.state = Particle::State::DIED;
         }

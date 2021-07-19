@@ -1,5 +1,5 @@
 {
-  "csv_folder": "C:\\Users\\prive\\OneDrive\\csv\\0307\\",
+  "csv_folder": "C:\\Users\\prive\\OneDrive\\csv\\0707\\",
 
   "area_beg": -1,
   "area_end": 1,
@@ -13,22 +13,24 @@
   "wave_time": 100,
 
 
-  "burn_radius": 5,
+  "burn_radius": 0.75,
   "burn_fix": -1,
   "burn_fix_a": 1,
-  "burn_fix_b": 0.672,
+  "burn_fix_b": 1,
 
 
 
-  "base_particles": 100,
+  "base_particles": 300,
   "particles_dist": 16,
-  "const_speed":0.92,
-  "base_speed": 2,
+
+  "const_speed": 0,
+  "base_speed": 3,
+
   "burn_speed": 0.99,
 
 
   "svm_count": 10000,
-  "print_count": 7000,
+  "print_count": 40000,
   "display_count": 500000,
 
   "emitter_begin": 0,
@@ -36,34 +38,34 @@
   "iterations": 1,
 
   "burn_time": 1,
-  "sage_time": 30,
+  "sage_time": 100,
 
 
 
 
   "frontline_spline_steps": 500,
-  "frontline_spline_alpha": 15,
+  "frontline_spline_alpha": 100,
   "move_normal": false,
   "move_speed": false,
 
-  "frontline_window_steps": 200,
-  "frontline_window_size": 1,
+  "frontline_window_steps": 500,
+  "frontline_window_size": 3,
 
-  "frontline_stencil_h": 1,
-  "frontline_radius_h": 15,
-  "curve_by_radius": true,
+  "frontline_stencil_h": 2,
+  "frontline_radius_h": 7,
+  "curve_by_radius": false,
 
   "frontline_cross_chunk": true,
   "frontline_cross_multipler": 5,
   "frontline_cross_area": 0.1,
   "frontline_cross_border": 0.5,
-  "frontline_cross_spline_alpha": 1000,
+  "frontline_cross_spline_alpha": 100,
 
 
   "calc_cross": false,
   "scale_burn": false,
 
 
-  "curve_burn_coef": 0.15
+  "curve_burn_coef": 0.1
 
 }

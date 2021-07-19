@@ -130,7 +130,7 @@ void ps::Params::Print()
     std::cout << "\n-------------\n";
     std::cout << stream_function(area_center) * base_speed << " - base speed\n";
     std::cout << particle_speed(area_center) << " - max delta\n";
-    std::cout << burn_radius << " - burn radius\n";
+    std::cout << get_burn_radius(0) << " - burn radius\n";
     std::cout << burn_radius_2 << " - burn radius 2\n";
     std::cout << burn_radius_2_cross << " - burn radius 2 fix\n";
     std::cout << burn_speed << " - burn speed\n";
