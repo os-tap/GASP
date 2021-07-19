@@ -16,7 +16,7 @@ namespace ps {
         {
             window_steps = P->frontline_window_steps;
             window_points.resize(window_steps);
-            flow_points.resize(window_steps);
+            //flow_points.resize(window_steps);
         }
 
         window_radius = (area_size) / (window_steps + 1.) * P->frontline_window_size;
@@ -24,10 +24,10 @@ namespace ps {
 
         window_step_size = (area_size - window_size) / (window_steps - 1.);
         for (int i = 0; i < window_steps; ++i) {
-            window_points[i].x = flow_points[i].x = area_start + window_radius + window_step_size * i;
+            /*flow_points[i].x = */window_points[i].x = area_start + window_radius + window_step_size * i;
 
-            flow_points[i].Vx = P->system_speed(flow_points[i].x) * P->burn_speed;
-            flow_points[i].Vx2 = flow_points[i].Vx * flow_points[i].Vx;
+            //flow_points[i].Vx = P->system_speed(flow_points[i].x) * P->burn_speed;
+            //flow_points[i].Vx2 = flow_points[i].Vx * flow_points[i].Vx;
         }
 
 
@@ -159,7 +159,7 @@ namespace ps {
         //SPLINTER::DenseVector xd(1);
         for (size_t i = 0; i < spline_steps; i++)
         {
-            spline_points[i].x = flow_points[i].x;
+            //spline_points[i].x = flow_points[i].x;
             spline_points[i].z = getZ(spline_points[i].x);
 
             /*if (spline_points[i].x >= spline_start && spline_points[i].x <= spline_end)
@@ -278,25 +278,27 @@ namespace ps {
         std::ofstream csv(P->csv_folder + "line.csv." + std::to_string(num));
 
         //std::string output = P->frontline_params();
-        std::string output = "x,z,wx,wz,div,div2,Vx2,diff2,cross,raw_cross,r,c,k";
+        std::string output = "x,z,div,div2,diff2,cross,raw_cross,curve_spline,r,br,c,k";
 
         for (int i = 0; i < spline_steps; ++i) {
 
             if (spline_points[i].z)
             {
 
-                output += fmt::format("\n{},{},{},{},{},{},{},{},{},{},{},{},{}",
+                output += fmt::format("\n{},{},{},{},{},{},{},{},{},{},{},{}",
                     spline_points[i].x,
                     spline_points[i].z,
-                    window_points[i].x,
-                    window_points[i].z,
+                    //window_points[i].x,
+                    //window_points[i].z,
                     analys_points[i].div,
                     analys_points[i].div2,
-                    flow_points[i].Vx2,
+                    //flow_points[i].Vx2,
                     analys_points[i].diff2,
                     analys_points[i].cross,
                     analys_points[i].raw_cross,
+                    analys_points[i].curve_spline,
                     analys_points[i].r,
+                    analys_points[i].br,
                     analys_points[i].c,
                     analys_points[i].k
                 );
@@ -456,7 +458,7 @@ namespace ps {
 
         for (size_t i = 0; i < spline_steps; i++)
         {
-            analys_points[i].cross = get_curvature(spline_points[i].x);
+            analys_points[i].curve_spline = get_curvature(spline_points[i].x);
         }
     }    
     
@@ -502,23 +504,25 @@ namespace ps {
             .alpha(P->frontline_cross_spline_alpha)
             .build();
 
+    }
 
+    void Frontline::Finalize() {
 
         for (size_t i = 0; i < spline_steps; i++)
         {
-            analys_points[i].cross = get_curvature(spline_points[i].x);
+            analys_points[i].cross = P->get_curvature(spline_points[i].x);
+            analys_points[i].br = P->get_burn_radius(spline_points[i].x);
         }
     }
 
     double Frontline::get_curvature(const double x) const
     {
+
         if (x < curve_start || x > curve_end) return 0;
 
         SPLINTER::DenseVector xd(1);
         xd(0) = x;
-        double c = curve_spline.eval(xd);
-
-        return c * (c > 0);
+        return curve_spline.eval(xd);
 
     }
 

@@ -151,6 +151,10 @@ namespace ps {
         double gm = 120. / P->sage_time;// P->iterations;
         double bm = 100. / P->sage_time;// P->iterations;
 
+        double rw = 155. / P->iterations;
+        double gw = 155. / P->iterations;
+        //double bw = 155. / P->iterations;
+
 
 
         int red = 0, green = 0, blue = 0;
@@ -182,7 +186,13 @@ namespace ps {
 //                    break;
 
                 case Particle::State::WARM:
-                    color = white_color;
+                    //color = sage_color;
+                    red = 100 + (int)(particle.warm_counter * rw);
+                    green = 100 + (int)(particle.warm_counter * gw);
+                    blue = 255;
+
+                    color = get_uint32_color(red, green, blue);
+                    break;
                     break;
 
                 case Particle::State::BURN:

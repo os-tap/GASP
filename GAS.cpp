@@ -195,8 +195,10 @@ void GAS::BuildFrontline()
     if (params.scale_burn)
     {
         //if (input.update_curve)
+        front_line.BuildCurvatureSpline();
         params.set_curve_spline(front_line.curve_spline, front_line.curve_start, front_line.curve_end);
     }
+    front_line.Finalize();
 }
 
 void GAS::DrawScreen()
