@@ -58,6 +58,11 @@ namespace ps {
         for (int i = 0; i < grid_count; ++i) {
             grid[i].x = i % grid_count_x;
             grid[i].z = i / grid_count_x;
+
+            grid[i].seg_start_x = grid[i].x * grid_x_size + P->area_beg;
+            grid[i].seg_start_z = grid[i].z * grid_z_size;
+            //grid[i].seg_end_x = grid[i].x * grid_x_size + grid_x_size;
+            //grid[i].seg_end_z = grid[i].z * grid_z_size + grid_z_size;
         }
 
 
@@ -184,6 +189,36 @@ namespace ps {
                 CreateParticle(p_x_cord, p_z_cord, p_speed);
             }
         }
+
+    }
+    void Segments::Refill()
+    {
+
+        std::for_each(pstl::execution::par, grid.begin(), grid.end(), [this](Segment& seg) {
+
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            std::uniform_real_distribution<double> dist;
+
+            int sz = seg.ok_list.size();
+
+            if (sz < P->base_particles) {
+
+                for (size_t i = 0; i < P->base_particles - sz; i++)
+                {
+                    double p_x_cord = dist(gen) * grid_x_size + seg.seg_start_x;
+                    double p_z_cord = dist(gen) * grid_z_size + seg.seg_start_z;
+                    Particle p(p_x_cord, p_z_cord, 0, 0);
+                    //all_list.push_back(p);
+                    refilled.push_back(p);
+                    seg.ok_list.emplace_back(p, all_list.size() + refilled.size());
+                }
+            }
+        });
+
+
+        all_list.insert(all_list.end(), refilled.begin(), refilled.end());
+        refilled.clear();
 
     }
     //void Segments::Fill_Sampling_2() {
@@ -386,8 +421,8 @@ namespace ps {
             }
         );*/
 
-        tbb::parallel_for(size_t(0),all_list.size(), [=] (size_t i) {
-                ParticleToSegment(all_list[i], i);
+        tbb::parallel_for(size_t(0),all_list.size(), [&] (size_t i) {
+                ParticleToSegment(i);
             }
         );
 
@@ -428,12 +463,58 @@ namespace ps {
     //}
 
 
+    void Segments::ParticleToSegment(size_t index) {
+        auto& p = all_list[index];
+        int seg_x = GetSegmentX(all_list[index].x);
+        int seg_z = GetSegmentZ(all_list[index].z);
+        auto& seg = grids(seg_x, seg_z);
+
+        if (all_list[index].state == Particle::State::OK) {
+            if (P->refill && seg.ok_list.size() > P->base_particles) {
+                all_list[index].state = Particle::State::DIED;
+                //BurnSegment(grids(seg_x, seg_z));
+
+                //std::cout << "OPA\n";
+            }
+                
+            else
+                seg.ok_list.emplace_back(all_list[index], index);
+            
+        }
+        else if (all_list[index].state == Particle::State::BURN) {
+            int grids_calc = ceil(all_list[index].burn_radius / grid_min_size);
+
+            int seg_x_start = (seg_x - grids_calc) * (seg_x >= grids_calc);
+            int seg_z_start = (seg_z - grids_calc) * (seg_z >= grids_calc);
+
+            int seg_x_end = seg_x + grids_calc + 1;
+            if (seg_x_end > grid_count_x) seg_x_end = grid_count_x;
+            int seg_z_end = seg_z + grids_calc + 1;
+            if (seg_z_end > grid_count_z) seg_z_end = grid_count_z;
+
+            for (int xi = seg_x_start; xi < seg_x_end; xi++) {
+                for (int zi = seg_z_start; zi < seg_z_end; zi++) {
+                    grids(xi, zi).burn_list.emplace_back(all_list[index], index);
+                }
+            }
+
+            //segment.burn_list.push_back(p);
+        }
+    }
+
     void Segments::ParticleToSegment(Particle& p, size_t index) {
         int seg_x = GetSegmentX(p.x);
         int seg_z = GetSegmentZ(p.z);
 
         if (p.state == Particle::State::OK) {
-            grids(seg_x, seg_z).ok_list.emplace_back(p, index);
+            if (grids(seg_x, seg_z).ok_list.size() > 280) {
+                p.state == Particle::State::BURN;
+                std::cout << "OPA\n";
+            }
+                
+            else
+                grids(seg_x, seg_z).ok_list.emplace_back(p, index);
+            
         }
         else if (p.state == Particle::State::BURN) {
             int grids_calc = ceil(p.burn_radius / grid_min_size);

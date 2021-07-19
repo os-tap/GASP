@@ -64,6 +64,7 @@ public:
     double iterate_const;
     double iterate_const_x, iterate_const_z;
     int iterate_particles;
+    bool refill;
 
     int burn_time, sage_time, wave_time;
 
@@ -215,10 +216,10 @@ public:
     }
 
     double particle_speed_x(const double x, const double z) const {
-        return iterate_const_x * x;
+        return iterate_const_x * sin(x - 2*z);
     }
     double particle_speed_z(const double x, const double z) const {
-        return iterate_const_z*(area_divide_z - z);
+        return iterate_const_z*(cos(x + 2*z));
     }
 
     double refract_func(const double x) const {

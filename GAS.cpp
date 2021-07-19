@@ -151,13 +151,14 @@ void GAS::IterateSwarm()
         if (state.move) {
             //if (State.pause) std::cout << "\nMove";
             main_swarm.MoveParticles();
-            if (state.fill) main_swarm.FillParticles();
+            //if (state.fill) main_swarm.FillParticles();
         }
     }
 
     if (!state.pause || input.step) {
         main_swarm.ClearParticles();
         main_swarm.UpdateSegments();
+        if (params.refill) main_swarm.Refill();
     }
 
     if (input.set_burn) main_swarm.BurnSegmentByPoint(burn_x, burn_y);
@@ -174,7 +175,6 @@ void GAS::IterateSwarm()
         }
         //main_swarm.RefractParticles();
         //main_swarm.FinalLoop();
-
     }
     
 
@@ -204,8 +204,8 @@ void GAS::DrawScreen()
     if (state.blur) screen.box_blur();
     screen.UpdateTexture();
 
-    screen.draw_grid(main_swarm.grid_count_x, main_swarm.grid_count_z);
-    screen.draw_hline(2.0, 255, 0, 255);
+    //screen.draw_grid(main_swarm.grid_count_x, main_swarm.grid_count_z);
+    //screen.draw_hline(2.0, 255, 0, 255);
 
 
     if (state.display_line) screen.draw_frontline(front_line.spline_points);

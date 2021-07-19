@@ -36,12 +36,14 @@ namespace ps {
     private:
         tbb::concurrent_vector <size_t> will_burn_index;
         tbb::concurrent_vector <Particle> all_will_burn_concurrent;
+        tbb::concurrent_vector <Particle> refilled;
 
 
 
     public:
 
         void FillParticles();
+        void Refill();
         void MoveParticles();
         void CrossParticles();
         void StepParticles();
@@ -58,12 +60,14 @@ namespace ps {
     private:
 
         void CreateParticle(double x_cord, double z_cord, double p_speed);
+        void CreateParticle(double x_cord, double z_cord);
         void MoveParticle(Particle& p);
         void StepParticle(Particle& p);
         void BurnParticle(Particle& p);
         void BurnParticle(Particle* p);
         void ParticleToSegment(Particle& p);
         void ParticleToSegment(Particle& p, size_t i);
+        void ParticleToSegment(size_t i);
         void FrontPointToSegment(Point& p, size_t index);
 
         bool ParticleInBurnSegments(Particle* particle, int seg_x, int seg_z);
@@ -111,6 +115,7 @@ namespace ps {
             std::vector<int> burn_indexes;
 
             std::vector<FrontSegPoint> front_points;
+            double seg_start_x, seg_start_z;// seg_end_x, , seg_end_z;
             //std::vector<std::pair<int, int>> front_points;
         };
 
