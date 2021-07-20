@@ -22,7 +22,7 @@
 
   "refill": true,
 
-  "base_particles": 25,
+  "base_particles": 10,
   "particles_dist": 16,
   "base_speed": 1.5,
   "burn_speed": 0.99,
