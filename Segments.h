@@ -90,7 +90,7 @@ namespace ps {
 
 
     public:
-
+        bool refill;
         int grid_count_x, grid_count_z, grid_count; 
         double grid_x_size, grid_z_size;
         double grid_min_size, grid_max_size;

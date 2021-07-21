@@ -15,14 +15,14 @@
   "wave_time": 100,
 
 
-  "burn_radius": 5,
+  "burn_radius": 1,
   "burn_fix": -1,
   "burn_fix_a": 1,
   "burn_fix_b": 0.671,
 
   "refill": true,
 
-  "base_particles": 25,
+  "base_particles": 3,
   "particles_dist": 16,
   "base_speed": 1.5,
   "burn_speed": 0.99,
@@ -37,7 +37,7 @@
 
   "emitter_begin": 0,
 
-  "iterations": 2,
+  "iterations": 1,
 
   "burn_time": 2,
   "sage_time": 0,

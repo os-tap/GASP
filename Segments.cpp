@@ -14,6 +14,7 @@ namespace ps {
         //SetSegmentsGrid(P->burn_radius_cross * (1 + pow(1 - fabs(0) / 0.25, 4)));
         SetSegmentsGrid(P->burn_radius_cross);
         ResetFillGrid();
+        refill = P->refill;
     }
 
 
@@ -197,7 +198,6 @@ namespace ps {
         std::for_each(pstl::execution::par, grid.begin(), grid.end(), [this](Segment& seg) {
 
             std::random_device rd;
-            std::mt19937 gen(rd());
             std::uniform_real_distribution<double> dist;
 
             int sz = seg.ok_list.size();
@@ -206,12 +206,11 @@ namespace ps {
 
                 for (size_t i = 0; i < P->base_particles - sz; i++)
                 {
-                    double p_x_cord = dist(gen) * grid_x_size + seg.seg_start_x;
-                    double p_z_cord = dist(gen) * grid_z_size + seg.seg_start_z;
+                    double p_x_cord = dist(rd) * grid_x_size + seg.seg_start_x;
+                    double p_z_cord = dist(rd) * grid_z_size + seg.seg_start_z;
                     Particle p(p_x_cord, p_z_cord, 0, 0);
-                    //all_list.push_back(p);
-                    refilled.push_back(p);
-                    seg.ok_list.emplace_back(p, all_list.size() + refilled.size());
+                    auto it = refilled.push_back(p);
+                    seg.ok_list.emplace_back(p, all_list.size() + it - refilled.begin());
                 }
             }
         });
@@ -470,7 +469,11 @@ namespace ps {
         auto& seg = grids(seg_x, seg_z);
 
         if (all_list[index].state == Particle::State::OK) {
-            if (P->refill && seg.ok_list.size() > P->base_particles) {
+            auto b1 = refill;
+            auto i1 = seg.ok_list.size();
+            auto i2 = P->base_particles;
+            auto b2 = i1 > i2;
+            if (b1 && b2) {
                 all_list[index].state = Particle::State::DIED;
                 //BurnSegment(grids(seg_x, seg_z));
 
