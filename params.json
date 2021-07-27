@@ -15,7 +15,7 @@
   "wave_time": 100,
 
 
-  "burn_radius": 1,
+  "burn_radius": 3,
   "burn_fix": -1,
   "burn_fix_a": 1,
   "burn_fix_b": 0.671,
