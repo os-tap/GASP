@@ -119,7 +119,7 @@ public:
         xd(0) = x;
         double c = curve_spline.eval(xd);
 
-        return c * (c > 0);
+        return c;
 
     }
 

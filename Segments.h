@@ -149,7 +149,7 @@ namespace ps {
 
         void CalcFrontlineRadius(std::vector <Point>& points);
         std::vector<double> front_crosses;
-        std::vector<Point> frontline_points;
+        //std::vector<Point> frontline_points;
         void CalcFrontlineRadius2(std::vector <Point>& points);
         void RefractParticles();
         /**/

@@ -235,7 +235,7 @@ void GAS::PrintBurnRadius() {
 void GAS::PrintFiles()
 {
 
-    main_swarm.PrintCount(print_step_counter, params.print_count);
+    //main_swarm.PrintCount(print_step_counter, params.print_count);
     front_line.Print(print_step_counter);
     PrintBurnRadius();
     std::cout << "\nprint - " << print_step_counter;

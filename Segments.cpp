@@ -456,7 +456,7 @@ namespace ps {
     }
 
     void Segments::CalcFrontlineRadius(std::vector <Point>& points) {
-        frontline_points = points;
+        //frontline_points = points;
 
 
         double cross_radius = P->frontline_cross_radius;
@@ -466,11 +466,13 @@ namespace ps {
         int grids_calc = ceil(cross_radius / grid_min_size);
 
         //tbb::parallel_for(size_t(0), frontline_points.size(), [=](size_t i)
+        
         for (size_t i = 0; i < points.size(); i++)
         {
                 //ParticleToSegment(all_list[i], i);
                 //auto p = frontline_points[i];
-                FrontPointToSegment(frontline_points[i], i, grids_calc, cross_radius_2);
+                if (points[i].x > P->stream_beg + cross_radius && points[i].x < P->stream_end - cross_radius)
+                    FrontPointToSegment(points[i], i, grids_calc, cross_radius_2);
         }
         //);
 
@@ -488,7 +490,7 @@ namespace ps {
         });
 
 
-        front_crosses.resize(frontline_points.size());
+        front_crosses.resize(points.size());
         std::fill(front_crosses.begin(), front_crosses.end(), 0);
 
         for (const auto& seg : grid) {
@@ -496,6 +498,24 @@ namespace ps {
                 front_crosses[sp.index] += sp.count;
             }
         }
+
+
+        /*for (int i = 0; i < front_crosses.size(); i++) {
+            if (front_crosses[i] > 0) {
+                for (int j = i-1; j >= 0; j--) {
+                    front_crosses[j] = front_crosses[i];
+                }
+                break;
+            }
+        }
+        for (int i = front_crosses.size() - 1; i >= 0; i--) {
+            if (front_crosses[i] > 0) {
+                for (int j = i+1; j < front_crosses.size(); j++) {
+                    front_crosses[j] = front_crosses[i];
+                }
+                break;
+            }
+        }*/
 
         for (auto& c : front_crosses)
         {

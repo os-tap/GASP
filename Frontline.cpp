@@ -6,8 +6,8 @@ namespace ps {
 
     void Frontline::Init() {
 
-        area_start = P->area_beg;
-        area_end = P->area_end;
+        area_start = P->stream_beg;
+        area_end = P->stream_end;
         area_size = area_end - area_start;
 
         /*   WINDOW MIDDLE PARAMS   */
@@ -110,7 +110,7 @@ namespace ps {
         {
             for (int i = 0; i < window_steps; ++i) {
                 if (window_points[i].count) {
-                    window_points[i].z += P->system_speed(window_points[i].x) / 2;
+                    window_points[i].z -= P->system_speed(window_points[i].x) / 2;
                 }
             }
         }
@@ -218,8 +218,8 @@ namespace ps {
                 analys_points[i].k = k;
                 double dx = d * gap / sqrt(k * k + 1);
                 double dy = dx * k;
-                spline_points[i].x += dx;
-                spline_points[i].z -= dy;
+                spline_points[i].x -= dx;
+                spline_points[i].z += dy;
             }
             else {
                 spline_points[i].z = 0;
@@ -440,7 +440,7 @@ namespace ps {
 
 
         for (int i = 0; i < spline_steps; ++i) {
-            if (analys_points[i].r!=0) samples.addSample(spline_points[i].x, analys_points[i].r);
+            if (analys_points[i].r>=0) samples.addSample(spline_points[i].x, analys_points[i].r);
         }
 
         if (samples.cbegin() == samples.cend()) return;
@@ -487,10 +487,16 @@ namespace ps {
         }
 
 
-
-
+        if (crosses.front()) {
+            samples.addSample(area_start, P->frontline_cross_border - crosses.front());
+            curve_start = area_start;
+        }
         for (int i = 0; i < spline_steps; ++i) {
             if (crosses[i]) samples.addSample(spline_points[i].x, P->frontline_cross_border - crosses[i]);
+        }
+        if (crosses.back()) {
+            samples.addSample(area_end, P->frontline_cross_border - crosses.back());
+            curve_end = area_end;
         }
 
         if (samples.cbegin() == samples.cend()) return;
@@ -518,7 +524,7 @@ namespace ps {
         xd(0) = x;
         double c = curve_spline.eval(xd);
 
-        return c * (c > 0);
+        return c;
 
     }
 
