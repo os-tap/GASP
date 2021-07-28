@@ -36,6 +36,7 @@ namespace ps {
         void CalcRadius(int h_div);
         void CalcCurve();
         void SetCrosses(const std::vector <double>& crosses);
+        void Finalize();
 
         void BuildCurvatureSpline();
         void BuildCrossesSpline(const std::vector <double>& crosses);
@@ -68,7 +69,7 @@ namespace ps {
 
 
         struct analys_point {
-            double div=0, diff2=0, div2=0, cross=0, raw_cross, r=0, c=0, k=0, cx=0, cz=0;
+            double div=0, diff2=0, div2=0, cross=0, raw_cross=0, curve_spline=0, r=0,br=0, c=0, k=0, cx=0, cz=0;
         };
         std::vector <analys_point> analys_points;
         std::vector <double> curvature{0};

@@ -70,7 +70,7 @@ private:
             burn = true,
             pause = false,
             display_swarm = true,
-            display_line = true,
+            display_line = false,
             bold_points = false,
             blur = false,
             update_line = true,

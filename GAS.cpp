@@ -184,7 +184,7 @@ void GAS::BuildFrontline()
 
     if (params.calc_cross)
     {
-
+        //std::cout << "cross";
         main_swarm.UpdateSegments();
         main_swarm.CalcFrontlineRadius(front_line.spline_points);
 
@@ -198,8 +198,10 @@ void GAS::BuildFrontline()
     if (params.scale_burn)
     {
         //if (input.update_curve)
+        front_line.BuildCurvatureSpline();
         params.set_curve_spline(front_line.curve_spline, front_line.curve_start, front_line.curve_end);
     }
+    front_line.Finalize();
 }
 
 void GAS::DrawScreen()
