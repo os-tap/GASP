@@ -1,11 +1,13 @@
 {
-  "csv_folder": "C:\\Users\\prive\\OneDrive\\csv\\0907\\",
+  "csv_folder": "C:\\Users\\prive\\OneDrive\\csv\\curve\\",
 
-  "area_beg": -1,
-  "area_end": 1,
+  "area_beg": -3,
+  "area_end": 3,
   "scale": 500,
-  "stream_beg": -1,
-  "stream_end": 1,
+  "stream_beg": -2,
+  "stream_end": 2,
+
+  "area_divide_z": 3,
 
 
   "refract_coef": -1,
@@ -13,59 +15,61 @@
   "wave_time": 100,
 
 
-  "burn_radius": 3,
+  "burn_radius": 5,
   "burn_fix": -1,
   "burn_fix_a": 1,
-  "burn_fix_b": 1,
+  "burn_fix_b": 0.671,
 
+  "refill": true,
 
-
-  "base_particles": 300,
+  "base_particles": 2,
   "particles_dist": 16,
-
-  "const_speed": 0,
-  "base_speed": 3,
-
+  "base_speed": 1.5,
   "burn_speed": 0.99,
+  "const_speed": 1,
+  "const_speed_x": 1,
+  "const_speed_z": 1,
 
 
   "svm_count": 10000,
-  "print_count": 40000,
+  "print_count": 20000,
   "display_count": 500000,
 
   "emitter_begin": 0,
 
-  "iterations": 1,
+  "iterations": 2,
 
-  "burn_time": 1,
-  "sage_time": 20,
+  "burn_time": 2,
+  "sage_time": 0,
 
 
 
 
   "frontline_spline_steps": 500,
   "frontline_spline_alpha": 100,
-  "move_normal": false,
+  "move_normal": true,
   "move_speed": false,
 
   "frontline_window_steps": 500,
-  "frontline_window_size": 3,
+  "frontline_window_size": 4,
 
   "frontline_stencil_h": 2,
-  "frontline_radius_h": 7,
+  "frontline_radius_h": 20,
   "curve_by_radius": false,
 
+  "calc_cross": false,
   "frontline_cross_chunk": true,
   "frontline_cross_multipler": 5,
   "frontline_cross_area": 0.1,
-  "frontline_cross_border": 0.5,
-  "frontline_cross_spline_alpha": 100,
 
 
-  "calc_cross": false,
+  "who_cross": false,
   "scale_burn": false,
+  "scale_burn_multipler": 580,
+  "scale_burn_size": 0.1,
+  "scale_burn_pow": 1,
+  "scale_burn_condition": 100,
 
-
-  "curve_burn_coef": 0.1
+  "curve_burn_coef": 5.5
 
 }

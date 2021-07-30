@@ -164,7 +164,7 @@ namespace ps {
             {
 
                 case Particle::State::OK:
-                    color = blue_color;
+                    color = get_uint32_color(0, 255, 0);
                     break;
 
 //                case Particle::State::WAVE:
