@@ -153,6 +153,8 @@ void GAS::IterateSwarm()
     if (!state.pause || input.step) {
         main_swarm.ClearParticles();
         main_swarm.UpdateSegments();
+        main_swarm.CalcBurnRadius(params.grid_curve_calc);
+        main_swarm.PlaceBurned();
     }
 
 
@@ -237,6 +239,7 @@ void GAS::PrintBurnRadius() {
 void GAS::PrintFiles()
 {
 
+    main_swarm.PrintCurvature(print_step_counter);
     main_swarm.PrintCount(print_step_counter, params.print_count);
     front_line.Print(print_step_counter);
     PrintBurnRadius();

@@ -47,9 +47,13 @@ namespace ps {
         void StepParticles();
         void ClearParticles();
 
+        void CalcBurnRadius(int g = 1);
+        void PlaceBurned();
+
         void LightsOut();
         void EraseParticles();
 
+        void PrintCurvature(int);
         void PrintSwarm(int);
         void PrintCount(int n, int count);
         void PrintSVM(int n, int count);
@@ -64,6 +68,7 @@ namespace ps {
         void BurnParticle(Particle* p);
         void ParticleToSegment(Particle& p);
         void ParticleToSegment(Particle& p, size_t i);
+        void ParticleToSegment(size_t i);
         void FrontPointToSegment(Point& p, size_t index, int grids_calc, double cross_radius_2);
 
         bool ParticleInBurnSegments(Particle* particle, int seg_x, int seg_z);
@@ -91,6 +96,7 @@ namespace ps {
         double grid_x_size, grid_z_size;
         double grid_min_size, grid_max_size;
         double grid_count_x_percent, grid_count_z_percent;
+        int grid_particles_count;
 
         struct SegPoint {
             SegPoint(Point &p, double _r2, size_t i) : x(p.x), z(p.z), r2(_r2), index(i) {}
@@ -107,7 +113,9 @@ namespace ps {
 
         struct Segment {
             int x, z;
-            tbb::concurrent_vector <SegPoint> ok_list, burn_list;
+            double curvature = 0;
+            int c_ok = 0, c_b = 0;
+            tbb::concurrent_vector <SegPoint> ok_list, burn_list, b_list;
             std::vector<int> burn_indexes;
 
             std::vector<FrontSegPoint> front_points;
@@ -117,7 +125,7 @@ namespace ps {
         std::vector<Segment> grid; 
         //tbb::concurrent_vector <Segment*> burn_segments;
 
-        Segment& grids(size_t x, size_t z) {
+        inline Segment& grids(size_t x, size_t z) {
             assert(z * grid_count_x + x < grid.size(), "segments out of range");
             return grid[z * grid_count_x + x];
         }

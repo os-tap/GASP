@@ -37,7 +37,7 @@ public:
     json GetFromFile();
     void Print();
 
-    const int screen_width = 350;
+    const int screen_width = 500;
     const int screen_height = 750;
     const int screen_bottom_gap = 0;
 
@@ -94,6 +94,9 @@ public:
 
     double curve_start, curve_end;
     double curve_burn_coef;
+
+
+    int grid_curve_calc;
 
     SPLINTER::BSpline curve_spline{ 1 };
 
