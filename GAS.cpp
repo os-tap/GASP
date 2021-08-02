@@ -201,7 +201,7 @@ void GAS::BuildFrontline()
         front_line.BuildCurvatureSpline();
         params.set_curve_spline(front_line.curve_spline, front_line.curve_start, front_line.curve_end);
     }
-    front_line.Finalize();
+    //front_line.Finalize();
 }
 
 void GAS::DrawScreen()
@@ -237,7 +237,7 @@ void GAS::PrintBurnRadius() {
 void GAS::PrintFiles()
 {
 
-    //main_swarm.PrintCount(print_step_counter, params.print_count);
+    main_swarm.PrintCount(print_step_counter, params.print_count);
     front_line.Print(print_step_counter);
     PrintBurnRadius();
     std::cout << "\nprint - " << print_step_counter;

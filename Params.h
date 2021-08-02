@@ -37,7 +37,7 @@ public:
     json GetFromFile();
     void Print();
 
-    const int screen_width = 500;
+    const int screen_width = 350;
     const int screen_height = 750;
     const int screen_bottom_gap = 0;
 
