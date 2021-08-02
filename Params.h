@@ -95,6 +95,9 @@ public:
     double curve_start, curve_end;
     double curve_burn_coef;
 
+
+    int grid_curve_calc;
+
     SPLINTER::BSpline curve_spline{ 1 };
 
     void set_curve_spline(SPLINTER::BSpline spline, double _start, double _end) {

@@ -62,6 +62,8 @@ namespace ps {
 
 
 
+        grid_particles_count = P->base_particles / P->burn_radius_2_cross / M_PI * grid_x_size * grid_z_size;
+
 
     }
 
@@ -114,6 +116,26 @@ namespace ps {
         }
 
         std::ofstream csv(P->csv_folder + "gas.csv." + std::to_string(num));
+        csv << output;
+        csv.close();
+
+
+
+    }
+    void Segments::PrintCurvature(int num)
+    {
+
+        std::string output;
+
+        //output += "#base_particles " + std::to_string(P->base_particles);
+
+        output += "x,z,c";
+
+        for (const auto& seg : grid) {
+            output += fmt::format("\n{},{},{}", seg.x / (double)grid_count_x * P->area_size + P->area_beg + grid_x_size / 2, seg.z / (double)grid_count_z * P->area_height + grid_z_size / 2, seg.curvature);
+        }
+
+        std::ofstream csv(P->csv_folder + "gas_curv.csv." + std::to_string(num));
         csv << output;
         csv.close();
 
@@ -365,6 +387,7 @@ namespace ps {
         std::for_each(pstl::execution::par,
             grid.begin(), grid.end(), [this](Segment& seg) {
                 seg.burn_list.clear();
+                seg.b_list.clear();
                 seg.ok_list.clear();
                 seg.burn_indexes.clear();
                 seg.front_points.clear();
@@ -435,7 +458,7 @@ namespace ps {
             grids(seg_x, seg_z).ok_list.emplace_back(p, index);
         }
         else if (p.state == Particle::State::BURN) {
-            int grids_calc = ceil(p.burn_radius / grid_min_size);
+            /*int grids_calc = ceil(p.burn_radius / grid_min_size);
 
             int seg_x_start = (seg_x - grids_calc) * (seg_x >= grids_calc);
             int seg_z_start = (seg_z - grids_calc) * (seg_z >= grids_calc);
@@ -449,7 +472,38 @@ namespace ps {
                 for (int zi = seg_z_start; zi < seg_z_end; zi++) {
                     grids(xi, zi).burn_list.emplace_back(p, index);
                 }
-            }
+            }*/
+            grids(seg_x, seg_z).b_list.emplace_back(p, index);
+
+            //segment.burn_list.push_back(p);
+        }
+    }
+
+    void Segments::ParticleToSegment(size_t index) {
+        auto& p = all_list[index];
+        int seg_x = GetSegmentX(p.x);
+        int seg_z = GetSegmentZ(p.z);
+
+        if (p.state == Particle::State::OK) {
+            grids(seg_x, seg_z).ok_list.emplace_back(p, index);
+        }
+        else if (p.state == Particle::State::BURN) {
+            /*int grids_calc = ceil(p.burn_radius / grid_min_size);
+
+            int seg_x_start = (seg_x - grids_calc) * (seg_x >= grids_calc);
+            int seg_z_start = (seg_z - grids_calc) * (seg_z >= grids_calc);
+
+            int seg_x_end = seg_x + grids_calc + 1;
+            if (seg_x_end > grid_count_x) seg_x_end = grid_count_x;
+            int seg_z_end = seg_z + grids_calc + 1;
+            if (seg_z_end > grid_count_z) seg_z_end = grid_count_z;
+
+            for (int xi = seg_x_start; xi < seg_x_end; xi++) {
+                for (int zi = seg_z_start; zi < seg_z_end; zi++) {
+                    grids(xi, zi).burn_list.emplace_back(p, index);
+                }
+            }*/
+            grids(seg_x, seg_z).b_list.emplace_back(p, index);
 
             //segment.burn_list.push_back(p);
         }
@@ -739,10 +793,75 @@ namespace ps {
 
         auto erase_it = std::remove_if(pstl::execution::par, all_list.begin(), all_list.end(), [](Particle& p) {
             return p.state == Particle::State::DIED;
-            });
+        });
         all_list.erase(erase_it, all_list.end());
 
 
+    }
+
+    void Segments::CalcBurnRadius(int g)
+    {
+        std::for_each(pstl::execution::par, grid.begin(), grid.end(), [&,g](Segment& seg) {
+            seg.curvature = seg.c_ok = seg.c_b = 0;
+            if (seg.x >= g && seg.x < grid_count_x - g && seg.z >= g && seg.z < grid_count_z - g) {
+                /*for (size_t zi = seg.z-g; zi <= seg.z+g ; zi++)
+                {
+                    for (size_t xi = seg.x-g; xi <= seg.x+g; xi++)
+                    {
+                        seg.c_ok += grids(xi, zi).ok_list.size();
+                        seg.c_b += grids(xi, zi).b_list.size();
+                    }
+                }*/
+
+                int xs[] = { 1,3,4,5,6,6,7,7,7,6,6,5,4,3,1 };
+
+                for (size_t j = 0, zi = seg.z - 7; zi <= seg.z + 7; zi++,j++)
+                {
+                    for (size_t xi = seg.x - xs[j]; xi <= seg.x + xs[j]; xi++)
+                    {
+                        seg.c_ok += grids(xi, zi).ok_list.size();
+                        seg.c_b += grids(xi, zi).b_list.size();
+                    }
+                }
+
+
+
+                //if (seg.c_ok && seg.c_b) 
+                {
+                    seg.curvature = (0.5 - (double)seg.c_ok / 158 / grid_particles_count) * P->curve_burn_coef;
+                    seg.curvature *= seg.curvature * (seg.curvature > 0);
+                }
+            }
+        });
+    }
+
+    void Segments::PlaceBurned()
+    {
+        std::for_each(pstl::execution::par, grid.begin(), grid.end(), [&](Segment& seg) {
+            if (seg.c_ok && seg.c_b) {
+                double br = P->burn_radius_cross * (1 + seg.curvature);
+                double br2 = br * br;
+                for (auto& bp : seg.b_list) {
+
+                    bp.r2 = br2;
+                    int grids_calc = ceil(br / grid_min_size);
+
+                    int seg_x_start = (seg.x - grids_calc) * (seg.x >= grids_calc);
+                    int seg_z_start = (seg.z - grids_calc) * (seg.z >= grids_calc);
+
+                    int seg_x_end = seg.x + grids_calc + 1;
+                    if (seg_x_end > grid_count_x) seg_x_end = grid_count_x;
+                    int seg_z_end = seg.z + grids_calc + 1;
+                    if (seg_z_end > grid_count_z) seg_z_end = grid_count_z;
+
+                    for (int xi = seg_x_start; xi < seg_x_end; xi++) {
+                        for (int zi = seg_z_start; zi < seg_z_end; zi++) {
+                            grids(xi, zi).burn_list.push_back(bp);
+                        }
+                    }
+                }
+            }
+        });
     }
 
 

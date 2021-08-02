@@ -121,6 +121,7 @@ void ps::Params::Load(json j)
     scale_burn = (bool)j["scale_burn"];
 
     curve_burn_coef = (double)j["curve_burn_coef"];
+    grid_curve_calc = (int)j["grid_curve_calc"];
 
 }
 
