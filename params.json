@@ -13,7 +13,7 @@
   "wave_time": 100,
 
 
-  "burn_radius": 7,
+  "burn_radius": 6,
   "burn_fix": -1,
   "burn_fix_a": 1,
   "burn_fix_b": 0.672,
@@ -23,8 +23,8 @@
   "base_particles": 300,
   "particles_dist": 16,
 
-  "const_speed": -1.5,
-  "base_speed": 6,
+  "const_speed": -2,
+  "base_speed": 7,
 
   "burn_speed": 0.99,
 
@@ -35,7 +35,7 @@
 
   "emitter_begin": 0,
 
-  "iterations": 1,
+  "iterations": 3,
 
   "burn_time": 1,
   "sage_time": 0,
@@ -66,7 +66,7 @@
   "scale_burn": false,
 
 
-  "curve_burn_coef": 6,
+  "curve_burn_coef": 5.25,
 
 
 

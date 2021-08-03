@@ -2,6 +2,8 @@
 #include "Params.h"
 #include "Particle.h"
 
+#include "Spline2d.h"
+
 #include <vector>
 #include <string>
 
@@ -48,6 +50,7 @@ namespace ps {
         void ClearParticles();
 
         void CalcBurnRadius(int g = 1);
+        void SplineGrid();
         void PlaceBurned();
 
         void LightsOut();
@@ -97,6 +100,9 @@ namespace ps {
         double grid_min_size, grid_max_size;
         double grid_count_x_percent, grid_count_z_percent;
         int grid_particles_count;
+        double* gxa{nullptr}, * gya{ nullptr };
+        Spline2d spline2d;
+
 
         struct SegPoint {
             SegPoint(Point &p, double _r2, size_t i) : x(p.x), z(p.z), r2(_r2), index(i) {}
