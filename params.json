@@ -1,11 +1,11 @@
 {
-  "csv_folder": "C:\\Users\\prive\\OneDrive\\csv\\0208\\",
+  "csv_folder": "C:\\Users\\prive\\OneDrive\\csv\\1708\\",
 
-  "area_beg": -2,
-  "area_end": 2,
+  "area_beg": -1,
+  "area_end": 1,
   "scale": 500,
-  "stream_beg": -2,
-  "stream_end": 2,
+  "stream_beg": -1,
+  "stream_end": 1,
 
 
   "refract_coef": -1,
@@ -13,18 +13,18 @@
   "wave_time": 100,
 
 
-  "burn_radius": 5,
+  "burn_radius": 4,
   "burn_fix": -1,
   "burn_fix_a": 1,
   "burn_fix_b": 0.672,
 
 
 
-  "base_particles": 500,
+  "base_particles": 100,
   "particles_dist": 16,
 
-  "const_speed": -0.2,
-  "base_speed": 6,
+  "const_speed": -1,
+  "base_speed": 8,
 
   "burn_speed": 0.99,
 
@@ -66,12 +66,12 @@
   "scale_burn": false,
 
 
-  "curve_burn_coef": 0.4,
+  "curve_burn_coef": 0.075,
 
 
 
 
-  "grid_curve_calc": 7,
-  "grid_curve_area": 0.1
+  "grid_curve_calc": 1,
+  "grid_curve_area": 0.25
 
 }

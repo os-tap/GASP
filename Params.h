@@ -97,6 +97,7 @@ public:
 
 
     int grid_curve_calc;
+    double grid_curve_area;
 
     SPLINTER::BSpline curve_spline{ 1 };
 

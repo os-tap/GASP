@@ -101,7 +101,7 @@ namespace ps {
         double grid_count_x_percent, grid_count_z_percent;
         int grid_particles_count;
         double* gxa{nullptr}, * gya{ nullptr };
-        Spline2d spline2d;
+        //Spline2d spline2d;
 
 
         struct SegPoint {
@@ -150,6 +150,9 @@ namespace ps {
 
 
         bool CheckSegmentNeighborsBurn(int seg_x, int seg_z);
+
+        std::vector<int> circle_squares;
+        void CircleSquareSampling(double r);
 
 
 

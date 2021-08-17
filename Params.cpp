@@ -122,6 +122,7 @@ void ps::Params::Load(json j)
 
     curve_burn_coef = (double)j["curve_burn_coef"];
     grid_curve_calc = (int)j["grid_curve_calc"];
+    grid_curve_area = (double)j["grid_curve_area"];
 
 }
 
