@@ -218,8 +218,8 @@ namespace ps {
                 analys_points[i].k = k;
                 double dx = d * gap / sqrt(k * k + 1);
                 double dy = dx * k;
-                spline_points[i].x -= dx;
-                spline_points[i].z += dy;
+                spline_points[i].x += dx;
+                spline_points[i].z -= dy;
             }
             else {
                 spline_points[i].z = 0;
@@ -488,14 +488,14 @@ namespace ps {
 
 
         if (crosses.front()) {
-            samples.addSample(area_start, P->frontline_cross_border - crosses.front());
+            samples.addSample(area_start, crosses.front());
             curve_start = area_start;
         }
         for (int i = 0; i < spline_steps; ++i) {
-            if (crosses[i]) samples.addSample(spline_points[i].x, P->frontline_cross_border - crosses[i]);
+            if (crosses[i]) samples.addSample(spline_points[i].x, crosses[i]);
         }
         if (crosses.back()) {
-            samples.addSample(area_end, P->frontline_cross_border - crosses.back());
+            samples.addSample(area_end, crosses.back());
             curve_end = area_end;
         }
 

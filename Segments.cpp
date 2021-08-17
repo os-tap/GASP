@@ -144,17 +144,17 @@ namespace ps {
 
         //output += "#base_particles " + std::to_string(P->base_particles);
 
-        output += "x,z,c,cf";
+        output += "x,z,c,cf,c_ok,c_bu";
         int g = P->grid_curve_calc+1;
 
         for (const auto& seg : grid) {
 
-            if (seg.x >= g && seg.x < grid_count_x - g && seg.z >= g && seg.z < grid_count_z - g)
+            //if (seg.x >= g && seg.x < grid_count_x - g && seg.z >= g && seg.z < grid_count_z - g)
             {
 
                 double x = seg.x / (double)grid_count_x * P->area_size + P->area_beg + grid_x_size / 2;
                 double z = seg.z / (double)grid_count_z * P->area_height + grid_z_size / 2;
-                output += fmt::format("\n{},{},{},{}", x, z, seg.curvature,spline2d.eval(x,z));
+                output += fmt::format("\n{},{},{},{},{},{}", x, z, seg.curvature,spline2d.eval(x,z),seg.ok_list.size(),seg.b_list.size());
 
             }
         }
@@ -597,7 +597,7 @@ namespace ps {
 
         for (auto& c : front_crosses)
         {
-            c = c / P->base_particles / P->frontline_cross_radius_2 * P->burn_radius_2_cross;
+            c = (P->frontline_cross_border - c / P->base_particles / P->frontline_cross_radius_2 * P->burn_radius_2_cross) * M_PI * M_PI / P->frontline_cross_radius;
             //c *= c < 0.5F;
             //if (c) c = 0.5F - c;
 
@@ -826,8 +826,9 @@ namespace ps {
     void Segments::CalcBurnRadius(int g)
     {
         std::for_each(pstl::execution::par, grid.begin(), grid.end(), [&,g](Segment& seg) {
-            seg.curvature = seg.c_ok = seg.c_b = 0;
-            if (seg.x >= g && seg.x < grid_count_x - g && seg.z >= g && seg.z < grid_count_z - g) 
+            seg.curvature = 0;
+            seg.c_ok = seg.c_b = 0;
+            //if (seg.x >= g && seg.x < grid_count_x - g && seg.z >= g && seg.z < grid_count_z - g) 
             {
                 /*for (size_t zi = seg.z-g; zi <= seg.z+g ; zi++)
                 {
@@ -840,25 +841,28 @@ namespace ps {
 
                 int xs[] = { 1,3,4,5,6,6,7,7,7,6,6,5,4,3,1 };
                 int nbr = 158;
-                for (size_t j = 0, zi = seg.z - 7; zi <= seg.z + 7; zi++,j++)
+                for (int j = 0, zi = seg.z - 7; zi <= seg.z + 7; zi++,j++)
                 {
-                    for (size_t xi = seg.x - xs[j]; xi <= seg.x + xs[j]; xi++)
+                    for (int xi = seg.x - xs[j]; xi <= seg.x + xs[j]; xi++)
                     {
-                        //if (zi >= 0 && zi < grid_count_z && xi >= 0 && xi < grid_count_x)
+                        if (zi >= 0 && zi < grid_count_z && xi >= 0 && xi < grid_count_x)
                         {
                             seg.c_ok += grids(xi, zi).ok_list.size();
                             seg.c_b += grids(xi, zi).b_list.size();
                         }
-                        //else nbr--;
+                        else nbr--;
                     }
                 }
 
 
 
-                if (seg.c_ok && seg.c_b) 
+                if (seg.c_ok && seg.c_b)  
                 {
-                    seg.curvature = (0.5 - (double)seg.c_ok / nbr / grid_particles_count) * P->curve_burn_coef;
-                    seg.curvature *= seg.curvature *(seg.curvature > 0);
+                    //seg.curvature = (0.5 - (double)seg.c_ok / (seg.c_b + seg.c_ok)) * M_PI * M_PI / ( P->grid_curve_calc * grid_x_size) * P->curve_burn_coef;
+                    //seg.curvature = (0.5 - (double)seg.c_ok / nbr / grid_particles_count);
+                    seg.curvature = (0.5 - (double)seg.c_ok / nbr / grid_particles_count) * M_PI * M_PI / ( P->grid_curve_calc * grid_x_size) * P->curve_burn_coef;
+                    //seg.curvature *= seg.curvature *(seg.curvature > 0);
+                    //seg.curvature *= seg.curvature > 0;
                     //seg.curvature *= std::fabs(seg.curvature);
                 }
             }
@@ -882,11 +886,16 @@ namespace ps {
     void Segments::PlaceBurned()
     {
         std::for_each(pstl::execution::par, grid.begin(), grid.end(), [&](Segment& seg) {
-            if (seg.c_ok && seg.c_b)
+            //if (seg.c_ok && seg.c_b)
             {
                 for (auto& bp : seg.b_list) {
 
-                    double br = P->burn_radius_cross * (1 + spline2d.eval(bp.x,bp.z));
+
+                    double br = P->make_radius_cross_fix(P->burn_radius * (1 + seg.curvature));
+
+                    //double br = P->burn_radius_cross;
+                    //double br = P->burn_radius_cross * (1 + seg.curvature);
+                    //double br = P->burn_radius_cross * (1 + spline2d.eval(bp.x,bp.z));
                     double br2 = br * br;
                     bp.r2 = br2;
                     int grids_calc = ceil(br / grid_min_size);
