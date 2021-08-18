@@ -15,17 +15,38 @@
 #include <cmath>
 #include <cassert>
 
+#include <cstdio>
+#include <utility>
+#include <limits>
+
+//#undef min
+//#undef max
+#define NOMINMAX 
+//#include <tbb/task_scheduler_init.h>
+#include <tbb/enumerable_thread_specific.h>
+#undef NOMINMAX 
+//#include <tbb/parallel_for.h>
+//#include <tbb/blocked_range.h>
 #include <tbb/concurrent_vector.h>
 #include <pstl/execution>
 #include <pstl/algorithm>
 
 typedef std::vector <ps::Particle> ParticleList;
 
+typedef tbb::enumerable_thread_specific<int> CounterType;
+
 namespace ps {
+
+
 
     class Segments {
 
         const Params* P;
+
+        CounterType SageCounter{0};
+
+        
+
 
     public:
 
@@ -88,6 +109,9 @@ namespace ps {
         void ResetFillGrid();
         std::vector <double> last_particles;
         int fill_grid_count;
+
+
+        int delete_sage = 0;
 
 
 
@@ -174,5 +198,5 @@ namespace ps {
     };
 
 
-} /* namespace ps */
+}; /* namespace ps */
 

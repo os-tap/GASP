@@ -59,6 +59,7 @@ void ps::Params::Load(json j)
     burn_radius_2 = burn_radius * burn_radius;
 
     base_particles = (int)j["base_particles"];
+    base_particles_NR2 = base_particles / burn_radius_2;
     particles_dist = burn_radius / (int)j["particles_dist"];
 
     //burn_radius_cross = burn_radius + burn_radius * (double)j["burn_fix"];

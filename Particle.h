@@ -10,6 +10,7 @@ namespace ps {
 
     public:
 
+
         Particle(coord_t x, coord_t z, coord_t speed, coord_t burn_radius);
         void SetBurnRadius(coord_t burn_radius);
 

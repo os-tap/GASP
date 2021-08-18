@@ -389,8 +389,35 @@ namespace ps {
 
     void Segments::StepParticles()
     {
+
         std::for_each(pstl::execution::par, all_list.begin(), all_list.end(), [this](Particle& p) {
-            StepParticle(p);
+
+            CounterType::reference thread_sage_counter = SageCounter.local();
+
+            p.Step();
+
+            /*if (p.state == Particle::State::WAVE &&
+                ++p.wave_counter >= P->wave_time)
+            {
+                p.state = Particle::State::DIED;
+            }
+            else */if (p.state == Particle::State::WARM && ++p.warm_counter >= P->iterations)
+            {
+                p.state = Particle::State::BURN;
+                //++burn_counter;
+            }
+            else if (p.state == Particle::State::BURN && ++p.burn_counter > P->burn_time)
+            {
+                p.state = P->sage_time && ++thread_sage_counter == 3 ? Particle::State::SAGE : Particle::State::DIED;
+                thread_sage_counter *= thread_sage_counter < 3;
+            }
+
+            else if (p.state == Particle::State::SAGE && ++p.burn_counter >= P->sage_time)
+            {
+                p.state = Particle::State::DIED;
+            }
+
+            //StepParticle(p);
             });
 
     }
@@ -892,7 +919,7 @@ namespace ps {
                     //seg.curvature = (0.5 - (double)seg.c_ok / nbr / grid_particles_count);
                     seg.curvature = (0.5 - (double)seg.c_ok / nbr / grid_particles_count) * M_PI * M_PI / P->grid_curve_area * P->curve_burn_coef;
                     //seg.curvature *= seg.curvature *(seg.curvature > 0);
-                    //seg.curvature *= seg.curvature > 0;
+                    seg.curvature *= seg.curvature > 0;
                     //seg.curvature *= std::fabs(seg.curvature);
                 }
             }
@@ -924,7 +951,7 @@ namespace ps {
                     //double br = P->make_radius_cross_fix(P->burn_radius * (1 + seg.curvature));
 
                     //double br = P->burn_radius_cross;
-                    double br = P->burn_radius_cross * (2 + seg.curvature);
+                    double br = P->burn_radius_cross * (1 + seg.curvature);
                     //double br = P->burn_radius_cross * (1 + spline2d.eval(bp.x,bp.z));
                     double br2 = br * br;
                     bp.r2 = br2;

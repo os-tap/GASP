@@ -13,18 +13,18 @@
   "wave_time": 100,
 
 
-  "burn_radius": 4,
+  "burn_radius": 3,
   "burn_fix": -1,
   "burn_fix_a": 1,
   "burn_fix_b": 0.672,
 
 
 
-  "base_particles": 100,
+  "base_particles": 50,
   "particles_dist": 16,
 
-  "const_speed": -1,
-  "base_speed": 8,
+  "const_speed": 0,
+  "base_speed": 4.5,
 
   "burn_speed": 0.99,
 
@@ -38,7 +38,7 @@
   "iterations": 1,
 
   "burn_time": 1,
-  "sage_time": 2,
+  "sage_time": 120,
 
 
 
@@ -66,12 +66,12 @@
   "scale_burn": false,
 
 
-  "curve_burn_coef": 0.075,
+  "curve_burn_coef": 0.5,
 
 
 
 
   "grid_curve_calc": 1,
-  "grid_curve_area": 0.25
+  "grid_curve_area": 0.23
 
 }

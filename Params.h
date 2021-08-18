@@ -37,8 +37,8 @@ public:
     json GetFromFile();
     void Print();
 
-    const int screen_width = 500;
-    const int screen_height = 750;
+    const int screen_width = 400;
+    const int screen_height = 800;
     const int screen_bottom_gap = 0;
 
     std::string csv_folder;
@@ -57,7 +57,9 @@ public:
     double base_speed, burn_speed, const_speed;
 
     double emitter_begin;
-    double base_particles, particles_dist;
+    int base_particles;
+    double particles_dist;
+    double base_particles_NR2;
 
     int iterations;
     double iterate_burn_radius;
@@ -142,7 +144,7 @@ public:
 
 
     double make_radius_cross_fix(double radius) const {
-        return radius / (1 - burn_fix_a / pow(base_particles, burn_fix_b));
+        return radius / (1 - burn_fix_a / pow(base_particles_NR2* radius* radius, burn_fix_b));
     }
     double get_burn_radius(double x_cord) const {
 
