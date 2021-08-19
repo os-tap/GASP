@@ -13,17 +13,23 @@
 #include <cmath>
 #include <cassert>
 
+
+#define NOMINMAX 
+#include <tbb/enumerable_thread_specific.h>
+
 #include <tbb/concurrent_vector.h>
 #include <pstl/execution>
 #include <pstl/algorithm>
 
-typedef std::vector <ps::Particle> ParticleList;
-
 namespace ps {
+
+    typedef std::vector <ps::Particle> ParticleList;
+    typedef tbb::enumerable_thread_specific<std::pair<std::uniform_real_distribution<double>, std::random_device>> GenType;
 
     class Segments {
 
         const Params* P;
+        GenType ParticleGenerator;
 
     public:
 
@@ -44,6 +50,7 @@ namespace ps {
 
         void FillParticles();
         void Refill();
+        void PlaceBurned();
         void MoveParticles();
         void CrossParticles();
         void StepParticles();
@@ -58,6 +65,7 @@ namespace ps {
 
 
     private:
+
 
         void CreateParticle(double x_cord, double z_cord, double p_speed);
         void CreateParticle(double x_cord, double z_cord);
@@ -111,7 +119,7 @@ namespace ps {
 
         struct Segment {
             int x, z;
-            tbb::concurrent_vector <SegPoint> ok_list, burn_list;
+            tbb::concurrent_vector <SegPoint> ok_list, burn_list, b_list;
             std::vector<int> burn_indexes;
 
             std::vector<FrontSegPoint> front_points;

@@ -38,6 +38,44 @@ namespace ps {
         all_list.emplace_back(x_cord, z_cord, p_speed, p_burn_radius);
     }
 
+    void Segments::PlaceBurned()
+    {
+        std::for_each(pstl::execution::par, grid.begin(), grid.end(), [&](Segment& seg) {
+            //if (seg.c_ok && seg.c_b)
+            {
+
+                double br = P->burn_radius_cross;
+                double br2 = br * br;
+                for (auto& bp : seg.b_list) {
+
+
+                    //double br = P->make_radius_cross_fix(P->burn_radius * (1 + seg.curvature));
+
+                    //double br = P->burn_radius_cross;
+                    //double br = P->burn_radius_cross * (1 + seg.curvature);
+                    //double br = P->burn_radius_cross * (1 + spline2d.eval(bp.x,bp.z));
+                    //double br2 = br * br;
+                    bp.r2 = br2;
+                    int grids_calc = ceil(br / grid_min_size);
+
+                    int seg_x_start = (seg.x - grids_calc) * (seg.x >= grids_calc);
+                    int seg_z_start = (seg.z - grids_calc) * (seg.z >= grids_calc);
+
+                    int seg_x_end = seg.x + grids_calc + 1;
+                    if (seg_x_end > grid_count_x) seg_x_end = grid_count_x;
+                    int seg_z_end = seg.z + grids_calc + 1;
+                    if (seg_z_end > grid_count_z) seg_z_end = grid_count_z;
+
+                    for (int xi = seg_x_start; xi < seg_x_end; xi++) {
+                        for (int zi = seg_z_start; zi < seg_z_end; zi++) {
+                            grids(xi, zi).burn_list.push_back(bp);
+                        }
+                    }
+                }
+            }
+        });
+    }
+
     void Segments::SetSegmentsGrid(double seg_size)
     {
         //double seg_size = P->burn_radius_cross;
@@ -196,23 +234,43 @@ namespace ps {
     {
 
         std::for_each(pstl::execution::par, grid.begin(), grid.end(), [this](Segment& seg) {
+            GenType::reference thread_gen = ParticleGenerator.local();
 
-            std::random_device rd;
-            std::uniform_real_distribution<double> dist;
+            if (seg.b_list.empty()) {
+                int sz = seg.ok_list.size();
 
-            int sz = seg.ok_list.size();
-
-            if (sz < P->base_particles) {
-
-                for (size_t i = 0; i < P->base_particles - sz; i++)
-                {
-                    double p_x_cord = dist(rd) * grid_x_size + seg.seg_start_x;
-                    double p_z_cord = dist(rd) * grid_z_size + seg.seg_start_z;
-                    Particle p(p_x_cord, p_z_cord, 0, 0);
-                    auto it = refilled.push_back(p);
-                    seg.ok_list.emplace_back(p, all_list.size() + it - refilled.begin());
+                if (sz < P->base_particles) {
+                    for (size_t i = 0; i < P->base_particles - sz; i++)
+                    {
+                        double p_x_cord = thread_gen.first(thread_gen.second) * grid_x_size + seg.seg_start_x;
+                        double p_z_cord = thread_gen.first(thread_gen.second) * grid_z_size + seg.seg_start_z;
+                        Particle p(p_x_cord, p_z_cord, 0, 0);
+                        auto it = refilled.push_back(p);
+                        seg.ok_list.emplace_back(p, all_list.size() + it - refilled.begin());
+                    }
                 }
             }
+            else if (seg.ok_list.empty()) {
+                /*int sz = seg.burn_list.size();
+
+                if (sz < P->base_particles) {
+                    for (size_t i = 0; i < P->base_particles - sz; i++)
+                    {
+                        double p_x_cord = thread_gen.first(thread_gen.second) * grid_x_size + seg.seg_start_x;
+                        double p_z_cord = thread_gen.first(thread_gen.second) * grid_z_size + seg.seg_start_z;
+                        Particle p(p_x_cord, p_z_cord, 0, 0);
+                        p.state = Particle::State::BURN;
+                        p.burn_counter = 1;
+                        auto it = refilled.push_back(p);
+                        seg.burn_list.emplace_back(p, all_list.size() + it - refilled.begin());
+                    }
+                }*/
+
+            }
+            else {
+
+            }
+
         });
 
 
@@ -400,6 +458,7 @@ namespace ps {
         std::for_each(pstl::execution::par,
             grid.begin(), grid.end(), [this](Segment& seg) {
                 seg.burn_list.clear();
+                seg.b_list.clear();
                 seg.ok_list.clear();
                 seg.burn_indexes.clear();
                 seg.front_points.clear();
@@ -480,28 +539,44 @@ namespace ps {
                 //std::cout << "OPA\n";
             }
                 
-            else
-                seg.ok_list.emplace_back(all_list[index], index);
+            else seg.ok_list.emplace_back(all_list[index], index);
             
         }
         else if (all_list[index].state == Particle::State::BURN) {
-            int grids_calc = ceil(all_list[index].burn_radius / grid_min_size);
 
-            int seg_x_start = (seg_x - grids_calc) * (seg_x >= grids_calc);
-            int seg_z_start = (seg_z - grids_calc) * (seg_z >= grids_calc);
 
-            int seg_x_end = seg_x + grids_calc + 1;
-            if (seg_x_end > grid_count_x) seg_x_end = grid_count_x;
-            int seg_z_end = seg_z + grids_calc + 1;
-            if (seg_z_end > grid_count_z) seg_z_end = grid_count_z;
+            auto b1 = refill;
+            auto i1 = seg.b_list.size();
+            auto i2 = P->base_particles;
+            auto b2 = i1 > i2;
+            if (b1 && b2) {
+                all_list[index].state = Particle::State::DIED;
+                //BurnSegment(grids(seg_x, seg_z));
 
-            for (int xi = seg_x_start; xi < seg_x_end; xi++) {
-                for (int zi = seg_z_start; zi < seg_z_end; zi++) {
-                    grids(xi, zi).burn_list.emplace_back(all_list[index], index);
-                }
+                //std::cout << "OPA\n";
             }
 
-            //segment.burn_list.push_back(p);
+            else seg.b_list.emplace_back(all_list[index], index);
+
+
+
+            //int grids_calc = ceil(all_list[index].burn_radius / grid_min_size);
+
+            //int seg_x_start = (seg_x - grids_calc) * (seg_x >= grids_calc);
+            //int seg_z_start = (seg_z - grids_calc) * (seg_z >= grids_calc);
+
+            //int seg_x_end = seg_x + grids_calc + 1;
+            //if (seg_x_end > grid_count_x) seg_x_end = grid_count_x;
+            //int seg_z_end = seg_z + grids_calc + 1;
+            //if (seg_z_end > grid_count_z) seg_z_end = grid_count_z;
+
+            //for (int xi = seg_x_start; xi < seg_x_end; xi++) {
+            //    for (int zi = seg_z_start; zi < seg_z_end; zi++) {
+            //        grids(xi, zi).burn_list.emplace_back(all_list[index], index);
+            //    }
+            //}
+
+            //grids(xi, zi).b_list.push_back(p);
         }
     }
 
