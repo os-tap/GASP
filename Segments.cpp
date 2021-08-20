@@ -41,7 +41,7 @@ namespace ps {
     void Segments::PlaceBurned()
     {
         std::for_each(pstl::execution::par, grid.begin(), grid.end(), [&](Segment& seg) {
-            //if (seg.c_ok && seg.c_b)
+            if (!seg.b_list.empty())
             {
 
                 double br = P->burn_radius_cross;
@@ -68,13 +68,14 @@ namespace ps {
 
                     for (int xi = seg_x_start; xi < seg_x_end; xi++) {
                         for (int zi = seg_z_start; zi < seg_z_end; zi++) {
-                            grids(xi, zi).burn_list.push_back(bp);
+                            if(!grids(xi, zi).ok_list.empty()) grids(xi, zi).burn_list.push_back(bp);
                         }
                     }
                 }
             }
         });
     }
+
 
     void Segments::SetSegmentsGrid(double seg_size)
     {
