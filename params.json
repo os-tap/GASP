@@ -37,7 +37,7 @@
 
   "iterations": 1,
 
-  "burn_time": 0,
+  "burn_time": 1,
   "sage_time": 0,
   "burn_fade": 100,
 
@@ -74,7 +74,7 @@
   "grid_curve_area": 0.23,
 
 
-  "refill": true,
+  "refill": false,
   "grid_count_gap": 0.5
 
 }
