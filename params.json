@@ -13,7 +13,7 @@
   "wave_time": 100,
 
 
-  "burn_radius": 3,
+  "burn_radius": 4,
   "burn_fix": -1,
   "burn_fix_a": 1,
   "burn_fix_b": 0.672,
@@ -37,8 +37,9 @@
 
   "iterations": 1,
 
-  "burn_time": 1,
-  "sage_time": 120,
+  "burn_time": 0,
+  "sage_time": 0,
+  "burn_fade": 100,
 
 
 
@@ -69,9 +70,11 @@
   "curve_burn_coef": 0.5,
 
 
-
-
   "grid_curve_calc": 1,
-  "grid_curve_area": 0.23
+  "grid_curve_area": 0.23,
+
+
+  "refill": true,
+  "grid_count_gap": 0.5
 
 }

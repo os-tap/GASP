@@ -146,13 +146,14 @@ void GAS::IterateSwarm()
         if (state.move) {
             //if (State.pause) std::cout << "\nMove";
             main_swarm.MoveParticles();
-            main_swarm.FillParticles();
+            if (!params.refill) main_swarm.FillParticles();
         }
     }
 
     if (!state.pause || input.step) {
         main_swarm.ClearParticles();
         main_swarm.UpdateSegments();
+        if (params.refill) main_swarm.Refill();
         main_swarm.CalcBurnRadius(params.grid_curve_calc);
         main_swarm.PlaceBurned();
     }
@@ -212,7 +213,7 @@ void GAS::DrawScreen()
     screen.clear();
 
 
-    if (state.display_swarm) screen.load_swarm_bunzen(main_swarm.all_list, state.bold_points);
+    if (state.display_swarm) screen.load_swarm_b(main_swarm.all_list, state.bold_points);
     if (state.blur) screen.box_blur();
     screen.UpdateTexture();
 

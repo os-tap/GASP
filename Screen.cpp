@@ -141,6 +141,71 @@ namespace ps {
 
 
 
+    void Screen::load_swarm_b(const std::vector <Particle>& particle_list, bool sdl_draw_plus) {
+        Uint32 color = get_uint32_color(0, 0, 0);
+
+        double rm = 255. / P->burn_fade / P->iterations;
+        double gm = 120. / P->burn_fade / P->iterations;
+        double bm = 100. / P->burn_fade / P->iterations;
+
+
+
+        int red = 0, green = 0, blue = 0;
+
+        int step = 1;// = particle_list.size() / P->display_count;
+        for (size_t i = 0; i < particle_list.size(); i += step) {
+
+            auto &particle = particle_list[i];
+
+            //if (particle._x() > SCREEN_WIDTH) continue;
+
+
+
+            switch (particle.getState())
+            {
+
+                case Particle::State::OK:
+                    color = get_uint32_color(100, 100, 250);
+                    break;
+
+                case Particle::State::BURN:
+                    red = std::max(100, 255 - (int)(particle.burn_counter * rm));
+                    green = std::max(40, 120 - (int)(particle.burn_counter * gm));
+                    blue = std::max(30, 100 - (int)(particle.burn_counter * bm));
+                    color = get_uint32_color(red, green, blue);
+                    break;
+
+
+
+                case Particle::State::SAGE:
+                    //color = sage_color;
+                    red = 255 - (int)(particle.burn_counter * 255. / P->sage_time / P->iterations);
+                    green = 120 - (int)(particle.burn_counter * 120. / P->sage_time / P->iterations);
+                    blue = 100 - (int)(particle.burn_counter * 100. / P->sage_time / P->iterations);
+
+                    color = get_uint32_color(red, green, blue);
+                    break;
+
+
+               case Particle::State::DIED:
+                    color = get_uint32_color(0, 0, 0);
+                    continue;
+                    break;
+            }
+
+
+
+            int x = x_to_pixel(particle.x);
+            int y = y_to_pixel(particle.z);
+            set_pixel_color(x, y, color);
+            if(sdl_draw_plus || particle.getState()== Particle::State::SAGE) draw_plus(x, y, color);
+
+        }
+        //SDL_RenderPresent(m_renderer);
+    }
+    
+
+
     void Screen::load_swarm_bunzen(const std::vector <Particle>& particle_list, bool sdl_draw_plus) {
         Uint32 red_color = get_uint32_color(255, 150, 100);
         Uint32 sage_color = get_uint32_color(60, 60, 60);

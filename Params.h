@@ -67,7 +67,7 @@ public:
     double iterate_const;
     int iterate_particles;
 
-    int burn_time, sage_time, wave_time;
+    int burn_time, sage_time, wave_time, burn_fade;
 
 
     int frontline_window_steps;
@@ -100,6 +100,8 @@ public:
 
     int grid_curve_calc;
     double grid_curve_area;
+    bool refill;
+    double grid_count_gap;
 
     SPLINTER::BSpline curve_spline{ 1 };
 

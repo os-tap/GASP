@@ -27,6 +27,7 @@ namespace ps {
         void box_blur();
         void draw_circles(std::vector <Particle*>& particle_list);
         void load_swarm(const std::vector <Particle>& particle_list, bool sdl_draw_plus = false);
+        void load_swarm_b(const std::vector <Particle>& particle_list, bool sdl_draw_plus = false);
         void load_swarm_bunzen(const std::vector <Particle>& particle_list, bool sdl_draw_plus = false);
         void Resize(int w, int h);
 

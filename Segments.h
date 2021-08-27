@@ -31,19 +31,21 @@
 #include <pstl/execution>
 #include <pstl/algorithm>
 
-typedef std::vector <ps::Particle> ParticleList;
-
-typedef tbb::enumerable_thread_specific<int> CounterType;
 
 namespace ps {
 
 
+    typedef std::vector <ps::Particle> ParticleList;
+    typedef tbb::enumerable_thread_specific<int> CounterType;
+    typedef tbb::enumerable_thread_specific<std::pair<std::uniform_real_distribution<double>, std::random_device>> GenType;
 
     class Segments {
 
         const Params* P;
 
         CounterType SageCounter{0};
+
+        GenType ParticleGenerator;
 
         
 
@@ -59,11 +61,13 @@ namespace ps {
     private:
         tbb::concurrent_vector <size_t> will_burn_index;
         tbb::concurrent_vector <Particle> all_will_burn_concurrent;
+        tbb::concurrent_vector <Particle> refilled;
 
 
 
     public:
 
+        void Refill();
         void FillParticles();
         void MoveParticles();
         void CrossParticles();
@@ -112,6 +116,7 @@ namespace ps {
 
 
         int delete_sage = 0;
+        bool refill;
 
 
 
@@ -124,6 +129,7 @@ namespace ps {
         double grid_min_size, grid_max_size;
         double grid_count_x_percent, grid_count_z_percent;
         int grid_particles_count;
+        int grid_particles_min, grid_particles_max;
         double* gxa{nullptr}, * gya{ nullptr };
         //Spline2d spline2d;
 
@@ -143,8 +149,9 @@ namespace ps {
 
         struct Segment {
             int x, z;
-            double curvature = 0;
+            double curvature = 0, seg_start_x, seg_start_z;;
             int c_ok = 0, c_b = 0;
+            int ok_size = 0, b_size = 0;
             tbb::concurrent_vector <SegPoint> ok_list, burn_list, b_list;
             std::vector<int> burn_indexes;
 

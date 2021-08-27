@@ -66,7 +66,8 @@ void ps::Params::Load(json j)
     //burn_radius_cross = burn_radius * (1 + (pow(base_particles, (double)j["burn_fix"])));
     burn_fix_a = (double)j["burn_fix_a"];
     burn_fix_b = (double)j["burn_fix_b"];
-    burn_radius_cross = make_radius_cross_fix(burn_radius);
+    burn_radius_cross = burn_radius;
+    //burn_radius_cross = make_radius_cross_fix(burn_radius);
     burn_radius_2_cross = burn_radius_cross * burn_radius_cross;
 
     emitter_begin = (double)j["emitter_begin"] * burn_radius_2 / burn_radius_cross;
@@ -87,6 +88,7 @@ void ps::Params::Load(json j)
     burn_time = (int)j["burn_time"] * iterations;
     sage_time = (int)j["sage_time"] * iterations;
     wave_time = (int)j["wave_time"] * iterations;
+    burn_fade = (int)j["burn_fade"] * iterations;
 
     frontline_spline_steps = (int)j["frontline_spline_steps"];
     frontline_spline_alpha = (double)j["frontline_spline_alpha"];
@@ -120,6 +122,8 @@ void ps::Params::Load(json j)
 
     
     scale_burn = (bool)j["scale_burn"];
+    refill = (bool)j["refill"];
+    grid_count_gap = (double)j["grid_count_gap"];
 
     curve_burn_coef = (double)j["curve_burn_coef"];
     grid_curve_calc = (int)j["grid_curve_calc"];
