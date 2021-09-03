@@ -141,11 +141,15 @@ namespace ps {
 
 
     void Screen::load_swarm(const std::vector <Particle>& particle_list, bool sdl_draw_plus) {
-        Uint32 red_color = get_uint32_color(125, 50, 50);
+        Uint32 red_color = get_uint32_color(255, 150, 100);
         Uint32 sage_color = get_uint32_color(60, 60, 60);
-        Uint32 blue_color = get_uint32_color(50, 50, 125);
+        Uint32 blue_color = get_uint32_color(50, 50, 150);
         Uint32 white_color = get_uint32_color(125, 125, 125);
         Uint32 color = get_uint32_color(0, 0, 0);
+
+        double rm = 255. / P->sage_time;
+        double gm = 120. / P->sage_time;
+        double bm = 100. / P->sage_time;
 
 
 
@@ -154,7 +158,7 @@ namespace ps {
         int step = 1;// = particle_list.size() / P->display_count;
         for (size_t i = 0; i < particle_list.size(); i += step) {
 
-            auto &particle = particle_list[i];
+            auto& particle = particle_list[i];
 
             //if (particle._x() > SCREEN_WIDTH) continue;
 
@@ -163,48 +167,53 @@ namespace ps {
             switch (particle.getState())
             {
 
-                case Particle::State::OK:
-                    color = get_uint32_color(0, 255, 0);
-                    break;
+            case Particle::State::OK:
+                color = blue_color;
+                break;
 
-//                case Particle::State::WAVE:
-//
-////                filledCircleRGBA(m_renderer, x, y, 7, 255, 255, 0, 100);
-//                    draw_circle(particle.x, particle.z, P->burn_radius * particle.wave_counter / P->iterations / 5, get_uint32_color(200, 200, 200));
-//                    /*aacircleRGBA(m_renderer, x, y,
-//                        P->screen_proportion * P->burn_radius * particle.wave_counter / P->iterations / 5,
-//                        255, 255, 255, 255);*/
-//                    //continue;
-//                    break;
+                //                case Particle::State::WAVE:
+                //
+                ////                filledCircleRGBA(m_renderer, x, y, 7, 255, 255, 0, 100);
+                //                    draw_circle(particle.x, particle.z, P->burn_radius * particle.wave_counter / P->iterations / 5, get_uint32_color(200, 200, 200));
+                //                    /*aacircleRGBA(m_renderer, x, y,
+                //                        P->screen_proportion * P->burn_radius * particle.wave_counter / P->iterations / 5,
+                //                        255, 255, 255, 255);*/
+                //                    //continue;
+                //                    break;
 
-                case Particle::State::WARM:
-                    color = white_color;
-                    break;
+            case Particle::State::WARM:
+                color = white_color;
+                break;
 
-                case Particle::State::BURN:
-                    color = red_color;
-                    break;
+            case Particle::State::BURN:
+                color = particle.burn_counter == 0 ? white_color : red_color;
+                break;
 
-               case Particle::State::SAGE:
-                    color = sage_color;
-                    break;
+            case Particle::State::SAGE:
+                //color = sage_color;
+                red = 255 - (int)(particle.sage_counter * rm);
+                green = 120 - (int)(particle.sage_counter * gm);
+                blue = 100 - (int)(particle.sage_counter * bm);
 
-               case Particle::State::DIED:
-                    color = get_uint32_color(0, 0, 0);
-                    continue;
-                    break;
+                color = get_uint32_color(red, green, blue);
+                break;
 
-                    //if (P->sage_time == 0) continue;
-                    //red = 200 - particle.sage_counter * 20;
-                    //green = 100 - particle.sage_counter * 10;
-                    //blue = 100 - particle.sage_counter * 10;
+            case Particle::State::DIED:
+                color = get_uint32_color(0, 0, 0);
+                continue;
+                break;
 
-                    //int lim = 40;
+                //if (P->sage_time == 0) continue;
+                //red = 200 - particle.sage_counter * 20;
+                //green = 100 - particle.sage_counter * 10;
+                //blue = 100 - particle.sage_counter * 10;
 
-                    //red = red < lim ? lim : red;
-                    //green = green < lim ? lim : green,
-                    //        blue = blue < lim ? lim : blue;
-                    //break;
+                //int lim = 40;
+
+                //red = red < lim ? lim : red;
+                //green = green < lim ? lim : green,
+                //        blue = blue < lim ? lim : blue;
+                //break;
             }
 
 
@@ -225,7 +234,7 @@ namespace ps {
             int x = x_to_pixel(particle.x);
             int y = y_to_pixel(particle.z);
             set_pixel_color(x, y, color);
-            if(sdl_draw_plus) draw_plus(x, y, color);
+            if (sdl_draw_plus) draw_plus(x, y, color);
 
         }
         //SDL_RenderPresent(m_renderer);
