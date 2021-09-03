@@ -51,7 +51,7 @@ namespace ps {
         void FillParticles();
         void Emit();
         void Refill();
-        void PlaceBurned();
+        //void PlaceBurned();
         void MoveParticles();
         void CrossParticles();
         void StepParticles();

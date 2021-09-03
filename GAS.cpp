@@ -161,7 +161,7 @@ void GAS::IterateSwarm()
         main_swarm.ClearParticles();
         main_swarm.UpdateSegments();
         if (params.refill) main_swarm.Refill();
-        main_swarm.PlaceBurned();
+        //main_swarm.PlaceBurned();
     }
 
     if (input.set_burn) main_swarm.BurnSegmentByPoint(burn_x, burn_y);
