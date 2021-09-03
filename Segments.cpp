@@ -26,6 +26,29 @@ namespace ps {
         _fill_one ? Fill_Grid() : Fill_Sampling();
     }
 
+    void Segments::Emit()
+    {
+
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_real_distribution<double> dist;
+        //std::uniform_real_distribution<double> dist_x(P->stream_beg, P->stream_end), dist_z(0, P->particle_speed(P->area_center));
+
+        double p_x_cord, p_z_cord, p_speed, p_burn_radius, fabs_x, max_z = P->particle_speed_z(P->area_center, 0);
+
+        for (int pi = P->iterate_particles; pi; --pi)
+        {
+            p_x_cord = dist(gen) * P->stream_width + P->stream_beg;
+            p_z_cord = - dist(gen);
+            p_speed = P->particle_speed(p_x_cord);
+
+            //if (p_z_cord < p_speed) 
+            {
+                CreateParticle(p_x_cord, p_z_cord, p_speed);
+            }
+        }
+    }
+
 
 
     void Segments::CreateParticle(double x_cord, double z_cord, double p_speed) {

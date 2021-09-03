@@ -112,7 +112,7 @@ void GAS::ReadSDLEvents()
                 break;
             case SDLK_o: params.who_cross = !params.who_cross;
                 break;
-            case SDLK_r: input.refill = true;
+            case SDLK_r: params.refill = !params.refill;
                 break;
             case SDLK_k: params.scale_burn = !params.scale_burn;
                 break;
@@ -149,6 +149,7 @@ void GAS::IterateSwarm()
 {
     if (!state.pause || input.step) {
         if (state.move) {
+            if (!params.refill) main_swarm.Emit();
             //if (State.pause) std::cout << "\nMove";
             main_swarm.MoveParticles();
             //if (state.fill) main_swarm.FillParticles();
