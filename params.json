@@ -1,13 +1,13 @@
 {
   "csv_folder": "C:\\Users\\prive\\OneDrive\\csv\\curve\\",
 
-  "area_beg": -3,
-  "area_end": 3,
+  "area_beg": 0,
+  "area_end": 1,
   "scale": 500,
-  "stream_beg": -2,
-  "stream_end": 2,
+  "stream_beg": 0,
+  "stream_end": 1,
 
-  "area_divide_z": 3,
+  "area_divide_z": 10,
 
 
   "refract_coef": -1,
@@ -15,20 +15,20 @@
   "wave_time": 100,
 
 
-  "burn_radius": 5,
+  "burn_radius": 10,
   "burn_fix": -1,
   "burn_fix_a": 1,
   "burn_fix_b": 0.671,
 
-  "refill": true,
+  "refill": false,
 
-  "base_particles": 2,
+  "base_particles": 100,
   "particles_dist": 16,
-  "base_speed": 1.5,
+  "base_speed": 0,
   "burn_speed": 0.99,
-  "const_speed": 1,
-  "const_speed_x": 1,
-  "const_speed_z": 1,
+  "const_speed": 1.5,
+  "const_speed_x": 2,
+  "const_speed_z": 2,
 
 
   "svm_count": 10000,

@@ -43,6 +43,7 @@ namespace ps {
     public:
 
         void FillParticles();
+        void Emit();
         void Refill();
         void MoveParticles();
         void CrossParticles();

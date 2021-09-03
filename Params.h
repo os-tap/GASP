@@ -33,7 +33,7 @@ public:
     json GetFromFile();
     void Print();
 
-    const int screen_width = 1000;
+    const int screen_width = 500;
     const int screen_height = 750;
     const int screen_bottom_gap = 0;
 
@@ -216,10 +216,12 @@ public:
     }
 
     double particle_speed_x(const double x, const double z) const {
-        return iterate_const_x * sin(x - 2*z);
+        //return iterate_const_x * z;
+        return iterate_const_x * (1 - 2 * z) * (x - x * x);
     }
     double particle_speed_z(const double x, const double z) const {
-        return iterate_const_z*(cos(x + 2*z));
+        //return iterate_const_z * -x;
+        return -iterate_const_z * (1 - 2 * x) * (z - z * z) + particle_speed(x);
     }
 
     double refract_func(const double x) const {
