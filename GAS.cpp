@@ -107,9 +107,10 @@ void GAS::ReadSDLEvents()
                 break;
             case SDLK_x: input.clear_csv = true;
                 break;
-            case SDLK_r: input.refill = true;
+            case SDLK_r: params.refill = !params.refill;
                 break;
             case SDLK_k: params.scale_burn = !params.scale_burn;
+                params.curve_burn_coef = 0;
                 break;
             case SDLK_i: input.update_curve = true;
                 break;
@@ -145,8 +146,8 @@ void GAS::IterateSwarm()
     if (!state.pause || input.step) {
         if (state.move) {
             //if (State.pause) std::cout << "\nMove";
+            if (!params.refill) main_swarm.Emit();
             main_swarm.MoveParticles();
-            if (!params.refill) main_swarm.FillParticles();
         }
     }
 
@@ -213,7 +214,7 @@ void GAS::DrawScreen()
     screen.clear();
 
 
-    if (state.display_swarm) screen.load_swarm_b(main_swarm.all_list, state.bold_points);
+    if (state.display_swarm) screen.load_swarm(main_swarm.all_list, state.bold_points);
     if (state.blur) screen.box_blur();
     screen.UpdateTexture();
 

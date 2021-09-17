@@ -29,9 +29,9 @@ namespace ps {
     }
 
 
-    void Particle::Move(const double dz) {
+    void Particle::Move(const double dx, const double dz) {
         z += dz;// *(state != State::WAVE);
-        //x += x_speed;
+        x += dx;
     }
 
     void Particle::Step()

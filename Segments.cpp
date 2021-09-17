@@ -198,6 +198,29 @@ namespace ps {
 
     }
 
+    void Segments::Emit()
+    {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_real_distribution<double> dist;
+        //std::uniform_real_distribution<double> dist_x(P->stream_beg, P->stream_end), dist_z(0, P->particle_speed(P->area_center));
+
+        double p_x_cord, p_z_cord, p_speed, p_burn_radius, fabs_x, max_z = P->particle_speed_z(P->area_center, 0);
+
+        int particles_per_step = round((double)P->base_particles / P->burn_radius_2 / M_PI * P->stream_width * P->stream_width / 10);
+
+        for (int pi = particles_per_step; pi; --pi)
+        {
+            p_x_cord = dist(gen) * P->stream_width + P->stream_beg;
+            p_z_cord = -dist(gen) * P->stream_width / 10;
+            p_speed = P->particle_speed(p_x_cord);
+
+            //if (p_z_cord < p_speed) 
+            {
+                CreateParticle(p_x_cord, p_z_cord, p_speed);
+            }
+        }
+    }
 
 
     void Segments::Fill_Grid() {
@@ -871,8 +894,13 @@ namespace ps {
 
 
     void Segments::MoveParticle(Particle& p) {
-        p.Move(P->particle_speed(p.x));
-        if (p.z >= P->area_height || p.x > P->area_end) p.state = Particle::State::DIED;
+        double half_x = p.x + P->particle_speed_x(p.x, p.z)/2;
+        double half_z = p.z + P->particle_speed_z(p.x, p.z)/2;
+
+        p.x += P->particle_speed_x(half_x, half_z);
+        p.z += P->particle_speed_z(half_x, half_z);
+
+        if (p.z < 0 || p.z >= P->area_height || p.x > P->area_end || p.x < P->area_beg) p.state = Particle::State::DIED;
     }
 
     void Segments::StepParticle(Particle& p) {

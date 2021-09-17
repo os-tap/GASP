@@ -55,6 +55,7 @@ public:
     double burn_radius_cross, burn_radius_2_cross;
 
     double base_speed, burn_speed, const_speed;
+    double const_speed_x, const_speed_z;
 
     double emitter_begin;
     int base_particles;
@@ -65,6 +66,7 @@ public:
     double iterate_burn_radius;
     double iterate_speed;
     double iterate_const;
+    double iterate_const_x, iterate_const_z;
     int iterate_particles;
 
     int burn_time, sage_time, wave_time, burn_fade;
@@ -240,6 +242,16 @@ public:
     }
     double particle_speed(const double x) const {
         return profile_speed(x) + iterate_const;
+    }
+
+
+    double particle_speed_x(const double x, const double z) const {
+        //return iterate_const_x * z;
+        return iterate_const_x * (1 - 2 * z) * (x - x * x);
+    }
+    double particle_speed_z(const double x, const double z) const {
+        //return iterate_const_z * -x;
+        return -iterate_const_z * (1 - 2 * x) * (z - z * z) + particle_speed(x);
     }
 
     double refract_func(const double x) const {

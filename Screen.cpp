@@ -312,13 +312,13 @@ namespace ps {
     void Screen::load_swarm(const std::vector <Particle>& particle_list, bool sdl_draw_plus) {
         Uint32 red_color = get_uint32_color(255, 150, 100);
         Uint32 sage_color = get_uint32_color(60, 60, 60);
-        Uint32 blue_color = get_uint32_color(50, 50, 150);
+        Uint32 blue_color = get_uint32_color(100, 100, 250);
         Uint32 white_color = get_uint32_color(125, 125, 125);
         Uint32 color = get_uint32_color(0, 0, 0);
 
-        double rm = 255. / P->sage_time / P->iterations;
-        double gm = 120. / P->sage_time / P->iterations;
-        double bm = 100. / P->sage_time / P->iterations;
+        double rm = 255. / P->sage_time;
+        double gm = 120. / P->sage_time;
+        double bm = 100. / P->sage_time;
 
 
 
@@ -332,6 +332,7 @@ namespace ps {
             //if (particle._x() > SCREEN_WIDTH) continue;
 
 
+            int bc = particle.burn_counter - 1;
 
             switch (particle.getState())
             {
@@ -360,9 +361,9 @@ namespace ps {
 
                case Particle::State::SAGE:
                     //color = sage_color;
-                    red = 255 - (int)(particle.sage_counter * rm);
-                    green = 120 - (int)(particle.sage_counter * gm);
-                    blue = 100 - (int)(particle.sage_counter * bm);
+                    red = 255 - (int)(bc * rm);
+                    green = 120 - (int)(bc * gm);
+                    blue = 100 - (int)(bc * bm);
 
                     color = get_uint32_color(red, green, blue);
                     break;
@@ -403,7 +404,7 @@ namespace ps {
             int x = x_to_pixel(particle.x);
             int y = y_to_pixel(particle.z);
             set_pixel_color(x, y, color);
-            if(sdl_draw_plus) draw_plus(x, y, color);
+            if (sdl_draw_plus || particle.getState() == Particle::State::SAGE) draw_plus(x, y, color);
 
         }
         //SDL_RenderPresent(m_renderer);
