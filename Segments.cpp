@@ -206,13 +206,13 @@ namespace ps {
         //std::uniform_real_distribution<double> dist_x(P->stream_beg, P->stream_end), dist_z(0, P->particle_speed(P->area_center));
 
         double p_x_cord, p_z_cord, p_speed, p_burn_radius, fabs_x, max_z = P->particle_speed_z(P->area_center, 0);
-
-        int particles_per_step = round((double)P->base_particles / P->burn_radius_2 / M_PI * P->stream_width * P->stream_width / 10);
+        double emitter_height = P->particle_speed_z(P->area_center, 0)*1.1;
+        int particles_per_step = round((double)P->base_particles / P->burn_radius_2 / M_PI * P->stream_width * emitter_height);
 
         for (int pi = particles_per_step; pi; --pi)
         {
             p_x_cord = dist(gen) * P->stream_width + P->stream_beg;
-            p_z_cord = -dist(gen) * P->stream_width / 10;
+            p_z_cord = -dist(gen) * emitter_height;
             p_speed = P->particle_speed(p_x_cord);
 
             //if (p_z_cord < p_speed) 

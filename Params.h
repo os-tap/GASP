@@ -38,7 +38,7 @@ public:
     void Print();
 
     const int screen_width = 400;
-    const int screen_height = 800;
+    const int screen_height = 700;
     const int screen_bottom_gap = 0;
 
     std::string csv_folder;

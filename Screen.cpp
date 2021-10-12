@@ -15,6 +15,7 @@ namespace ps {
     Screen::~Screen() {
         // Destroy all SDL related objects.
         delete[] m_main_buffer;
+        delete[] atomic_texture;
         delete[] m_blur_buffer;
         SDL_DestroyRenderer(m_renderer);
         SDL_DestroyTexture(m_texture);
@@ -94,6 +95,9 @@ namespace ps {
     void Screen::init_buffers() {
         // Initialize main_buffer and blur_buffer memory. During runtime, buffers are loaded with
         // particle objects and then fed to the SDL texture to be rendered within the SDL window.
+        atomic_texture = new std::atomic<Uint32>[SCREEN_HEIGHT * SCREEN_WIDTH];
+        //memset(atomic_texture, 0, SCREEN_HEIGHT * SCREEN_WIDTH * sizeof(std::atomic<Uint32>));
+
         m_main_buffer = new Uint32[SCREEN_HEIGHT * SCREEN_WIDTH];
         memset(m_main_buffer, 0, SCREEN_HEIGHT * SCREEN_WIDTH * sizeof(Uint32));
 
@@ -132,6 +136,7 @@ namespace ps {
         //auto background = SDL_Color{0,0,0,0};
         for (int i = 0; i < SCREEN_HEIGHT * SCREEN_WIDTH; ++i) {
             m_main_buffer[i] = background;
+            atomic_texture[i] = background;
         }
 
     }
@@ -324,8 +329,8 @@ namespace ps {
 
         int red = 0, green = 0, blue = 0;
 
-        int step = 1;// = particle_list.size() / P->display_count;
-        for (size_t i = 0; i < particle_list.size(); i += step) {
+        //int step = 1;// = particle_list.size() / P->display_count;
+        for (size_t i = 0; i < particle_list.size(); i++) {
 
             auto &particle = particle_list[i];
 
@@ -404,9 +409,14 @@ namespace ps {
             int x = x_to_pixel(particle.x);
             int y = y_to_pixel(particle.z);
             set_pixel_color(x, y, color);
+            //set_pixel_atomic(x, y, color);
             if (sdl_draw_plus || particle.getState() == Particle::State::SAGE) draw_plus(x, y, color);
 
         }
+        /*for (int i = 0; i < SCREEN_HEIGHT * SCREEN_WIDTH; ++i) {
+            m_main_buffer[i] = atomic_texture[i];
+        }*/
+
         //SDL_RenderPresent(m_renderer);
     }
 
@@ -680,6 +690,16 @@ namespace ps {
         }
     }
 
+
+    void Screen::set_pixel_atomic(int x, int y, Uint32 color) {
+
+        // Ignore particles with coordinates outside the boundaries of the SDL window
+        if (x < 0 || x >= ps::Screen::SCREEN_WIDTH || y < 0 || y >= ps::Screen::SCREEN_HEIGHT)
+            return;
+
+        atomic_texture[x + (y * SCREEN_WIDTH)] = color;
+
+    }
 
     void Screen::set_pixel_color(int x, int y, Uint32 color) {
 

@@ -62,7 +62,9 @@ namespace ps {
         int x_to_pixel(double);
         int y_to_pixel(double);
         void draw_plus(int, int, Uint32);
+        void draw_plus_atomic(int, int, Uint32);
         void set_pixel_color(int, int, Uint32);
+        void set_pixel_atomic(int, int, Uint32);
         void set_pixel_color(int, int, Uint8, Uint8, Uint8);
         void get_avg_color(int, int, Uint8&, Uint8&, Uint8&);
         void draw_circle(double x, double y, double r, Uint32 color);
@@ -76,6 +78,7 @@ namespace ps {
         SDL_Texture* m_texture{ nullptr };
         SDL_Color* SDL_Color_buffer{ nullptr };
         Uint32* m_main_buffer{ nullptr };
+        std::atomic<Uint32>* atomic_texture{ nullptr };
         Uint32* m_blur_buffer{ nullptr };
         SDL_Event m_event;
     };
