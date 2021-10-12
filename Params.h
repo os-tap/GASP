@@ -16,14 +16,12 @@
 #include <SPLINTER/bspline.h>
 #include <SPLINTER/bsplinebuilder.h>
 
+#include "Point.hpp"
+
 
 namespace ps {
     class Params;
-    struct Point;
 }
-struct ps::Point {
-    double x, z;
-};
 
 using json = nlohmann::json;
 

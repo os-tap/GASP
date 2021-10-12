@@ -357,7 +357,7 @@ namespace ps {
             const auto& B = spline_points[i - h_div];
             const auto& C = spline_points[i + h_div];
 
-            Point M[2], Cntr{0}; double H1, H2, G;
+            Point M[2], Cntr; double H1, H2, G;
 
             M[0].x = B.x - A.x;
             M[0].z = B.z - A.z;

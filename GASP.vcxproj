@@ -33,6 +33,7 @@
     <ClInclude Include="GAS.h" />
     <ClInclude Include="Params.h" />
     <ClInclude Include="Particle.h" />
+    <ClInclude Include="Point.hpp" />
     <ClInclude Include="Screen.h" />
     <ClInclude Include="Segments.h" />
     <ClInclude Include="Spline2d.h" />

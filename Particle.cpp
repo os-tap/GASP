@@ -3,17 +3,10 @@
 namespace ps {
 
 
-    /*Particle::Particle(coord_t _x, coord_t _z, coord_t _speed) :
-        x(_x), z(_z), speed(_speed){}*/
-
-    Particle::Particle(coord_t _x, coord_t _z, coord_t _speed, coord_t _burn_radius) :
-            x(_x), z(_z), speed(_speed), burn_radius(_burn_radius){}
-
-    void Particle::SetBurnRadius(coord_t _burn_radius) {
-        burn_radius = _burn_radius;
-        burn_radius_2 = burn_radius * burn_radius;
+    void Particle::setBurn() {
+        state = State::WARM;
+        burn_counter = 1;
     }
-
 
 
     bool Particle::isBurn() const {
@@ -23,20 +16,11 @@ namespace ps {
         return state == State::OK;
     }
 
-    void Particle::setBurn() {
-        state = State::WARM;
-        burn_counter = 1;
-    }
 
 
     void Particle::Move(const double dx, const double dz) {
         z += dz;// *(state != State::WAVE);
         x += dx;
-    }
-
-    void Particle::Step()
-    {
-        //x_speed += 0.002;
     }
 
 
@@ -50,26 +34,6 @@ namespace ps {
 
     Particle::State Particle::getState() const {
         return state;
-    }
-
-    inline coord_t Particle::Distance(const Particle &p) const {
-        return (x - p.x) * (x - p.x) + (z - p.z) * (z - p.z);
-    }
-    bool Particle::Cross(const Particle &p) const {
-        return Distance(p) < p.burn_radius_2;
-    }
-    bool Particle::CrossBurn(const Particle &burn_particle) const {
-        return Distance(burn_particle) < burn_particle.burn_radius_2;
-    }
-
-    inline coord_t Particle::Distance(const Particle* p) const {
-        return (x - p->x) * (x - p->x) + (z - p->z) * (z - p->z);
-    }
-    bool Particle::Cross(const Particle* p) const {
-        return Distance(p) < p->burn_radius_2;
-    }
-    bool Particle::CrossBurn(const Particle* p) const {
-        return ((x - p->x) * (x - p->x) + (z - p->z) * (z - p->z)) < p->burn_radius_2;
     }
 
 } /* namespace ps */

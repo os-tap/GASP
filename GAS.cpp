@@ -48,7 +48,6 @@ void GAS::Iteration()
     if (input.print_denisty)
     {
         main_swarm.Density_Grid();
-        main_swarm.Density_Radius();
         std::cout << "\nPrint Denisty";
     }
 
@@ -190,10 +189,9 @@ void GAS::BuildFrontline()
     {
         //std::cout << "cross";
         main_swarm.UpdateSegments();
-        main_swarm.CalcFrontlineRadius(front_line.spline_points);
 
         //front_line.SetCrosses(main_swarm.front_crosses);
-        front_line.BuildCrossesSpline(main_swarm.front_crosses);
+        //front_line.BuildCrossesSpline(main_swarm.front_crosses);
     }
     else {
         front_line.BuildCurvatureSpline();
