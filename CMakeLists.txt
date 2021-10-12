@@ -30,4 +30,5 @@ target_link_libraries(GASP
     nlohmann_json::nlohmann_json
     SDL2main SDL2-static m
     tbb
+    gsl
 )

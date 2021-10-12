@@ -59,6 +59,7 @@ private:
             step = 0,
             toggle_fill = 0,
             print_step = 0,
+            print_grid = 0,
             print_denisty = 0,
             clear_csv = 0,
             refill = 0,

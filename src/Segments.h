@@ -82,6 +82,7 @@ namespace ps {
         void LightsOut();
         void EraseParticles();
 
+        void PrintGrid(int);
         void PrintCurvature(int);
         void PrintSwarm(int);
         void PrintCount(int n, int count);
@@ -126,7 +127,7 @@ namespace ps {
         int grid_particles_count;
         int grid_particles_min, grid_particles_max;
         double* gxa{nullptr}, * gya{ nullptr };
-        //Spline2d spline2d;
+        Spline2d spline2d;
 
 
 
@@ -157,6 +158,7 @@ namespace ps {
 
         struct Segment {
             int x, z;
+            double br, br2;
             double curvature = 0, seg_start_x, seg_start_z;;
             int c_ok = 0, c_b = 0;
             int ok_size = 0, b_size = 0;

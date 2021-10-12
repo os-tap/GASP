@@ -1,6 +1,7 @@
 #pragma once
 #include "Point.hpp"
 
+
 typedef float coord_t;
 
 

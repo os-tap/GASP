@@ -103,6 +103,9 @@ void GAS::ReadSDLEvents()
                 break;
             case SDLK_c: input.print_step = true;
                 break;
+                break;
+            case SDLK_g: input.print_grid = true;
+                break;
             case SDLK_d: input.print_denisty = true;
                 break;
             case SDLK_x: input.clear_csv = true;
@@ -241,10 +244,11 @@ void GAS::PrintBurnRadius() {
 void GAS::PrintFiles()
 {
 
-    main_swarm.PrintCurvature(print_step_counter);
-    main_swarm.PrintCount(print_step_counter, params.print_count);
+    // main_swarm.PrintCurvature(print_step_counter);
+    // main_swarm.PrintCount(print_step_counter, params.print_count);
     // front_line.Print(print_step_counter);
-    PrintBurnRadius();
+    // PrintBurnRadius();
+    main_swarm.PrintGrid(print_step_counter);
     std::cout << "\nprint - " << print_step_counter;
     ++print_step_counter;
 }

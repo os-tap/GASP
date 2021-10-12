@@ -1,8 +1,8 @@
 {
-  "csv_folder": "C:\\Users\\prive\\OneDrive\\csv\\1708\\",
+  "csv_folder": "/home/bryzgalov.ov/csv/",
 
-  "area_beg": -0.1,
-  "area_end": 1.1,
+  "area_beg": 0,
+  "area_end": 1,
   "scale": 500,
   "stream_beg": 0,
   "stream_end": 1,
@@ -13,14 +13,14 @@
   "wave_time": 100,
 
 
-  "burn_radius": 1,
+  "burn_radius": 2,
   "burn_fix": -1,
   "burn_fix_a": 1,
   "burn_fix_b": 0.672,
 
 
 
-  "base_particles": 500,
+  "base_particles": 300,
   "particles_dist": 16,
 
 
@@ -36,7 +36,7 @@
   "print_count": 10000,
   "display_count": 500000,
 
-  "skip_frames": 10,
+  "skip_frames": 1,
 
   "emitter_begin": 0,
 

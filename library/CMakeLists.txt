@@ -41,11 +41,10 @@ FetchContent_MakeAvailable(fmtlib)
 
 message(STATUS "FetchContent: json")
 
-FetchContent_Declare(
-        json
-        GIT_REPOSITORY https://github.com/nlohmann/json.git
-        GIT_TAG v3.10.2
-)
+FetchContent_Declare(json
+  GIT_REPOSITORY https://github.com/ArthurSonzogni/nlohmann_json_cmake_fetchcontent
+  GIT_TAG v3.10.3)
+
 FetchContent_GetProperties(json)
 if(NOT json_POPULATED)
   FetchContent_Populate(json)
@@ -62,5 +61,16 @@ endif()
 #         GIT_TAG v3.0
 # )
 # FetchContent_MakeAvailable(splinter)
+
+# --------------------------------------------------------------------
+
+message(STATUS "FetchContent: gsl")
+
+FetchContent_Declare(
+        gsl
+        GIT_REPOSITORY https://github.com/ampl/gsl.git
+        GIT_TAG v2.7.0
+)
+FetchContent_MakeAvailable(gsl)
 
 # --------------------------------------------------------------------
