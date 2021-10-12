@@ -4,7 +4,7 @@
 
 ps::Params::Params() {
     Read();
-    clear_curve_spline();
+    // clear_curve_spline();
 }
 
 void ps::Params::Read()
@@ -132,6 +132,8 @@ void ps::Params::Load(json j)
     curve_burn_coef = (double)j["curve_burn_coef"];
     grid_curve_calc = (int)j["grid_curve_calc"];
     grid_curve_area = (double)j["grid_curve_area"];
+
+    skip_frames = (size_t)j["skip_frames"];
 
 }
 

@@ -12,21 +12,19 @@
 #include <fmt/core.h>
 #include <nlohmann/json.hpp>
 
-#include <SPLINTER/datatable.h>
-#include <SPLINTER/bspline.h>
-#include <SPLINTER/bsplinebuilder.h>
+
+// #include <SPLINTER/datatable.h>
+// #include <SPLINTER/bspline.h>
+// #include <SPLINTER/bsplinebuilder.h>
 
 
-namespace ps {
-    class Params;
-    struct Point;
-}
-struct ps::Point {
-    double x, z;
-};
+#include "Point.hpp"
 
 using json = nlohmann::json;
 
+namespace ps {
+    class Params;
+}
 class ps::Params {
 
 public:
@@ -38,7 +36,7 @@ public:
     void Print();
 
     const int screen_width = 400;
-    const int screen_height = 800;
+    const int screen_height = 700;
     const int screen_bottom_gap = 0;
 
     std::string csv_folder;
@@ -105,7 +103,9 @@ public:
     bool refill;
     double grid_count_gap;
 
-    SPLINTER::BSpline curve_spline{ 1 };
+    size_t skip_frames;
+
+/*     SPLINTER::BSpline curve_spline{ 1 };
 
     void set_curve_spline(SPLINTER::BSpline spline, double _start, double _end) {
         curve_spline = spline;
@@ -114,9 +114,9 @@ public:
     }
     void clear_curve_spline() {
         set_curve_spline(SPLINTER::BSpline{ 1 }, area_end, area_beg);
-        /*curve_spline = SPLINTER::BSpline {1};
-        curve_start = area_end;
-        curve_end = area_beg;*/
+        // curve_spline = SPLINTER::BSpline {1};
+        // curve_start = area_end;
+        // curve_end = area_beg;
     }
 
     double get_curvature(const double x) const
@@ -131,7 +131,7 @@ public:
 
         return c;
 
-    }
+    } */
 
 
 
@@ -152,8 +152,9 @@ public:
     }
     double get_burn_radius(double x_cord) const {
 
-        //return burn_radius_cross;
-        return burn_radius_cross * (1 + get_curvature(x_cord) * /*system_speed(x_cord)*/  curve_burn_coef * scale_burn);
+        return burn_radius_cross;
+
+        // return burn_radius_cross * (1 + get_curvature(x_cord) * /*system_speed(x_cord)*/  curve_burn_coef * scale_burn);
 
 
         /*double br = burn_radius_cross;

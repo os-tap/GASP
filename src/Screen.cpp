@@ -324,8 +324,8 @@ namespace ps {
 
         int red = 0, green = 0, blue = 0;
 
-        int step = 1;// = particle_list.size() / P->display_count;
-        for (size_t i = 0; i < particle_list.size(); i += step) {
+        // int step = 1;// = particle_list.size() / P->display_count;
+        for (size_t i = 0; i < particle_list.size(); i++) {
 
             auto &particle = particle_list[i];
 
@@ -582,12 +582,12 @@ namespace ps {
         for (int i = 1; i < x_count; i++)
         {
             int x = (int)round(SCREEN_WIDTH / (double)x_count * i);
-            vlineRGBA(m_renderer, x, 0, SCREEN_HEIGHT, 60,60,90,100);
+            // vlineRGBA(m_renderer, x, 0, SCREEN_HEIGHT, 60,60,90,100);
         }
         for (int i = 1; i < y_count; i++)
         {
             int y = (int)round(SCREEN_HEIGHT / (double)y_count * i);
-            hlineRGBA(m_renderer, 0, SCREEN_WIDTH, y, 60, 60, 90, 100);
+            // hlineRGBA(m_renderer, 0, SCREEN_WIDTH, y, 60, 60, 90, 100);
         }
     }
     void Screen::draw_grid2(int x_count, int y_count)
@@ -625,7 +625,8 @@ namespace ps {
         //std::cout << v.size();
         //SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
         for (const auto& x : v) {
-            vlineRGBA(m_renderer, x_to_pixel(x), 0, SCREEN_HEIGHT, 255, 255, 255, SDL_ALPHA_OPAQUE);
+            // vlineRGBA(m_renderer, x_to_pixel(x), 0, SCREEN_HEIGHT, 255, 255, 255, SDL_ALPHA_OPAQUE);
+
             //vlineRGBA(m_renderer, x_to_pixel(x2), 0, SCREEN_HEIGHT, 255, 255, 255, SDL_ALPHA_OPAQUE);
             //SDL_RenderDrawLine(m_renderer, x_to_pixel(x1-0.1), 1, x_to_pixel(x2+0.1), 1);
         }

@@ -23,14 +23,15 @@ void GAS::Iteration()
 {
     ReadSDLEvents();
 
-        
-    IterateSwarm();
+    for (size_t i = 0; i < params.skip_frames; i++)
+    {
+        IterateSwarm();
+    }
 
-
-    if (state.display_line && state.update_line && (!state.pause || input.step || key_pressed))
+    /* if (state.display_line && state.update_line && (!state.pause || input.step || key_pressed))
     {
         BuildFrontline();
-    }
+    } */
 
 
     if (!state.pause || input.step || key_pressed)
@@ -48,7 +49,6 @@ void GAS::Iteration()
     if (input.print_denisty)
     {
         main_swarm.Density_Grid();
-        main_swarm.Density_Radius();
         std::cout << "\nPrint Denisty";
     }
 
@@ -96,7 +96,7 @@ void GAS::ReadSDLEvents()
                 std::cout << (state.move ? "\n- Move" : "\n- Freeze");
                 break;
             case SDLK_w: state.display_swarm = !state.display_swarm; key_pressed = 1; break;
-            case SDLK_e: state.display_line = !state.display_line; key_pressed = 1; params.clear_curve_spline();  break;
+            case SDLK_e: state.display_line = !state.display_line; key_pressed = 1; /* params.clear_curve_spline(); */  break;
             case SDLK_l: state.update_line = !state.update_line; key_pressed = 1; break;
             case SDLK_f: main_swarm.Toggle_Fill();
                 std::cout << "\n- Toggle Fill";
@@ -119,10 +119,10 @@ void GAS::ReadSDLEvents()
                 params.Read();
                 params.Print();
                 main_swarm.Update();
-                front_line.Init();
+                // front_line.Init();
                 screen.calc_refract_points();
                 std::cout << main_swarm.all_list.size() << " - size\n";
-                std::cout << front_line.spline_points.size() << " - error\n";
+                // std::cout << front_line.spline_points.size() << " - error\n";
                 break;
             }
             break;
@@ -183,27 +183,27 @@ void GAS::IterateSwarm()
 
 void GAS::BuildFrontline()
 {
-    front_line.Calc(main_swarm.all_will_burn);
+    // front_line.Calc(main_swarm.all_will_burn);
     
 
     if (params.calc_cross)
     {
         //std::cout << "cross";
         main_swarm.UpdateSegments();
-        main_swarm.CalcFrontlineRadius(front_line.spline_points);
+        // main_swarm.CalcFrontlineRadius(front_line.spline_points);
 
         //front_line.SetCrosses(main_swarm.front_crosses);
-        front_line.BuildCrossesSpline(main_swarm.front_crosses);
+        // front_line.BuildCrossesSpline(main_swarm.front_crosses);
     }
     else {
-        front_line.BuildCurvatureSpline();
+        // front_line.BuildCurvatureSpline();
     }
 
     if (params.scale_burn)
     {
         //if (input.update_curve)
-        front_line.BuildCurvatureSpline();
-        params.set_curve_spline(front_line.curve_spline, front_line.curve_start, front_line.curve_end);
+        // front_line.BuildCurvatureSpline();
+        // params.set_curve_spline(front_line.curve_spline, front_line.curve_start, front_line.curve_end);
     }
     //front_line.Finalize();
 }
@@ -221,7 +221,7 @@ void GAS::DrawScreen()
     screen.draw_grid(main_swarm.grid_count_x, main_swarm.grid_count_z);
 
 
-    if (state.display_line) screen.draw_frontline(front_line.spline_points);
+    // if (state.display_line) screen.draw_frontline(front_line.spline_points);
     //if (params.display_kinks) screen.draw_hlines(front_line.kinks);
 
 
@@ -243,7 +243,7 @@ void GAS::PrintFiles()
 
     main_swarm.PrintCurvature(print_step_counter);
     main_swarm.PrintCount(print_step_counter, params.print_count);
-    front_line.Print(print_step_counter);
+    // front_line.Print(print_step_counter);
     PrintBurnRadius();
     std::cout << "\nprint - " << print_step_counter;
     ++print_step_counter;
@@ -260,13 +260,13 @@ void GAS::CalcFPS()
         SDL_Delay(timePerFrame - delta);
         fps = max_fps;
     }
-    else fps = 1000 / delta;
+    else fps = 1000. / delta * params.skip_frames;
 
     fps_sum += fps;
 
     if (ii % 10 == 0)
     {
-        sprintf_s(buffer, "FPS: %d", fps);
+        sprintf(buffer, "FPS: %d", fps);
         screen.SetTitle(buffer);
         fps_sum = 0;
     }

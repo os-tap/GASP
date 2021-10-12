@@ -28,8 +28,8 @@
 //#include <tbb/parallel_for.h>
 //#include <tbb/blocked_range.h>
 #include <tbb/concurrent_vector.h>
-#include <pstl/execution>
-#include <pstl/algorithm>
+#include <execution>
+#include <algorithm>
 
 
 namespace ps {
@@ -90,17 +90,11 @@ namespace ps {
 
     private:
 
-        void CreateParticle(double x_cord, double z_cord, double p_speed);
+        void CreateParticle(double x_cord, double z_cord);
         void MoveParticle(Particle& p);
         void StepParticle(Particle& p);
         void BurnParticle(Particle& p);
-        void BurnParticle(Particle* p);
-        void ParticleToSegment(Particle& p);
         void ParticleToSegment(Particle& p, size_t i);
-        void ParticleToSegment(size_t i);
-        void FrontPointToSegment(Point& p, size_t index, int grids_calc, double cross_radius_2);
-
-        bool ParticleInBurnSegments(Particle* particle, int seg_x, int seg_z);
 
 
     public:
@@ -135,9 +129,22 @@ namespace ps {
         //Spline2d spline2d;
 
 
+
+        struct SegPointBurn : public Point {
+            coord_t r2;
+            explicit SegPointBurn(Point& p, coord_t _r2) : Point(p.x, p.z), r2(_r2) {}
+        };
+
+        struct SegPointOk : public Point {
+            size_t index;
+            explicit SegPointOk(Point& p, size_t i) : Point(p.x, p.z), index(i) {}
+            bool Cross(const SegPointBurn& p) const { return Point::Cross(p, p.r2); }
+        };
+
+
         struct SegPoint {
             SegPoint(Point &p, double _r2, size_t i) : x(p.x), z(p.z), r2(_r2), index(i) {}
-            SegPoint(Particle &p, size_t i) : x(p.x), z(p.z), r2(p.burn_radius_2), index(i) {}
+            SegPoint(Point &p, size_t i) : x(p.x), z(p.z), r2(0), index(i) {}
             bool Cross(SegPoint p) { return ((x - p.x) * (x - p.x) + (z - p.z) * (z - p.z)) <= p.r2; }
             bool CrossOk(SegPoint p) { return ((x - p.x) * (x - p.x) + (z - p.z) * (z - p.z)) <= r2; }
             float x, z, r2;
@@ -153,7 +160,8 @@ namespace ps {
             double curvature = 0, seg_start_x, seg_start_z;;
             int c_ok = 0, c_b = 0;
             int ok_size = 0, b_size = 0;
-            tbb::concurrent_vector <SegPoint> ok_list, burn_list, b_list;
+            tbb::concurrent_vector <SegPointOk> ok_list, b_list;
+            tbb::concurrent_vector <SegPointBurn> burn_list;
             std::vector<int> burn_indexes;
 
             std::vector<FrontSegPoint> front_points;
@@ -164,7 +172,7 @@ namespace ps {
         //tbb::concurrent_vector <Segment*> burn_segments;
 
         inline Segment& grids(size_t x, size_t z) {
-            assert(z * grid_count_x + x < grid.size(), "segments out of range");
+            assert(z * grid_count_x + x < grid.size());
             return grid[z * grid_count_x + x];
         }
 
@@ -181,7 +189,6 @@ namespace ps {
         void ClearSegments();
 
 
-        bool CheckSegmentNeighborsBurn(int seg_x, int seg_z);
 
         std::vector<int> circle_squares;
         void CircleSquareSampling(double r);
@@ -191,16 +198,9 @@ namespace ps {
 
         /**/
     public:
-        int Line_Count();
-        void Density_Grid();
-        void Density_Radius();
-        void Max_Radius();
 
-        void CalcFrontlineRadius(std::vector <Point>& points);
-        std::vector<double> front_crosses;
-        //std::vector<Point> frontline_points;
-        void CalcFrontlineRadius2(std::vector <Point>& points);
-        void RefractParticles();
+        void Density_Grid();
+
         /**/
 
     };

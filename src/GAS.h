@@ -3,7 +3,7 @@
 #include "Params.h"
 #include "Particle.h"
 #include "Segments.h"
-#include "Frontline.h"
+// #include "Frontline.h"
 #include "Screen.h"
 
 class GAS {
@@ -14,7 +14,7 @@ private:
     ps::Params params;
 
     ps::Segments main_swarm{ params };
-    ps::Frontline front_line{ params };
+    // ps::Frontline front_line{ params };
     ps::Screen screen{ params };
 
     unsigned ii = 0;
