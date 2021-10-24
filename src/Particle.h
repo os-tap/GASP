@@ -12,12 +12,15 @@ namespace ps {
 
     public:
         Particle(coord_t _x, coord_t _y) : Point(_x,_y) {}
+        Particle(coord_t _x, coord_t _y, bool is_visible) : Point(_x,_y), visible(is_visible) {}
 
         enum class State { OK, WARM, BURN, WAVE, SAGE, DIED };
         State state = State::OK;
 
         unsigned burn_counter = 0;
         unsigned warm_counter = 0;
+
+        bool visible;
 
         //get coordinates
         coord_t _x()const;

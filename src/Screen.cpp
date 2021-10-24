@@ -328,6 +328,7 @@ namespace ps {
         for (size_t i = 0; i < particle_list.size(); i++) {
 
             auto &particle = particle_list[i];
+            if (!particle.visible) continue;
 
             //if (particle._x() > SCREEN_WIDTH) continue;
 

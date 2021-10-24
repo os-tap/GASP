@@ -58,6 +58,7 @@ namespace ps {
         }
 
         grid_particles_count = (double)P->base_particles / P->burn_radius_2 / M_PI * grid_x_size * grid_z_size;
+        std::cout << "\nparticles_in_cell: " << grid_particles_count << '\n';
         grid_particles_min = grid_particles_count / (1 + P->grid_count_gap);
         grid_particles_max = grid_particles_count * (1 + P->grid_count_gap);
 
@@ -204,13 +205,18 @@ namespace ps {
 
         double p_x_cord, p_z_cord;
         double emitter_height = P->particle_speed_z(P->area_center, 0)*1.1;
-        int particles_per_step = round((double)P->base_particles / P->burn_radius_2 / M_PI * P->stream_width * emitter_height);
+        double particles_per_step_d = (double)P->base_particles / P->burn_radius_2 / M_PI * P->stream_width * emitter_height;
+        int particles_per_step = round(particles_per_step_d);
+        double display_rate = particles_per_step_d / P->display_particles; 
 
+        double display_rating = -0;
         for (int i = 0; i < particles_per_step; i++)
         {
+            display_rating-= 1;
             p_x_cord = dist(gen) * P->stream_width + P->stream_beg;
             p_z_cord = -dist(gen) * emitter_height;
-            CreateParticle(p_x_cord, p_z_cord);
+            all_list.emplace_back(p_x_cord, p_z_cord, display_rating < 0);
+            display_rating+= display_rate * (display_rating < 0);
         }
     }
 
@@ -320,8 +326,9 @@ namespace ps {
             }
             else if (p.state == Particle::State::BURN && ++p.burn_counter > P->burn_time && P->burn_time)
             {
-                p.state = P->sage_time && ++thread_sage_counter == 5 ? Particle::State::SAGE : Particle::State::DIED;
-                thread_sage_counter *= thread_sage_counter < 5;
+                p.state = p.visible ? Particle::State::SAGE : Particle::State::DIED;
+                // p.state = P->sage_time && ++thread_sage_counter == 5 ? Particle::State::SAGE : Particle::State::DIED;
+                // thread_sage_counter *= thread_sage_counter < 5;
             }
             else if (p.state == Particle::State::SAGE && ++p.burn_counter >= P->sage_time)
             {
@@ -569,10 +576,13 @@ namespace ps {
                     //seg.curvature = (0.5 - (double)seg.c_ok / nbr / grid_particles_count);
                     seg.curvature = (0.5 - (double)seg.c_ok / nbr / grid_particles_count) * M_PI * M_PI / P->grid_curve_area * P->curve_burn_coef;
                     //seg.curvature *= seg.curvature *(seg.curvature > 0);
-                    seg.curvature *= seg.curvature > 0;
+                    if (P->only_positive_curve) {
+                        seg.curvature *= seg.curvature > 0;
+                    }
+                    
                     //seg.curvature *= std::fabs(seg.curvature);
                     
-                    seg.br = P->burn_radius_cross * (1 + seg.curvature);
+                    seg.br = P->make_radius_cross_fix(P->burn_radius * (1 + seg.curvature));
                     seg.br2 = seg.br * seg.br;
                 }
             }
@@ -607,7 +617,7 @@ namespace ps {
                     // double br = P->burn_radius_cross * (1 + seg.curvature);
                     //double br = P->burn_radius_cross * (1 + spline2d.eval(bp.x,bp.z));
                     // double br2 = br * br;
-                    //bp.r2 = br2;
+                    
                     int grids_calc = ceil(seg.br / grid_min_size);
 
                     int seg_x_start = (seg.x - grids_calc) * (seg.x >= grids_calc);

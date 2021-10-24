@@ -115,6 +115,9 @@ void GAS::ReadSDLEvents()
             case SDLK_k: params.scale_burn = !params.scale_burn;
                 params.curve_burn_coef = 0;
                 break;
+                break;
+            case SDLK_o: params.only_positive_curve = !params.only_positive_curve;
+                break;
             case SDLK_i: input.update_curve = true;
                 break;
             case SDLK_u:

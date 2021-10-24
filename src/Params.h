@@ -47,6 +47,8 @@ public:
     double stream_beg, stream_end, stream_width, stream_radius;
     double L, scale, DSR;
 
+
+    bool fix_burn_radius_cross;
     double burn_fix_a, burn_fix_b;
 
     double burn_radius, burn_radius_2;
@@ -83,7 +85,7 @@ public:
 
     double refract_coef, refract_offset;
 
-    int svm_count, print_count, display_count;
+    int svm_count, print_count, display_particles;
 
     bool frontline_cross_chunk, calc_cross;
     double frontline_cross_multipler, frontline_cross_area, frontline_cross_radius, frontline_cross_radius_2;
@@ -92,6 +94,7 @@ public:
 
 
     bool scale_burn;
+    bool only_positive_curve;
 
 
     double curve_start, curve_end;
@@ -148,7 +151,7 @@ public:
 
 
     double make_radius_cross_fix(double radius) const {
-        return radius / (1 - burn_fix_a / pow(base_particles_NR2* radius* radius, burn_fix_b));
+        return !fix_burn_radius_cross ? radius : radius / (1 - burn_fix_a / pow(base_particles_NR2* radius* radius, burn_fix_b));
     }
     double get_burn_radius(double x_cord) const {
 

@@ -124,7 +124,7 @@ namespace ps {
         double grid_x_size, grid_z_size;
         double grid_min_size, grid_max_size;
         double grid_count_x_percent, grid_count_z_percent;
-        int grid_particles_count;
+        double grid_particles_count;
         int grid_particles_min, grid_particles_max;
         double* gxa{nullptr}, * gya{ nullptr };
         Spline2d spline2d;

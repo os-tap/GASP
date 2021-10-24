@@ -18,13 +18,14 @@
   "burn_fix_a": 1,
   "burn_fix_b": 0.672,
 
+  "fix_burn_radius_cross": true,
 
 
-  "base_particles": 300,
+  "base_particles": 100,
   "particles_dist": 16,
 
 
-  "base_speed": 5,
+  "base_speed": 4,
   "const_speed": 0,
   "const_speed_x": 0,
   "const_speed_z": 0,
@@ -32,9 +33,9 @@
   "burn_speed": 0.99,
 
 
+  "display_particles": 500,
   "svm_count": 10000,
   "print_count": 10000,
-  "display_count": 500000,
 
   "skip_frames": 1,
 
@@ -43,7 +44,7 @@
   "iterations": 1,
 
   "burn_time": 1,
-  "sage_time": 0,
+  "sage_time": 50,
   "burn_fade": 0,
 
 
@@ -72,11 +73,12 @@
   "scale_burn": false,
 
 
-  "curve_burn_coef": 0.25,
+  "curve_burn_coef": 0.0,
+  "only_positive_curve": true,
 
 
   "grid_curve_calc": 1,
-  "grid_curve_area": 0.1,
+  "grid_curve_area": 0.14,
 
 
   "refill": false,

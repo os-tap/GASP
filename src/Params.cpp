@@ -62,12 +62,14 @@ void ps::Params::Load(json j)
     base_particles_NR2 = base_particles / burn_radius_2;
     particles_dist = burn_radius / (int)j["particles_dist"];
 
+    fix_burn_radius_cross = j["fix_burn_radius_cross"];
+
     //burn_radius_cross = burn_radius + burn_radius * (double)j["burn_fix"];
     //burn_radius_cross = burn_radius * (1 + (pow(base_particles, (double)j["burn_fix"])));
     burn_fix_a = (double)j["burn_fix_a"];
     burn_fix_b = (double)j["burn_fix_b"];
-    burn_radius_cross = burn_radius;
-    //burn_radius_cross = make_radius_cross_fix(burn_radius);
+    // burn_radius_cross = burn_radius;
+    burn_radius_cross = make_radius_cross_fix(burn_radius);
     burn_radius_2_cross = burn_radius_cross * burn_radius_cross;
 
     emitter_begin = (double)j["emitter_begin"] * burn_radius_2 / burn_radius_cross;
@@ -112,7 +114,7 @@ void ps::Params::Load(json j)
 
     svm_count = (int)j["svm_count"];
     print_count = (int)j["print_count"];
-    display_count = (int)j["display_count"];
+    display_particles = (int)j["display_particles"];
 
     calc_cross = (bool)j["calc_cross"];
     frontline_cross_chunk = (bool)j["frontline_cross_chunk"];
@@ -125,6 +127,7 @@ void ps::Params::Load(json j)
     frontline_cross_spline_alpha = (double)j["frontline_cross_spline_alpha"];
 
     
+    only_positive_curve = (bool)j["only_positive_curve"];
     scale_burn = (bool)j["scale_burn"];
     refill = (bool)j["refill"];
     grid_count_gap = (double)j["grid_count_gap"];
