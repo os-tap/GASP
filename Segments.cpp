@@ -100,7 +100,9 @@ namespace ps {
         std::string output;
         output += "x,z,burn";
         for (auto& particle : all_list) {
-            output += fmt::format("\n{},{},{}", particle._x(), particle._z(), particle.burn_counter);
+            if (particle.visible) {
+                output += fmt::format("\n{},{},{}", particle._x(), particle._z(), particle.burn_counter);
+            }
         }
         std::ofstream csv(P->csv_folder + "gas.csv." + std::to_string(num));
         csv << output;
@@ -190,13 +192,18 @@ namespace ps {
 
         double p_x_cord, p_z_cord;
         double emitter_height = P->particle_speed_z(P->area_center, 0)*1.1;
-        int particles_per_step = round((double)P->base_particles / P->burn_radius_2 / M_PI * P->stream_width * emitter_height);
+        double particles_per_step_d = (double)P->base_particles / P->burn_radius_2 / M_PI * P->stream_width * emitter_height;
+        int particles_per_step = round(particles_per_step_d);
+        double display_rate = particles_per_step_d / P->display_count;
 
+        double display_rating = -0;
         for (int i = 0; i < particles_per_step; i++)
         {
+            display_rating -= 1;
             p_x_cord = dist(gen) * P->stream_width + P->stream_beg;
             p_z_cord = -dist(gen) * emitter_height;
-            CreateParticle(p_x_cord, p_z_cord);
+            all_list.emplace_back(p_x_cord, p_z_cord, display_rating < 0);
+            display_rating += display_rate * (display_rating < 0);
         }
     }
 
@@ -297,7 +304,7 @@ namespace ps {
 
         std::for_each(pstl::execution::par, all_list.begin(), all_list.end(), [this](Particle& p) {
 
-            CounterType::reference thread_sage_counter = SageCounter.local();
+            //CounterType::reference thread_sage_counter = SageCounter.local();
 
             if (p.state == Particle::State::WARM && ++p.warm_counter >= P->iterations)
             {
@@ -306,10 +313,11 @@ namespace ps {
             }
             else if (p.state == Particle::State::BURN && ++p.burn_counter > P->burn_time && P->burn_time)
             {
-                p.state = P->sage_time && ++thread_sage_counter == 5 ? Particle::State::SAGE : Particle::State::DIED;
-                thread_sage_counter *= thread_sage_counter < 5;
+                p.state = p.visible ? Particle::State::SAGE : Particle::State::DIED;
+                //p.state = P->sage_time && ++thread_sage_counter == 5 ? Particle::State::SAGE : Particle::State::DIED;
+                //thread_sage_counter *= thread_sage_counter < 5;
             }
-            else if (p.state == Particle::State::SAGE && ++p.burn_counter >= P->sage_time)
+            else if (p.state == Particle::State::SAGE && ++p.burn_counter >= P->sage_time && P->sage_time)
             {
                 p.state = Particle::State::DIED;
             }

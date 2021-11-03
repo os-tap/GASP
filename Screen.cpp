@@ -334,6 +334,7 @@ namespace ps {
 
             auto &particle = particle_list[i];
 
+            if (!particle.visible) continue;
             //if (particle._x() > SCREEN_WIDTH) continue;
 
 
@@ -365,12 +366,13 @@ namespace ps {
                     break;
 
                case Particle::State::SAGE:
-                    //color = sage_color;
+                    //color = red_color;
+
                     red = 255 - (int)(bc * rm);
                     green = 120 - (int)(bc * gm);
                     blue = 100 - (int)(bc * bm);
-
                     color = get_uint32_color(red, green, blue);
+
                     break;
 
                case Particle::State::DIED:
@@ -410,7 +412,8 @@ namespace ps {
             int y = y_to_pixel(particle.z);
             set_pixel_color(x, y, color);
             //set_pixel_atomic(x, y, color);
-            if (sdl_draw_plus || particle.getState() == Particle::State::SAGE) draw_plus(x, y, color);
+            if (sdl_draw_plus) draw_plus(x, y, color);
+            //if (sdl_draw_plus || particle.getState() == Particle::State::SAGE) draw_plus(x, y, color);
 
         }
         /*for (int i = 0; i < SCREEN_HEIGHT * SCREEN_WIDTH; ++i) {

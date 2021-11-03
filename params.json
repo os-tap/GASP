@@ -1,5 +1,5 @@
 {
-  "csv_folder": "C:\\Users\\prive\\OneDrive\\csv\\1708\\",
+  "csv_folder": "C:\\Users\\prive\\csv\\interNocurve\\",
 
   "area_beg": 0,
   "area_end": 1,
@@ -13,19 +13,19 @@
   "wave_time": 100,
 
 
-  "burn_radius": 3,
+  "burn_radius": 2,
   "burn_fix": -1,
   "burn_fix_a": 1,
   "burn_fix_b": 0.672,
 
 
 
-  "base_particles": 40,
+  "base_particles": 200,
   "particles_dist": 16,
 
 
-  "base_speed": 4,
-  "const_speed": 0.5,
+  "base_speed": 5,
+  "const_speed": 0,
   "const_speed_x": 10,
   "const_speed_z": 10,
 
@@ -34,7 +34,7 @@
 
   "svm_count": 10000,
   "print_count": 10000,
-  "display_count": 500000,
+  "display_count": 2000,
 
   "emitter_begin": 0,
 
@@ -70,11 +70,11 @@
   "scale_burn": false,
 
 
-  "curve_burn_coef": 0.25,
+  "curve_burn_coef": 0.2,
 
 
   "grid_curve_calc": 1,
-  "grid_curve_area": 0.1,
+  "grid_curve_area": 0.08,
 
 
   "refill": false,
