@@ -62,6 +62,8 @@ void ps::Params::Load(json j)
     base_particles_NR2 = base_particles / burn_radius_2;
     particles_dist = burn_radius / (int)j["particles_dist"];
 
+    density_coef = get_density_coef(base_particles_NR2);
+
     //burn_radius_cross = burn_radius + burn_radius * (double)j["burn_fix"];
     //burn_radius_cross = burn_radius * (1 + (pow(base_particles, (double)j["burn_fix"])));
     burn_fix_a = (double)j["burn_fix_a"];
@@ -146,6 +148,7 @@ void ps::Params::Print()
     std::cout << burn_radius_2_cross << " - burn radius 2 fix\n";
     std::cout << burn_speed << " - burn speed\n";
     std::cout << area_height << " - area_height\n";
+    std::cout << base_particles_NR2 << " - base_particles_NR2\n";
 }
 /*
 
@@ -154,5 +157,14 @@ std::string ps::Params::frontline_params() const
 	return fmt::format("#steps {}\n#window 1/{}\n#h {}\n", front_line_steps, front_line_windows, front_line_h);
 }
 */
+
+namespace ps {
+    double Params::get_density_coef(double denisty) {
+        return 0.1 / sqrt(denisty);
+    }
+    double Params::get_burn_radius(double burn_speed) {
+        return 1 + density_coef / pow(burn_speed, (4. / 3.));
+    }
+}
 
 

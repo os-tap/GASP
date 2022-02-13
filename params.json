@@ -26,8 +26,8 @@
 
   "base_speed": 5,
   "const_speed": 0,
-  "const_speed_x": 10,
-  "const_speed_z": 10,
+  "const_speed_x": 0,
+  "const_speed_z": 0,
 
   "burn_speed": 0.99,
 

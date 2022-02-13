@@ -59,6 +59,7 @@ public:
     int base_particles;
     double particles_dist;
     double base_particles_NR2;
+    double density_coef;
 
     int iterations;
     double iterate_burn_radius;
@@ -255,6 +256,10 @@ public:
     double refract_func(const double x) const {
         return x * refract_coef + refract_offset;
     }
+
+
+    double get_density_coef(double particles_denisty);
+    double get_burn_radius(double burn_speed);
 
 
 
