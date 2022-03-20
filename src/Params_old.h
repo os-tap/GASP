@@ -23,150 +23,90 @@
 using json = nlohmann::json;
 
 namespace ps {
-    class JsonReader;
     class Params;
 }
-class ps::JsonReader {
-    //Class, which read Json on initialization
-protected:
-    json j;
-public:
-    JsonReader() {
-        
-        std::ifstream file("/home/bryzgalov.ov/GASP/params.json");
-        if (!file.is_open()) {
-            std::cout << "Cant find params.json";
-            exit(1);
-        }
-
-        file >> j;
-        file.close();
-    }
-};
-class ps::Params : JsonReader {
+class ps::Params {
 
 public:
 
-    // void Read();
-    // void Load(json j);
-    // json GetFromFile();
+    Params();
+    void Read();
+    void Load(json j);
+    json GetFromFile();
     void Print();
 
-    int screen_width = 400;
-    int screen_height = 700;
-    int screen_bottom_gap = 0;
+    const int screen_width = 400;
+    const int screen_height = 700;
+    const int screen_bottom_gap = 0;
 
-    // json j;
+    std::string csv_folder;
 
-    std::string csv_folder = j["csv_folder"];
+    double screen_proportion, screen_x_proportion, screen_y_proportion;
 
-    double area_beg = j["area_beg"];
-    double area_end = j["area_end"];
-    double area_size = area_end - area_beg;
-    double area_height = area_size / screen_width * screen_height;
-
-
-    double screen_proportion = screen_width / area_size;
-    double screen_x_proportion = area_size / screen_width;
-    double screen_y_proportion = area_height / screen_height;
-
-    
-    double stream_beg = j["stream_beg"];
-    double stream_end = j["stream_end"];
-    double stream_width = stream_end - stream_beg;
-    double stream_radius = stream_width / 2;
-
-    double area_center = stream_beg + stream_radius;
-    double L = stream_width;
-
-    double scale = j["scale"];
-    double DSR = L / scale;
+    double area_beg, area_end, area_size, area_center, area_height;
+    double stream_beg, stream_end, stream_width, stream_radius;
+    double L, scale, DSR;
 
 
-    bool fix_burn_radius_cross = j["fix_burn_radius_cross"];
-    double burn_fix_a = j["burn_fix_a"];
-    double burn_fix_b = j["burn_fix_b"];
+    bool fix_burn_radius_cross;
+    double burn_fix_a, burn_fix_b;
 
-    double burn_radius = (double)j["burn_radius"] * DSR;
-    double burn_radius_2 = burn_radius * burn_radius;
+    double burn_radius, burn_radius_2;
+    double burn_radius_cross, burn_radius_2_cross;
 
-    int base_particles = j["base_particles"];
-    double base_particles_NR2 = base_particles / burn_radius_2;
-    double particles_dist = burn_radius / (int)j["particles_dist"];
+    double base_speed, burn_speed, const_speed;
+    double const_speed_x, const_speed_z;
 
-    double burn_radius_cross = make_radius_cross_fix(burn_radius);
-    double burn_radius_2_cross = burn_radius_cross * burn_radius_cross;
+    double emitter_begin;
+    int base_particles;
+    double particles_dist;
+    double base_particles_NR2;
 
-    double base_speed = static_cast<double>(j["base_speed"]) * burn_radius;
-    double burn_speed = static_cast<double>(j["burn_speed"]) / burn_radius;
-
-    double const_speed = static_cast<double>(j["const_speed"]) * burn_radius;
-    double const_speed_x = static_cast<double>(j["const_speed_x"]) * burn_radius;
-    double const_speed_z = static_cast<double>(j["const_speed_z"]) * burn_radius;
-
-    double emitter_begin = static_cast<double>(j["emitter_begin"]) * burn_radius_2 / burn_radius_cross;
-
-
-    int iterations = j["iterations"];
+    int iterations;
     double iterate_burn_radius;
-    double iterate_speed = base_speed / iterations;
-    double iterate_const = const_speed / iterations;
-    double iterate_const_x = const_speed_x / iterations;
-    double iterate_const_z = const_speed_z / iterations;
-    int iterate_particles = floor(base_particles * particle_speed(area_center) / burn_radius_2_cross / M_PI * L);
+    double iterate_speed;
+    double iterate_const;
+    double iterate_const_x, iterate_const_z;
+    int iterate_particles;
+
+    int burn_time, sage_time, wave_time, burn_fade;
 
 
-    int burn_time = static_cast<int>(j["burn_time"]) * iterations;
-    int sage_time = static_cast<int>(j["sage_time"]) * iterations;
-    int wave_time = static_cast<int>(j["wave_time"]) * iterations;
-    int burn_fade = static_cast<int>(j["burn_fade"]) * iterations;
+    int frontline_window_steps;
+    double frontline_window_size;
+
+    int frontline_spline_steps;
+    double frontline_spline_alpha;
+    bool move_normal, move_speed;
+    bool curve_by_radius;
+
+    int frontline_stencil_h, frontline_radius_h;
 
 
-    int frontline_window_steps = j["frontline_window_steps"];
-    double frontline_window_size = j["frontline_window_size"];
-    int frontline_stencil_h = j["frontline_stencil_h"];
-    int frontline_radius_h = j["frontline_radius_h"];
+    double refract_coef, refract_offset;
 
-    int frontline_spline_steps = j["frontline_spline_steps"];
-    double frontline_spline_alpha = j["frontline_spline_alpha"];
-    bool move_normal = j["move_normal"];
-    bool move_speed = j["move_speed"];
-    bool curve_by_radius = j["curve_by_radius"];
+    int svm_count, print_count, display_particles;
+
+    bool frontline_cross_chunk, calc_cross;
+    double frontline_cross_multipler, frontline_cross_area, frontline_cross_radius, frontline_cross_radius_2;
+    double frontline_cross_border;
+    double frontline_cross_spline_alpha;
 
 
-
-    double refract_coef = j["refract_coef"];
-    double refract_offset = j["refract_offset"];
-
-    int svm_count = j["svm_count"]; 
-    int print_count = j["print_count"]; 
-    int display_particles = j["display_particles"];
-
-    bool frontline_cross_chunk = j["frontline_cross_chunk"];
-    bool calc_cross = j["calc_cross"];
-    double frontline_cross_multipler = j["frontline_cross_multipler"];
-    double frontline_cross_area = j["frontline_cross_area"];
-    double frontline_cross_border = j["frontline_cross_border"];
-    double frontline_cross_spline_alpha = j["frontline_cross_spline_alpha"];
-    double frontline_cross_radius = stream_width * frontline_cross_area;
-    double frontline_cross_radius_2 = frontline_cross_radius * frontline_cross_radius;
+    bool scale_burn;
+    bool only_positive_curve;
 
 
-    bool scale_burn = j["scale_burn"];
-    bool only_positive_curve = j["only_positive_curve"];
+    double curve_start, curve_end;
+    double curve_burn_coef;
 
 
-    double curve_start = area_end;
-    double curve_end = area_beg;
-    double curve_burn_coef = j["curve_burn_coef"];
+    int grid_curve_calc;
+    double grid_curve_area;
+    bool refill;
+    double grid_count_gap;
 
-
-    int grid_curve_calc = j["grid_curve_calc"];
-    double grid_curve_area = j["grid_curve_area"];
-    bool refill = j["refill"];
-    double grid_count_gap = j["grid_count_gap"];
-
-    int skip_frames = j["skip_frames"];
+    size_t skip_frames;
 
 /*     SPLINTER::BSpline curve_spline{ 1 };
 
@@ -244,6 +184,15 @@ public:
     }
 
 
+    double stream_function(double x) const {
+        return (this->*stream_function_p)(x);
+    }
+
+    void SetStream(int i) {
+        assert(i && i <= 4);
+        stream_function_p = streams[i];
+        Read();
+    }
 
 private:
     typedef double(Params::* stream)(double) const;
@@ -274,18 +223,6 @@ private:
 
 
 public:
-
-    double stream_function(double x) const {
-        // return (this->*stream_function_p)(x);
-        return x2_stream(x);
-    }
-
-    void SetStream(int i) {
-        assert(i && i <= 4);
-        stream_function_p = streams[i];
-        // Read();
-    }
-
     double from_center(const double x) const{
         return x - area_center;
     }

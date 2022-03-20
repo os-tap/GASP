@@ -2,7 +2,7 @@
 
 
 
-/* ps::Params::Params() {
+ps::Params::Params() {
     Read();
     // clear_curve_spline();
 }
@@ -138,7 +138,7 @@ void ps::Params::Load(json j)
 
     skip_frames = (size_t)j["skip_frames"];
 
-} */
+}
 
 
 void ps::Params::Print()
