@@ -2,14 +2,17 @@
 #include "Params.h"
 #include "Particle.h"
 
-#include "Spline2d.h"
+// #include "Spline2d.h"
+
+// #include <tbb/enumerable_thread_specific.h>
+#include <tbb/concurrent_vector.h>
+#include <fmt/core.h>
 
 #include <vector>
 #include <string>
 
 #include <iostream>
 #include <fstream>
-#include <fmt/core.h>
 
 #include <random>
 #include <cmath>
@@ -19,24 +22,13 @@
 #include <utility>
 #include <limits>
 
-//#undef min
-//#undef max
-#define NOMINMAX
-//#include <tbb/task_scheduler_init.h>
-#include <tbb/enumerable_thread_specific.h>
-#undef NOMINMAX
-//#include <tbb/parallel_for.h>
-//#include <tbb/blocked_range.h>
-#include <tbb/concurrent_vector.h>
-#include <execution>
-#include <algorithm>
 
 namespace ps
 {
 
     typedef std::vector<ps::Particle> ParticleList;
     // typedef tbb::enumerable_thread_specific<int> CounterType;
-    typedef tbb::enumerable_thread_specific<std::pair<std::uniform_real_distribution<double>, std::random_device>> GenType;
+    // typedef tbb::enumerable_thread_specific<std::pair<std::uniform_real_distribution<double>, std::random_device>> GenType;
 
     class Segments
     {
@@ -45,7 +37,7 @@ namespace ps
 
         // CounterType SageCounter{0};
 
-        GenType ParticleGenerator;
+        // GenType ParticleGenerator;
 
     public:
         Segments(const Params &);
@@ -61,7 +53,7 @@ namespace ps
 
     public:
         void Emit();
-        void Refill();
+        // void Refill();
         void FillParticles();
         void MoveParticles();
         void CrossParticles();
@@ -102,7 +94,6 @@ namespace ps
         int fill_grid_count;
 
         int delete_sage = 0;
-        bool refill;
 
     public:
         int grid_count_x, grid_count_z, grid_count;
@@ -112,7 +103,7 @@ namespace ps
         double grid_particles_count;
         int grid_particles_min, grid_particles_max;
         double *gxa{nullptr}, *gya{nullptr};
-        Spline2d spline2d;
+        // Spline2d spline2d;
 
         struct SegPointOk;
         struct SegPointBurn;
@@ -131,21 +122,6 @@ namespace ps
             bool Cross(const SegPointOk &p) const { return Point::Cross(p, r2); }
         };
 
-        struct SegPoint
-        {
-            SegPoint(Point &p, double _r2, size_t i) : x(p.x), z(p.z), r2(_r2), index(i) {}
-            SegPoint(Point &p, size_t i) : x(p.x), z(p.z), r2(0), index(i) {}
-            bool Cross(SegPoint p) { return ((x - p.x) * (x - p.x) + (z - p.z) * (z - p.z)) <= p.r2; }
-            bool CrossOk(SegPoint p) { return ((x - p.x) * (x - p.x) + (z - p.z) * (z - p.z)) <= r2; }
-            float x, z, r2;
-            size_t index;
-        };
-        struct FrontSegPoint : SegPoint
-        {
-            FrontSegPoint(Point &p, double _r2, size_t i) : SegPoint(p, _r2, i) {}
-            unsigned count = 0;
-        };
-
         struct Segment
         {
             int x, z;
@@ -156,9 +132,6 @@ namespace ps
             tbb::concurrent_vector<SegPointOk> ok_list, b_list;
             tbb::concurrent_vector<SegPointBurn> burn_list;
             std::vector<int> burn_indexes;
-
-            std::vector<FrontSegPoint> front_points;
-            // std::vector<std::pair<int, int>> front_points;
         };
 
         std::vector<Segment> grid;

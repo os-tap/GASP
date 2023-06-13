@@ -1,5 +1,19 @@
 #include "Segments.h"
 
+//#undef min
+//#undef max
+#define NOMINMAX
+//#include <tbb/task_scheduler_init.h>
+#undef NOMINMAX
+
+#include <tbb/parallel_for.h>
+#include <tbb/parallel_sort.h>
+#include <tbb/parallel_for_each.h>
+//#include <tbb/blocked_range.h>
+#include <tbb/concurrent_vector.h>
+#include <execution>
+#include <algorithm>
+
 namespace ps
 {
 
@@ -11,7 +25,6 @@ namespace ps
     {
         SetSegmentsGrid(P->burn_radius_cross);
         ResetFillGrid();
-        refill = P->refill;
     }
 
     void Segments::Toggle_Fill()
@@ -76,7 +89,7 @@ namespace ps
             gya[i - P->grid_curve_calc] = (i + 0.5) * grid_z_size;
         }
 
-        spline2d.init(gxa, gya, grid_count_x - P->grid_curve_calc * 2, grid_count_z - P->grid_curve_calc * 2);
+        // spline2d.init(gxa, gya, grid_count_x - P->grid_curve_calc * 2, grid_count_z - P->grid_curve_calc * 2);
 
         CircleSquareSampling(P->grid_curve_area);
     }
@@ -270,13 +283,11 @@ namespace ps
 
     void Segments::CrossParticles()
     {
-
-        std::for_each(std::execution::par,
-                      grid.begin(), grid.end(), [this](Segment &seg)
-                      {
-                if (!(seg.burn_list.empty())) {
-                    DoSegment(seg);
-                } });
+        tbb::parallel_for_each(grid.begin(), grid.end(), [this](Segment &seg) {
+            if (!(seg.burn_list.empty())) {
+                DoSegment(seg);
+            } 
+            });
 
         all_will_burn.resize(will_burn_index.size());
         tbb::parallel_for(size_t(0), all_will_burn.size(), [=](size_t i)
@@ -304,7 +315,7 @@ namespace ps
     void Segments::StepParticles()
     {
 
-        std::for_each(std::execution::par, all_list.begin(), all_list.end(), [this](Particle &p)
+        tbb::parallel_for_each(all_list.begin(), all_list.end(), [this](Particle &p)
             {
                 // CounterType::reference thread_sage_counter = SageCounter.local();
 
@@ -328,8 +339,9 @@ namespace ps
 
     void Segments::MoveParticles()
     {
-        std::for_each(std::execution::par, all_list.begin(), all_list.end(), [this](Particle &p)
-                      { MoveParticle(p); });
+        tbb::parallel_for_each(all_list.begin(), all_list.end(), [this](Particle &p) { 
+            MoveParticle(p); 
+        });
     }
 
     inline int Segments::GetSegmentX(double x_cord) const
@@ -354,14 +366,12 @@ namespace ps
     void Segments::ClearSegments()
     {
         will_burn_index.clear();
-        std::for_each(std::execution::par,
-                      grid.begin(), grid.end(), [this](Segment &seg)
-                      {
-                seg.burn_list.clear();
-                seg.b_list.clear();
-                seg.ok_list.clear();
-                seg.burn_indexes.clear();
-                seg.front_points.clear(); });
+        tbb::parallel_for_each( grid.begin(), grid.end(), [this](Segment &seg) {
+            seg.burn_list.clear();
+            seg.b_list.clear();
+            seg.ok_list.clear();
+            seg.burn_indexes.clear();
+        });
     }
 
     void Segments::UpdateSegments()
@@ -371,11 +381,10 @@ namespace ps
         tbb::parallel_for(size_t(0), all_list.size(), [=](size_t i)
                           { ParticleToSegment(all_list[i], i); });
 
-        std::for_each(std::execution::par,
-                      grid.begin(), grid.end(), [this](Segment &seg)
-                      {
-               seg.ok_size = seg.ok_list.size();
-               seg.b_size = seg.b_list.size(); });
+        tbb::parallel_for_each(grid.begin(), grid.end(), [this](Segment &seg) {
+            seg.ok_size = seg.ok_list.size();
+            seg.b_size = seg.b_list.size(); 
+        });
     }
 
     void Segments::ParticleToSegment(Particle &p, size_t index)
@@ -383,12 +392,6 @@ namespace ps
         int seg_x = GetSegmentX(p.x);
         int seg_z = GetSegmentZ(p.z);
         auto &seg = grids(seg_x, seg_z);
-
-        if (refill && seg.ok_list.size() + seg.b_list.size() > grid_particles_max)
-        {
-            p.state = Particle::State::DIED;
-            return;
-        }
 
         if (p.state == Particle::State::OK)
         {
@@ -449,6 +452,8 @@ namespace ps
 
     void Segments::MoveParticle(Particle &p)
     {
+        // LEAPFROG integration https://en.wikipedia.org/wiki/Leapfrog_integration
+
         double half_x = p.x + P->particle_speed_x(p.x, p.z) / 2;
         double half_z = p.z + P->particle_speed_z(p.x, p.z) / 2;
 
@@ -494,25 +499,32 @@ namespace ps
 
     void Segments::BurnSegment(Segment &segment)
     {
-
-        std::for_each(std::execution::par,
-                      segment.ok_list.begin(), segment.ok_list.end(), [this](SegPointOk &p)
-                      { BurnParticle(all_list[p.index]); });
+        tbb::parallel_for_each(segment.ok_list.begin(), segment.ok_list.end(), [this](SegPointOk &p) { 
+            BurnParticle(all_list[p.index]); 
+        });
         segment.ok_list.clear();
     }
 
     void Segments::ClearParticles()
     {
+        auto erase_it = std::remove_if(all_list.begin(), all_list.end(), [](Particle &p) { 
+            return p.state == Particle::State::DIED; 
+        });       
 
-        auto erase_it = std::remove_if(std::execution::par, all_list.begin(), all_list.end(), [](Particle &p)
-                                       { return p.state == Particle::State::DIED; });
+        // tbb::parallel_sort(all_list.begin(), all_list.end(), [](Particle &a, Particle b) { 
+        //     return a.state != Particle::State::DIED && b.state == Particle::State::DIED; 
+        // });
+
+        // auto erase_it = std::find_if(all_list.begin(), all_list.end(), [](Particle &p) {
+        //     return p.state == Particle::State::DIED;
+        // });
+        
         all_list.erase(erase_it, all_list.end());
     }
 
     void Segments::CalcBurnRadius(int g)
     {
-        std::for_each(std::execution::par, grid.begin(), grid.end(), [this, g](Segment &seg)
-                      {
+        tbb::parallel_for_each(grid.begin(), grid.end(), [this, g](Segment &seg) {
             seg.br = P->burn_radius_cross;
             seg.br2 = P->burn_radius_2_cross;
             seg.c_ok = seg.c_b = seg.curvature = 0;//seg.br = seg.br2 = 0;
@@ -544,8 +556,6 @@ namespace ps
                     }
                 }
 
-
-
                 if (seg.c_ok && seg.c_b)  
                 {
                     //seg.curvature = (0.5 - (double)seg.c_ok / (seg.c_b + seg.c_ok)) * M_PI * M_PI / ( P->grid_curve_calc * grid_x_size) * P->curve_burn_coef;
@@ -571,16 +581,15 @@ namespace ps
         {
             for (size_t i = 0; i < grid_count_x - P->grid_curve_calc * 2; i++)
             {
-                spline2d.set(i, j, grids(i + P->grid_curve_calc, j + P->grid_curve_calc).curvature);
+                // spline2d.set(i, j, grids(i + P->grid_curve_calc, j + P->grid_curve_calc).curvature);
             }
         }
-        spline2d.fit();
+        // spline2d.fit();
     }
 
     void Segments::PlaceBurned()
     {
-        std::for_each(std::execution::par, grid.begin(), grid.end(), [this](Segment &seg)
-                      {
+        tbb::parallel_for_each(grid.begin(), grid.end(), [this](Segment &seg) {
             if (seg.c_ok && seg.c_b)
             {
                 for (auto& bp : seg.b_list) {
@@ -613,54 +622,53 @@ namespace ps
                 }
             } });
     }
-
+    /*
     void Segments::Refill()
     {
 
-        std::for_each(std::execution::par, grid.begin(), grid.end(), [this](Segment &seg)
-                      {
-                          GenType::reference thread_gen = ParticleGenerator.local();
+        tbb::parallel_for_each(grid.begin(), grid.end(), [this](Segment &seg) {
+            GenType::reference thread_gen = ParticleGenerator.local();
 
-                          if (seg.b_list.empty())
-                          {
-                              int sz = seg.ok_list.size();
+            if (seg.b_list.empty())
+            {
+                int sz = seg.ok_list.size();
 
-                              if (sz < grid_particles_min)
-                              {
-                                  for (size_t i = 0; i < grid_particles_count - sz; i++)
-                                  {
-                                      double p_x_cord = thread_gen.first(thread_gen.second) * grid_x_size + seg.seg_start_x;
-                                      double p_z_cord = thread_gen.first(thread_gen.second) * grid_z_size + seg.seg_start_z;
-                                      Particle p(p_x_cord, p_z_cord);
-                                      auto it = refilled.push_back(p);
-                                      seg.ok_list.emplace_back(p, all_list.size() + (it - refilled.begin()));
-                                  }
-                              }
-                          }
-                          else if (seg.ok_list.empty())
-                          {
-                              int sz = seg.b_list.size();
-                              if (sz < grid_particles_min)
-                              {
-                                  for (size_t i = 0; i < grid_particles_count - sz; i++)
-                                  {
-                                      double p_x_cord = thread_gen.first(thread_gen.second) * grid_x_size + seg.seg_start_x;
-                                      double p_z_cord = thread_gen.first(thread_gen.second) * grid_z_size + seg.seg_start_z;
-                                      Particle p(p_x_cord, p_z_cord);
-                                      p.state = Particle::State::BURN;
-                                      p.burn_counter = 1;
-                                      auto it = refilled.push_back(p);
-                                      seg.b_list.emplace_back(p, 0);
-                                  }
-                              }
-                          }
-                          else
-                          {
-                          }
-                      });
+                if (sz < grid_particles_min)
+                {
+                    for (size_t i = 0; i < grid_particles_count - sz; i++)
+                    {
+                        double p_x_cord = thread_gen.first(thread_gen.second) * grid_x_size + seg.seg_start_x;
+                        double p_z_cord = thread_gen.first(thread_gen.second) * grid_z_size + seg.seg_start_z;
+                        Particle p(p_x_cord, p_z_cord);
+                        auto it = refilled.push_back(p);
+                        seg.ok_list.emplace_back(p, all_list.size() + (it - refilled.begin()));
+                    }
+                }
+            }
+            else if (seg.ok_list.empty())
+            {
+                int sz = seg.b_list.size();
+                if (sz < grid_particles_min)
+                {
+                    for (size_t i = 0; i < grid_particles_count - sz; i++)
+                    {
+                        double p_x_cord = thread_gen.first(thread_gen.second) * grid_x_size + seg.seg_start_x;
+                        double p_z_cord = thread_gen.first(thread_gen.second) * grid_z_size + seg.seg_start_z;
+                        Particle p(p_x_cord, p_z_cord);
+                        p.state = Particle::State::BURN;
+                        p.burn_counter = 1;
+                        auto it = refilled.push_back(p);
+                        seg.b_list.emplace_back(p, 0);
+                    }
+                }
+            }
+            else
+            {
+            }
+        });
 
         all_list.insert(all_list.end(), refilled.begin(), refilled.end());
         refilled.clear();
     }
-
+    */
 }

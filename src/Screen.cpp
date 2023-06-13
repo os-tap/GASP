@@ -36,11 +36,11 @@ namespace ps {
         // Creates an SDL window struct. Returns NULL on failure.
         m_window = SDL_CreateWindow(
                 "Particle Simulation",       // Window title
-                SDL_WINDOWPOS_UNDEFINED,     // Initial x position
-                SDL_WINDOWPOS_UNDEFINED,     // Initial y position
+                // SDL_WINDOWPOS_UNDEFINED,     // Initial x position
+                // SDL_WINDOWPOS_UNDEFINED,     // Initial y position
                 SCREEN_WIDTH,                // Width, in pixels
                 SCREEN_HEIGHT,               // Height, in pixels
-                SDL_WINDOW_ALLOW_HIGHDPI     // Increases resolution
+                0// SDL_WINDOW_ALLOW_HIGHDPI     // Increases resolution
         );
 
         // Check if window creation failed.
@@ -57,7 +57,7 @@ namespace ps {
         // done rendering are sent to the window to be displayed.
         m_renderer = SDL_CreateRenderer(
                 m_window,                      // Window associated with the renderer.
-                -1,                            // Index of rendering driver to initialize, -1 to use first available.
+                NULL,                            // Index of rendering driver to initialize, -1 to use first available.
                 SDL_RENDERER_PRESENTVSYNC |    // Synchronize rendering with window refresh rate.
                 SDL_RENDERER_ACCELERATED);     // Allow renderer to use hardware acceleration.
 
@@ -112,7 +112,7 @@ namespace ps {
         );
 
         // Copies the newly updated texture into the renderer.
-        SDL_RenderCopy(
+        SDL_RenderTexture(
                 m_renderer,    // The renderer to be updated.
                 m_texture,     // The source texture.
                 NULL,          // Amount of texture to be copied, NULL for entire texture.
@@ -444,9 +444,9 @@ namespace ps {
     {
         //double bias = P->front_line_bias;
 
-        SDL_Point* sdl_points = new SDL_Point[points.size()];
-        SDL_Point* sdl_points1 = new SDL_Point[points.size()];
-        SDL_Point* sdl_points2 = new SDL_Point[points.size()];
+        SDL_FPoint* sdl_points = new SDL_FPoint[points.size()];
+        SDL_FPoint* sdl_points1 = new SDL_FPoint[points.size()];
+        SDL_FPoint* sdl_points2 = new SDL_FPoint[points.size()];
         size_t sdl_points_count = 0;
 
         for(auto& point : points)
@@ -471,7 +471,7 @@ namespace ps {
 
         //SDL_SetRenderDrawColor(m_renderer, 100, 255, 100, SDL_ALPHA_OPAQUE);
         SDL_SetRenderDrawColor(m_renderer, 255, 200, 100, SDL_ALPHA_OPAQUE);
-        SDL_RenderDrawLines(m_renderer, sdl_points, sdl_points_count);
+        SDL_RenderLines(m_renderer, sdl_points, sdl_points_count);
         //SDL_RenderDrawLines(m_renderer, sdl_points1, sdl_points_count);
         //SDL_RenderDrawLines(m_renderer, sdl_points2, sdl_points_count);
 
@@ -710,7 +710,7 @@ namespace ps {
     bool Screen::quit_program() {
         // Check for SDL events. If the window is closed, quit the program.
         while (SDL_PollEvent(&m_event)) {
-            if (m_event.type == SDL_QUIT)
+            if (m_event.type == SDL_EVENT_QUIT)
                 return true;
         }
         return false;

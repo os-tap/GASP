@@ -41,7 +41,7 @@ private:
     char buffer[8] = "FPS: 00";
 
 
-    int mouse_x, mouse_y;
+    float mouse_x, mouse_y;
     double burn_x, burn_y;
 
     std::string burn_radius_str{ "t, burn_radius" };
@@ -62,7 +62,6 @@ private:
             print_grid = 0,
             print_denisty = 0,
             clear_csv = 0,
-            refill = 0,
             update_curve = 0;
     } input;
 

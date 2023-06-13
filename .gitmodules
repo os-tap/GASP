@@ -9,7 +9,7 @@
 	url = https://github.com/nlohmann/json.git
 [submodule "vendor/gsl"]
 	path = vendor/gsl
-	url = https://github.com/ampl/gsl.git
+	url = git://git.savannah.gnu.org/gsl.git
 [submodule "vendor/oneTBB"]
 	path = vendor/oneTBB
 	url = https://github.com/oneapi-src/oneTBB.git

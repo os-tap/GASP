@@ -33,7 +33,7 @@ protected:
 public:
     JsonReader() {
         
-        std::ifstream file("/home/bryzgalov.ov/GASP/params.json");
+        std::ifstream file("params.json");
         if (!file.is_open()) {
             std::cout << "Cant find params.json";
             exit(1);
@@ -163,7 +163,6 @@ public:
 
     int grid_curve_calc = j["grid_curve_calc"];
     double grid_curve_area = j["grid_curve_area"];
-    bool refill = j["refill"];
     double grid_count_gap = j["grid_count_gap"];
 
     int skip_frames = j["skip_frames"];

@@ -64,11 +64,11 @@ void GAS::ReadSDLEvents()
     {
         switch (e.type)
         {
-        case SDL_QUIT:
+        case SDL_EVENT_QUIT:
             input.sdl_quit = true;
             break;
 
-        case SDL_KEYDOWN:
+        case SDL_EVENT_KEY_DOWN:
             switch (e.key.keysym.sym)
             {
             case SDLK_1:
@@ -156,9 +156,6 @@ void GAS::ReadSDLEvents()
             case SDLK_x:
                 input.clear_csv = true;
                 break;
-            case SDLK_r:
-                params.refill = !params.refill;
-                break;
             case SDLK_k:
                 params.scale_burn = !params.scale_burn;
                 params.curve_burn_coef = 0;
@@ -208,7 +205,7 @@ void GAS::IterateSwarm()
         if (state.move)
         {
             // if (State.pause) std::cout << "\nMove";
-            if (!params.refill) main_swarm.Emit();
+            main_swarm.Emit();
             main_swarm.MoveParticles();
         }
     }
@@ -217,7 +214,6 @@ void GAS::IterateSwarm()
     {
         main_swarm.ClearParticles();
         main_swarm.UpdateSegments();
-        if (params.refill) main_swarm.Refill();
         main_swarm.CalcBurnRadius(params.grid_curve_calc);
         main_swarm.PlaceBurned();
     }

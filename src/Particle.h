@@ -11,8 +11,7 @@ namespace ps {
     class Particle : public Point {
 
     public:
-        Particle(coord_t _x, coord_t _y) : Point(_x,_y) {}
-        Particle(coord_t _x, coord_t _y, bool is_visible) : Point(_x,_y), visible(is_visible) {}
+        Particle(coord_t _x, coord_t _y, bool is_visible = true) : Point(_x,_y), visible(is_visible) {}
 
         enum class State { OK, WARM, BURN, WAVE, SAGE, DIED };
         State state = State::OK;

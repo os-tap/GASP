@@ -18,7 +18,7 @@ message(STATUS "FetchContent: SDL2")
 FetchContent_Declare(
         SDL2
         GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-        GIT_TAG release-2.0.16
+        GIT_TAG release-2.26.5
 )
 FetchContent_GetProperties(SDL2)
 if (NOT sdl2_POPULATED)
@@ -72,5 +72,16 @@ FetchContent_Declare(
         GIT_TAG v2.7.0
 )
 FetchContent_MakeAvailable(gsl)
+
+# --------------------------------------------------------------------
+
+message(STATUS "FetchContent: one tbb")
+
+FetchContent_Declare(
+        oneTBB
+        GIT_REPOSITORY https://github.com/oneapi-src/oneTBB.git
+        GIT_TAG v2021.9.0
+)
+FetchContent_MakeAvailable(oneTBB)
 
 # --------------------------------------------------------------------

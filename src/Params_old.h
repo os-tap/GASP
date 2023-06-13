@@ -103,7 +103,6 @@ public:
 
     int grid_curve_calc;
     double grid_curve_area;
-    bool refill;
     double grid_count_gap;
 
     size_t skip_frames;

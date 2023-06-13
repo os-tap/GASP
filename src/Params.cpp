@@ -129,7 +129,6 @@ void ps::Params::Load(json j)
     
     only_positive_curve = (bool)j["only_positive_curve"];
     scale_burn = (bool)j["scale_burn"];
-    refill = (bool)j["refill"];
     grid_count_gap = (double)j["grid_count_gap"];
 
     curve_burn_coef = (double)j["curve_burn_coef"];
