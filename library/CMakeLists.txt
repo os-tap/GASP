@@ -13,18 +13,20 @@ include(FetchContent)
 
 # --------------------------------------------------------------------
 
-message(STATUS "FetchContent: SDL2")
+message(STATUS "FetchContent: SDL")
 
 FetchContent_Declare(
-        SDL2
+        SDL
         GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-        GIT_TAG release-2.26.5
+        GIT_TAG 739f783
 )
-FetchContent_GetProperties(SDL2)
-if (NOT sdl2_POPULATED)
-    FetchContent_Populate(SDL2)
-    add_subdirectory(${sdl2_SOURCE_DIR} ${sdl2_BINARY_DIR})
-endif ()
+FetchContent_MakeAvailable(SDL)
+
+# FetchContent_GetProperties(SDL2)
+# if (NOT sdl2_POPULATED)
+#     FetchContent_Populate(SDL2)
+#     add_subdirectory(${sdl2_SOURCE_DIR} ${sdl2_BINARY_DIR})
+# endif ()
 
 # --------------------------------------------------------------------
 
@@ -64,14 +66,14 @@ endif()
 
 # --------------------------------------------------------------------
 
-message(STATUS "FetchContent: gsl")
+# message(STATUS "FetchContent: gsl")
 
-FetchContent_Declare(
-        gsl
-        GIT_REPOSITORY https://github.com/ampl/gsl.git
-        GIT_TAG v2.7.0
-)
-FetchContent_MakeAvailable(gsl)
+# FetchContent_Declare(
+#         gsl
+#         GIT_REPOSITORY https://github.com/ampl/gsl.git
+#         GIT_TAG v2.7.0
+# )
+# FetchContent_MakeAvailable(gsl)
 
 # --------------------------------------------------------------------
 

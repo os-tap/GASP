@@ -35,8 +35,14 @@ public:
         
         std::ifstream file("params.json");
         if (!file.is_open()) {
-            std::cout << "Cant find params.json";
-            exit(1);
+            file = std::ifstream("../params.json");
+            if (!file.is_open()) {
+                file = std::ifstream("../../params.json");
+            }
+            if (!file.is_open()) {
+                std::cout << "Cant find params.json";
+                exit(1);
+            }
         }
 
         file >> j;
