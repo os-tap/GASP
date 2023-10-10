@@ -18,7 +18,7 @@ message(STATUS "FetchContent: SDL")
 FetchContent_Declare(
         SDL
         GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-        GIT_TAG 739f783
+        GIT_TAG origin/main
 )
 FetchContent_MakeAvailable(SDL)
 

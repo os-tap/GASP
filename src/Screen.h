@@ -7,8 +7,8 @@
 #include "Params.h"
 #include "Particle.h"
 
-#include <SDL.h>
-#include <SDL_timer.h>
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_timer.h>
 // #include <SDL2/SDL2_gfxPrimitives.h>
 
 #include <iostream>
